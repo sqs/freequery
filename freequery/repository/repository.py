@@ -24,7 +24,7 @@ class Repository(object):
         self.docindex.clear()
 
     def __path_for_docid(self, docid):
-        return os.path.join(self.path, 'doc%04d' % docid)
+        return os.path.join(self.path, 'doc%06d' % docid)
     
     def add(self, doc):
         """
