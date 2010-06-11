@@ -18,8 +18,8 @@ for root, dirs, files in os.walk(wikipath):
             path = os.path.join(root, f)
             uri = 'file://' + path
             with open(path, 'r') as ff:
-                contents = ff.read()
-            doc = Document(uri, {'orig': contents})
+                raw = ff.read()
+            doc = Document(uri, raw)
             repos.add(doc)
             print "%d. %s" % (i, uri)
             i += 1
