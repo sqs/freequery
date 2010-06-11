@@ -28,19 +28,18 @@ class Repository(object):
     
     def add(self, doc):
         """
-        Adds `doc` to the repository.
+        Adds `doc` to the repository. Returns `doc`'s docid.
         """
         docid = self.docindex.add(doc.uri)
         docfile = open(self.__path_for_docid(docid), 'w')
         pickle.dump(doc, docfile)
         docfile.close()
+        return docid
 
-    def get(self, key):
-        docid = None
-        if isinstance(key, int): # docid
-            docid = key
-        else: # uri
-            docid = self.docindex[key]
+    def get(self, docid):
+        """
+        Returns the `Document` with the given `docid`.
+        """
         docfile = open(self.__path_for_docid(docid), 'r')
         doc = pickle.load(docfile)
         docfile.close()

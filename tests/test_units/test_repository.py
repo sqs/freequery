@@ -16,12 +16,12 @@ class TestRepository(unittest.TestCase):
         self.repos.clear()
 
     def test_adds(self):
-        self.repos.add(self.doc)
-        assert self.doc == self.repos.get('http://example.com')
+        i = self.repos.add(self.doc)
+        assert self.doc == self.repos.get(i)
 
     def test_persists(self):
-        self.repos.add(self.doc)
+        i = self.repos.add(self.doc)
         self.repos.close()
         self.repos = Repository(TEST_REPOSITORY_PATH)
-        assert self.doc == self.repos.get('http://example.com')
+        assert self.doc == self.repos.get(i)
 
