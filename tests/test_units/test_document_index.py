@@ -1,4 +1,4 @@
-import unittest, os
+import unittest
 from freequery.repository.document_index import DocumentIndex
 
 TEST_DOCUMENT_INDEX_PATH = "/tmp/fq-test.docindex"
@@ -9,8 +9,7 @@ class TestDocumentIndex(unittest.TestCase):
         self.docindex = DocumentIndex(TEST_DOCUMENT_INDEX_PATH)
 
     def tearDown(self):
-        self.docindex.close()
-        os.unlink(TEST_DOCUMENT_INDEX_PATH)
+        self.docindex.clear()
 
     def test_notfound(self):
         assert 'http://apple.com' not in self.docindex
@@ -37,6 +36,3 @@ class TestDocumentIndex(unittest.TestCase):
         self.docindex = DocumentIndex(TEST_DOCUMENT_INDEX_PATH)
         j = self.docindex['http://example.com']
         assert i == j
-    
-if __name__ == '__main__':
-        unittest.main()

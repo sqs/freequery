@@ -35,7 +35,14 @@ class DocumentIndex(object):
     def close(self):
         """Closes the index file (and saves it if there are unsaved changes)."""
         self.save()
-        self.indexfile.close()
+        if self.indexfile:
+            self.indexfile.close()
+
+    def clear(self):
+        """Removes the index file."""
+        if self.indexfile:
+            self.indexfile.close()
+        os.remove(self.indexpath)
 
     def __unicode__(self):
         return "<DocumentIndex path='%s' size=%d dirty=%s>" % \
@@ -62,3 +69,7 @@ class DocumentIndex(object):
 
     def __contains__(self, uri):
         return uri in self.index
+
+    def docids(self):
+        """Returns a list of all docids."""
+        return self.index.values()
