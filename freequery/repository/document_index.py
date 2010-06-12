@@ -17,7 +17,7 @@ class DocumentIndex(object):
             self.indexfile = open(self.indexpath, 'r+')
             self.index = pickle.load(self.indexfile)
             self.dirty = False
-        except IOError:
+        except IOError, EOFError:
             self.indexfile = open(self.indexpath, 'w+')
             self.index = dict()
             self.dirty = True

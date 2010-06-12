@@ -16,7 +16,7 @@ class InvertedIndex(object):
             self.file = open(self.path, 'r+')
             self.term_doclists = pickle.load(self.file)
             self.new = False
-        except IOError:
+        except IOError, EOFError:
             self.file = open(self.path, 'w+')
             self.term_doclists = dict()
             self.new = True
