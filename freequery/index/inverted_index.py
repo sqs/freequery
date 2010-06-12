@@ -49,6 +49,8 @@ class InvertedIndex(object):
 
     def add(self, docs):
         """Adds a list of `Document`s to the inverted index."""
+        if not self.new:
+            raise NotImplementedError("can't add to existing index")
         for doc in docs:
             term_hits = doc.term_hits()
             for term,hits in term_hits.items():
