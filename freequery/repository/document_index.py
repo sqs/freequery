@@ -62,6 +62,7 @@ class DocumentIndex(object):
         and a metadata entry with RepositoryPointer `ptr`. Fails if `uri` has
         already been added. Returns the newly created docID.
         """
+        assert isinstance(uri, str) or isinstance(uri, unicode)
         if uri in self.urimap:
             raise NotImplementedError("can't add doc with duplicate URI")
         else:

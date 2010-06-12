@@ -50,7 +50,7 @@ class Repository(object):
         Adds `doc` to the repository. Returns `doc`'s docid.
         """
         ptr = RepositoryPointer(0, self.cur.ofs)
-        docid = self.docindex.add(doc, ptr)
+        docid = self.docindex.add(doc.uri, ptr)
         doc.docid = docid
         s = doc.pack()
         self.file.write(s)
