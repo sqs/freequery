@@ -1,4 +1,4 @@
-import re
+import re, struct
 
 class Document(object):
 
@@ -6,9 +6,10 @@ class Document(object):
     Represents a document.
     """
 
-    def __init__(self, uri, raw):
+    def __init__(self, uri, raw, docid=-1):
         self.uri = uri
         self.raw = raw
+        self.docid = docid
 
     def terms(self):
         raise NotImplementedError
@@ -16,13 +17,27 @@ class Document(object):
     def make_typed(self, mimetype):
         self.__class__ = MIMETYPE_CLASS[mimetype]
         return self
+
+    doc_struct = struct.Struct('i255p255p')
+    def pack(self):
+        return self.doc_struct.pack(self.docid, self.uri, self.raw)
+    
+    @classmethod
+    def unpack(klass, s):
+        docid, uri, raw = klass.doc_struct.unpack(s)
+        return klass(uri, raw, docid)
+
+    @classmethod
+    def unpack_from_file(klass, file):
+        buffer = file.read(klass.doc_struct.size)
+        docid, uri, raw = klass.doc_struct.unpack_from(buffer)
+        return klass(uri, raw, docid)
     
     def __eq__(self, other):
         return isinstance(other, Document) and self.__dict__ == other.__dict__
     
     def __str__(self):
-        return "<Document docid=%d uri='%s'>" % \
-               (getattr(self, 'docid', None), self.uri)
+        return "<Document docid=%d uri='%s'>" % (self.docid, self.uri)
 
 
 class HTMLDocument(Document):

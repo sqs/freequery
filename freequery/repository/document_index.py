@@ -4,22 +4,28 @@ import os, pickle
 class DocumentIndex(object):
 
     """
-    Maintains a uri->docID mapping for `Repository`.
+    Stores document metadata and contains a uri->docID mapping for `Repository`.
     """
 
-    def __init__(self, indexpath):
+    def __init__(self, path):
         """
-        Opens a document index file at `indexfile`, creating it if it doesn't
+        Opens a document index file at `path`, creating it if it doesn't
         exist.
         """
-        self.indexpath = indexpath
+        self.path = path
+        self.entriespath = os.path.join(self.path, "entries")
+        self.urimappath = os.path.join(self.path, "urimap")
         try:
-            self.indexfile = open(self.indexpath, 'r+')
-            self.index = pickle.load(self.indexfile)
+            self.entriesfile = open(self.entriespath, 'r+')
+            self.entries = pickle.load(self.entriesfile)
+            self.urimapfile = open(self.urimappath, 'r+')
+            self.urimap = pickle.load(self.urimapfile)
             self.dirty = False
-        except IOError, EOFError:
-            self.indexfile = open(self.indexpath, 'w+')
-            self.index = dict()
+        except (EOFError, IOError):
+            self.entriesfile = open(self.entriespath, 'w+')
+            self.entries = dict()
+            self.urimapfile = open(self.urimappath, 'w+')
+            self.urimap = dict()
             self.dirty = True
 
     def save(self):
@@ -28,48 +34,101 @@ class DocumentIndex(object):
         if the index file was saved, and `False` otherwise.
         """
         if not self.dirty: return False
-        pickle.dump(self.index, self.indexfile)
+        pickle.dump(self.entries, self.entriesfile)
+        pickle.dump(self.urimap, self.urimapfile)
         self.dirty = False
         return True
 
     def close(self):
-        """Closes the index file (and saves it if there are unsaved changes)."""
-        self.save()
-        if self.indexfile:
-            self.indexfile.close()
+        """Closes open files (without saving unsaved changes)."""
+        self.entriesfile.close()
+        self.urimapfile.close()
+        self.entriesfile = None
+        self.urimapfile = None
 
     def clear(self):
-        """Removes the index file."""
-        if self.indexfile:
-            self.indexfile.close()
-        os.remove(self.indexpath)
+        """Erases the document index."""
+        self.close()
+        os.remove(self.entriespath)
+        os.remove(self.urimappath)
 
     def __unicode__(self):
         return "<DocumentIndex path='%s' size=%d dirty=%s>" % \
-               (self.indexpath, len(self.index), self.dirty)
+               (self.path, len(self.entries), self.dirty)
 
-    def add(self, uri):
+    def add(self, uri, ptr):
         """
-        If `uri` is not in the index, create and return a new docID for it;
-        otherwise, return its existing docID.
+        Adds doc with `uri` to the document index, creating an entry in the URI map
+        and a metadata entry with RepositoryPointer `ptr`. Fails if `uri` has
+        already been added. Returns the newly created docID.
         """
-        if uri in self.index:
-            return self.index[uri]
+        if uri in self.urimap:
+            raise NotImplementedError("can't add doc with duplicate URI")
         else:
-            docid = len(self.index)
-            self.index[uri] = docid
+            docid = len(self.entries)
+            self.urimap[uri] = docid
+            self.entries[docid] = DocumentIndexEntry(ptr=ptr)
             self.dirty = True
             return docid
     
     def __len__(self):
-        return len(self.index)
+        return len(self.entries)
 
-    def __getitem__(self, uri):
-        return self.index[uri]
+    def __key_to_docid(self, key):
+        """
+        Given either a URI or docID, return the docID itself or the docID
+        corresponding to the URI.
+        """
+        if isinstance(key, int):
+            return key
+        else:
+            return self.urimap[key]
+    
+    def __getitem__(self, key):
+        if not isinstance(key, int):
+            key = self.urimap.get(key, None)
+            if key is None:
+                raise KeyError("URI not found in urimap")
+        return self.entries[key]
 
-    def __contains__(self, uri):
-        return uri in self.index
+    def __contains__(self, key):
+        if not isinstance(key, int):
+            key = self.urimap.get(key, None)
+            if key is None:
+                return False
+        return key in self.entries
 
     def docids(self):
         """Returns a list of all docids."""
-        return self.index.values()
+        return self.entries.keys()
+
+class DocumentIndexEntry(object):
+
+    """Stores metadata about each `Document`."""
+
+    def __init__(self, ptr=None):
+        self.ptr = ptr
+    
+    ptr = None
+    """The `Document`'s location in a `Repository`."""
+
+class RepositoryPointer(object):
+
+    """Represents the location of a `Document` in a `Repository`."""
+
+    def __init__(self, file=-1, ofs=-1):
+        self.file = file
+        self.ofs = ofs
+    
+    file = -1
+    """The virtual file containing the `Document`."""
+    
+    ofs = -1
+    """The `Document`'s offset in the virtual file."""
+
+    def __eq__(self, other):
+        return isinstance(other, RepositoryPointer) and \
+               self.file == other.file and self.ofs == other.ofs
+
+    def __str__(self):
+        return "<RepositoryPointer (%d,%d)>" % (self.file, self.ofs)

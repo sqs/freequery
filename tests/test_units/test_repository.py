@@ -10,7 +10,7 @@ class TestRepository(unittest.TestCase):
         if not os.path.exists(TEST_REPOSITORY_PATH):
             os.makedirs(TEST_REPOSITORY_PATH)
         self.repos = Repository(TEST_REPOSITORY_PATH)
-        self.doc = Document('http://example.com', {'title': 'Example'})
+        self.doc = Document('http://example.com', '<h1>Welcome to example</h1>')
 
     def tearDown(self):
         self.repos.clear()
@@ -18,6 +18,13 @@ class TestRepository(unittest.TestCase):
     def test_adds(self):
         i = self.repos.add(self.doc)
         assert self.doc == self.repos.get(i)
+
+    def test_adds_two(self):
+        i = self.repos.add(self.doc)
+        doc2 = Document('http://apple.com', '<h1>Welcome to Apple</h1>')
+        j = self.repos.add(doc2)
+        assert self.doc == self.repos.get(i)
+        assert doc2 == self.repos.get(j)
 
     def test_persists(self):
         i = self.repos.add(self.doc)
