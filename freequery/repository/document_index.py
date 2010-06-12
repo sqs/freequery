@@ -1,4 +1,4 @@
-import os, pickle
+import os, cPickle as pickle
 
 
 class DocumentIndex(object):
