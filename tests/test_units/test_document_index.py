@@ -36,3 +36,9 @@ class TestDocumentIndex(unittest.TestCase):
         self.docindex = DocumentIndex(TEST_DOCUMENT_INDEX_PATH)
         j = self.docindex['http://example.com']
         assert i == j
+
+    def test_iterates_docids(self):
+        i = self.docindex.add('http://example.com')
+        j = self.docindex.add('http://apple.com')
+        assert list(self.docindex.docids()) == [i, j]
+        
