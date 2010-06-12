@@ -73,7 +73,6 @@ class InvertedIndex(object):
             else:
                 self.term_doclists[term] = doclist
         
-
     def lookup(self, term):
         """Returns a list of docids of `Document`s that contain `term`."""
         return self.term_doclists.get(term, {})
