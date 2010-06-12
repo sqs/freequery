@@ -41,6 +41,8 @@ class Repository(object):
         """
         Returns the `Document` with the given `docid`.
         """
+        if not isinstance(docid, int):
+            raise KeyError("docid must be int")
         docfile = open(self.__path_for_docid(docid), 'r')
         doc = pickle.load(docfile)
         docfile.close()
