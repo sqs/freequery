@@ -14,7 +14,8 @@ class TestInvertedIndex(unittest.TestCase):
 
     def test_lookup(self):
         d1 = HTMLDocument('http://example.com', '<h1>Welcome to example</h1>')
+        d1.docid = 123
         self.invindex.add((d1,))
         self.invindex.save()
-        assert [d1,] == self.invindex.lookup('welcome').keys()
+        assert [123] == self.invindex.lookup('welcome').keys()
         assert {} == self.invindex.lookup('nonexistent')
