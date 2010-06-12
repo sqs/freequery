@@ -9,6 +9,6 @@ repos = Repository(repospath)
 
 for docid in repos.docindex.docids():
     doc = repos.get(docid)
-    print "%06d\t%s\n      \tsize=%d" % (docid, doc.uri, len(doc.data['orig']))
+    print "%06d\t%s\n      \tsize=%d" % (docid, doc.uri, len(doc.raw))
 
 repos.close()
