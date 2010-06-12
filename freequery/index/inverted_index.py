@@ -55,8 +55,8 @@ class InvertedIndex(object):
             term_hits = doc.term_hits()
             for term,hits in term_hits.items():
                 if term not in self.term_doclists:
-                    self.term_doclists[term] = dict()
-                self.term_doclists[term][doc.docid] = hits
+                    self.term_doclists[term] = []
+                self.term_doclists[term].append((doc.docid, hits))
 
     def merge(self, invindex1, invindex2):
         """
@@ -69,10 +69,10 @@ class InvertedIndex(object):
         term_doclists2 = copy.deepcopy(invindex2.term_doclists)
         for term,doclist in term_doclists2.items():
             if term in self.term_doclists:
-                self.term_doclists[term].update(doclist)
+                self.term_doclists[term].extend(doclist)
             else:
                 self.term_doclists[term] = doclist
         
     def lookup(self, term):
         """Returns a list of docids of `Document`s that contain `term`."""
-        return self.term_doclists.get(term, {})
+        return self.term_doclists.get(term, [])

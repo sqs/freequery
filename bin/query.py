@@ -13,7 +13,7 @@ term = sys.argv[3]
 repos = Repository(repospath)
 invindex = InvertedIndex(invindexpath)
 
-docids = invindex.lookup(term)
+docids = map(lambda r: r[0], invindex.lookup(term))
 for docid in docids:
     print repos.get(docid).uri
 

@@ -6,7 +6,7 @@ from freequery.index.inverted_index import InvertedIndex
 if len(sys.argv) not in (3,4,5):
     print "Usage: %s <repos> <invindex> [start-docid [end-docid]]" % sys.argv[0]
     exit(1)
-
+    
 repospath = sys.argv[1]
 invindexpath = sys.argv[2]
 start_docid = int(sys.argv[3])

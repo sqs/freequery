@@ -4,8 +4,12 @@ from freequery.repository.document import HTMLDocument
 
 TEST_INVERTED_INDEX_PATH = '/tmp/fq-test/invindex'
 
-class TestInvertedIndex(unittest.TestCase):
+def result_docids(res):
+    return dict(res).keys()
+    
 
+class TestInvertedIndex(unittest.TestCase):
+    
     def setUp(self):
         self.invindex = InvertedIndex(TEST_INVERTED_INDEX_PATH)
 
@@ -20,8 +24,8 @@ class TestInvertedIndex(unittest.TestCase):
     def test_lookup(self):
         self.invindex.add((self.d1,))
         self.invindex.save()
-        assert [1] == self.invindex.lookup('welcome').keys()
-        assert {} == self.invindex.lookup('nonexistent')
+        assert [1] == result_docids(self.invindex.lookup('welcome'))
+        assert [] == self.invindex.lookup('nonexistent')
 
     def test_merge(self):
         # invindex #1
@@ -34,9 +38,9 @@ class TestInvertedIndex(unittest.TestCase):
         # set up invindex to merge into
         invindex3 = InvertedIndex(TEST_INVERTED_INDEX_PATH+'3')
         invindex3.merge(self.invindex, invindex2)
-        assert [2] == invindex3.lookup('apple').keys()
-        assert [1] == invindex3.lookup('example').keys()
-        assert [1,2] == invindex3.lookup('welcome').keys()
+        assert [2] == result_docids(invindex3.lookup('apple'))
+        assert [1] == result_docids(invindex3.lookup('example'))
+        assert [1,2] == result_docids(invindex3.lookup('welcome'))
 
         invindex2.clear()
         invindex3.clear()
