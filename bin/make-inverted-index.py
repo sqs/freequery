@@ -22,6 +22,8 @@ for doc in repos:
         print "%d. %s" % (i, doc.uri)
         invindex.add((doc,))
         i += 1
+    elif doc.docid > end_docid:
+        break
 
 invindex.save()
 invindex.close()
