@@ -50,7 +50,7 @@ class Repository(object):
         ptr = RepositoryPointer(0, self.cur.ofs)
         docid = self.docindex.add(doc.uri, ptr)
         doc.docid = docid
-        s = doc.pack()
+        s = doc.to_proto_string()
         self.file.write(s)
         self.cur.ofs += len(s)
         return docid
@@ -67,7 +67,7 @@ class Repository(object):
     def get_at(self, ptr):
         """Returns the `Document` at the given pointer `ptr`."""
         self.file.seek(ptr.ofs, os.SEEK_SET)
-        return Document.unpack_from_file(self.file)
+        return Document.from_proto_file(self.file)
 
     def __iter__(self):
         """Iterator over all documents stored in this repository."""
@@ -81,7 +81,7 @@ class RepositoryIterator(object):
         
     def next(self):
         try:
-            return Document.unpack_from_file(self.file)
+            return Document.from_proto_file(self.file)
         except EOFError:
             self.file.close()
             raise StopIteration

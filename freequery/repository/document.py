@@ -1,4 +1,5 @@
 import re, struct
+from freequery.repository.repository_pb2 import Document as proto_Document
 
 class Document(object):
 
@@ -18,32 +19,57 @@ class Document(object):
         self.__class__ = MIMETYPE_CLASS[mimetype]
         return self
 
-    doc_struct = struct.Struct('i255p255p')
-    def pack(self):
-        return self.doc_struct.pack(self.docid, self.uri, self.raw)
     
-    @classmethod
-    def unpack(klass, s):
-        docid, uri, raw = klass.doc_struct.unpack(s)
-        return klass(uri, raw, docid)
+    size_header = struct.Struct('I')
+    size_header_size = size_header.size
+    
+    def to_proto(self):
+        proto_doc = proto_Document()
+        proto_doc.docid = self.docid
+        proto_doc.uri = self.uri.decode('utf8')
+        proto_doc.raw = self.raw.decode('utf8')
+        return proto_doc
+        
+    def to_proto_string(self):
+        proto_doc = self.to_proto()
+        size = proto_doc.ByteSize()
+        return self.size_header.pack(size) + proto_doc.SerializeToString()
 
     @classmethod
-    def unpack_from(klass, s):
-        docid, uri, raw = klass.doc_struct.unpack_from(s)
-        return klass(uri, raw, docid)
+    def from_proto(klass, proto_doc):
+        return klass(proto_doc.uri, proto_doc.raw, proto_doc.docid)
+
+    @classmethod
+    def from_proto_string(klass, s):
+        """
+        Read string `s` to parse a protobuf Document. See `from_proto_file`.
+        """
+        size = klass.size_header.unpack(s[:klass.size_header_size])[0]
+        data = s[klass.size_header_size:]
+        proto_doc = proto_Document()
+        proto_doc.ParseFromString(data)
+        return klass.from_proto(proto_doc)
     
     @classmethod
-    def unpack_from_file(klass, file):
-        buffer = file.read(klass.doc_struct.size)
-        if len(buffer) != klass.doc_struct.size:
+    def from_proto_file(klass, file):
+        """
+        Read `file` to parse a protobuf Document. The first sizeof(int) bytes are
+        unsigned int `size`; the next `size` bytes are the serialized data.
+        """
+        try:
+            size = klass.size_header.unpack(file.read(klass.size_header_size))[0]
+        except:
             raise EOFError
-        return klass.unpack_from(buffer)
+        data = file.read(size)
+        proto_doc = proto_Document()
+        proto_doc.ParseFromString(data)
+        return klass.from_proto(proto_doc)
     
     def __eq__(self, other):
         return isinstance(other, Document) and self.__dict__ == other.__dict__
     
     def __str__(self):
-        return "<Document docid=%d uri='%s'>" % (self.docid, self.uri)
+        return "<Document docid=%d uri='%s' raw=(%d bytes)>" % (self.docid, self.uri, len(self.raw))
 
     __unicode__ = __str__
     __repr__ = __str__

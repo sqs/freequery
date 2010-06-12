@@ -12,5 +12,6 @@ class TestDocument(unittest.TestCase):
 
     def test_pack(self):
         d1 = Document('http://example.com', '<h1>Welcome to example</h1>')
-        assert d1 == Document.unpack(d1.pack())
+        proto_d1 = Document.from_proto_string(d1.to_proto_string())
+        assert d1 == proto_d1
         
