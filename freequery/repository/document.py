@@ -21,7 +21,8 @@ class Document(object):
         return isinstance(other, Document) and self.__dict__ == other.__dict__
     
     def __str__(self):
-        return "<Document uri='%s'>" % self.uri
+        return "<Document docid=%d uri='%s'>" % \
+               (getattr(self, 'docid', None), self.uri)
 
 
 class HTMLDocument(Document):
