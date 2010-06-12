@@ -31,6 +31,7 @@ class Repository(object):
         Adds `doc` to the repository. Returns `doc`'s docid.
         """
         docid = self.docindex.add(doc.uri)
+        doc.docid = docid
         docfile = open(self.__path_for_docid(docid), 'w')
         pickle.dump(doc, docfile)
         docfile.close()
