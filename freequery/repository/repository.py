@@ -1,4 +1,4 @@
-import os, pickle
+import os
 from freequery.repository.document_index import DocumentIndex, RepositoryPointer
 from freequery.repository.document import Document
 
