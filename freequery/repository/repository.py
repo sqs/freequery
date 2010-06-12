@@ -26,10 +26,8 @@ class Repository(object):
         self.cur.file = 0
         filepath = self.__path_for_file_num(self.cur.file)
         if not os.path.exists(filepath):
-            with open(filepath, 'w+') as f:
-                f.write(" ")
+            open(filepath, 'a').close() # create if doesn't exist
         self.file = open(filepath, 'a+b')
-        self.file.seek(0, os.SEEK_END)
         self.cur.ofs = self.file.tell()
 
     def close(self):
@@ -71,3 +69,22 @@ class Repository(object):
         self.file.seek(ptr.ofs, os.SEEK_SET)
         return Document.unpack_from_file(self.file)
 
+    def __iter__(self):
+        """Iterator over all documents stored in this repository."""
+        self.file.flush()
+        return RepositoryIterator(self.__path_for_file_num(self.cur.file))
+
+class RepositoryIterator(object):
+
+    def __init__(self, path):
+        self.file = open(path, 'rb')
+        
+    def next(self):
+        try:
+            return Document.unpack_from_file(self.file)
+        except EOFError:
+            self.file.close()
+            raise StopIteration
+    
+    def __iter__(self):
+        return self

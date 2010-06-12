@@ -16,9 +16,9 @@ repos = Repository(repospath)
 invindex = InvertedIndex(invindexpath)
 
 i = 1
-for docid in repos.docindex.docids():
-    if docid in range(start_docid, end_docid+1):
-        doc = repos.get(docid).make_typed('text/html')
+for doc in repos:
+    if doc.docid in range(start_docid, end_docid+1):
+        doc.make_typed('text/html')
         print "%d. %s" % (i, doc.uri)
         invindex.add((doc,))
         i += 1

@@ -28,16 +28,25 @@ class Document(object):
         return klass(uri, raw, docid)
 
     @classmethod
+    def unpack_from(klass, s):
+        docid, uri, raw = klass.doc_struct.unpack_from(s)
+        return klass(uri, raw, docid)
+    
+    @classmethod
     def unpack_from_file(klass, file):
         buffer = file.read(klass.doc_struct.size)
-        docid, uri, raw = klass.doc_struct.unpack_from(buffer)
-        return klass(uri, raw, docid)
+        if len(buffer) != klass.doc_struct.size:
+            raise EOFError
+        return klass.unpack_from(buffer)
     
     def __eq__(self, other):
         return isinstance(other, Document) and self.__dict__ == other.__dict__
     
     def __str__(self):
         return "<Document docid=%d uri='%s'>" % (self.docid, self.uri)
+
+    __unicode__ = __str__
+    __repr__ = __str__
 
 
 class HTMLDocument(Document):
@@ -79,4 +88,5 @@ class Hit(object):
 MIMETYPE_CLASS = {
     'text/html': HTMLDocument
 }
+
 
