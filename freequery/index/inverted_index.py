@@ -1,4 +1,4 @@
-import os, cPickle as pickle
+import os, cPickle as pickle, copy
 
 class InvertedIndex(object):
 
@@ -55,6 +55,22 @@ class InvertedIndex(object):
                 if term not in self.term_doclists:
                     self.term_doclists[term] = dict()
                 self.term_doclists[term][doc.docid] = hits
+
+    def merge(self, invindex1, invindex2):
+        """
+        Merges two other `InvertedIndex`es together into this one. The two
+        indexes must not share any documents.
+        """
+        if not self.new:
+            raise NotImplementedError("can't merge into existing index")
+        self.term_doclists = copy.deepcopy(invindex1.term_doclists)
+        term_doclists2 = copy.deepcopy(invindex2.term_doclists)
+        for term,doclist in term_doclists2.items():
+            if term in self.term_doclists:
+                self.term_doclists[term].update(doclist)
+            else:
+                self.term_doclists[term] = doclist
+        
 
     def lookup(self, term):
         """Returns a list of docids of `Document`s that contain `term`."""
