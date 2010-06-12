@@ -15,5 +15,5 @@ print "Raw: (%d bytes)" % len(doc.raw)
 
 print "Term hits:"
 for (term,hits) in doc.term_hits().items():
-    print " - %s (x%d)" % (term, len(hits))
-
+    hit_list = ','.join(map(lambda h: str(h.pos), hits))
+    print " - %s (x%d @ %s)" % (term, len(hits), hit_list)
