@@ -2,7 +2,16 @@ import os, struct
 from freequery.repository.document import Document
 from freequery.index.forward_index_pb2 import ForwardIndexEntry as proto_ForwardIndexEntry
 
-
+def term_hits_to_proto(term_hits):
+    entry = proto_ForwardIndexEntry()
+    for term,hits in term_hits.items():
+        proto_term_hits = entry.term_hits.add()
+        proto_term_hits.term = term
+        for hit in hits:
+            proto_hit = proto_term_hits.hits.add()
+            proto_hit.pos = hit.pos
+    return entry
+        
 class ForwardIndex(object):
     """
     Mapping of documents to term hit lists.
@@ -30,15 +39,8 @@ class ForwardIndex(object):
     def add(self, doc):
         """Add `doc` to the forward index."""
         doc.make_typed('text/html')
-        term_hits = doc.term_hits()
-        entry = proto_ForwardIndexEntry()
+        entry = term_hits_to_proto(doc.term_hits())
         entry.docid = doc.docid
-        for term,hits in term_hits.items():
-            proto_term_hits = entry.term_hits.add()
-            proto_term_hits.term = term
-            for hit in hits:
-                proto_hit = proto_term_hits.hits.add()
-                proto_hit.pos = hit.pos
         s = entry.SerializeToString()
         size = entry.ByteSize()
         self.file.write(self.size_header.pack(size))
