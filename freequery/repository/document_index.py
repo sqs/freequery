@@ -1,6 +1,5 @@
-import os, cPickle as pickle
-from freequery.repository.repository_pb2 import DocumentIndex as proto_DocumentIndex
-proto_DocumentIndexEntry = proto_DocumentIndex.DocumentIndexEntry
+import os, struct, cPickle as pickle
+from freequery.repository.repository_pb2 import DocumentIndexEntry as proto_DocumentIndexEntry
 
 
 class DocumentIndex(object):
@@ -28,30 +27,25 @@ class DocumentIndex(object):
         if not os.path.isfile(self.urimappath):
             open(self.urimappath, 'a').close()
 
-        self.docindexfile = open(self.docindexpath, 'r+')
-        self.docindex = proto_DocumentIndex()
-        self.docindex.ParseFromString(self.docindexfile.read())
+        self.docindexfile = open(self.docindexpath, 'a+b')
         
         self.urimapfile = open(self.urimappath, 'r+')
         try:
             self.urimap = pickle.load(self.urimapfile)
         except EOFError:
             self.urimap = dict()
-        
+
+    size_header = struct.Struct('I')
+            
     def save(self):
         """
-        Saves the index to disk if there are unsaved changes. Returns `True`
-        if the index file was saved, and `False` otherwise.
+        Saves the URI map to disk if there are unsaved changes. Returns `True`
+        if the URI map file was saved, and `False` otherwise. The docindex file
+        is continuously written and does not need to be explicitly saved.
         """
-        if not self.dirty: return False
-
-        s = self.docindex.SerializeToString()
-        self.docindexfile.seek(0)
-        self.docindexfile.write(s)
-        
+        if not self.urimap_dirty: return False
         pickle.dump(self.urimap, self.urimapfile)
-
-        self.dirty = False
+        self.urimap_dirty = False
         return True
 
     def close(self):
@@ -63,14 +57,14 @@ class DocumentIndex(object):
 
     def clear(self):
         """Erases the document index."""
-        self.dirty = True
+        self.urimap_dirty = True
         self.close()
         os.remove(self.docindexpath)
         os.remove(self.urimappath)
 
     def __unicode__(self):
         return "<DocumentIndex path='%s' size=%d dirty=%s>" % \
-               (self.path, len(self.docindex), self.dirty)
+               (self.path, len(self.docindex), self.urimap_dirty)
 
     def add(self, uri, ptr):
         """
@@ -82,21 +76,22 @@ class DocumentIndex(object):
         if uri in self.urimap:
             raise NotImplementedError("can't add doc with duplicate URI")
         else:
-            docid = len(self.docindex.entries)
+            docid = len(self.urimap)
             self.urimap[uri] = docid
+            self.urimap_dirty = True
 
-            entry = self.docindex.entries.add()
+            entry = proto_DocumentIndexEntry()
             entry.docid = docid
             entry.uri = uri.decode('utf8')
             entry.ptr_file = ptr.file
             entry.ptr_ofs = ptr.ofs
+            s = entry.SerializeToString()
+            size = entry.ByteSize()
+            self.docindexfile.write(self.size_header.pack(size))
+            self.docindexfile.write(s)
 
-            self.dirty = True
             return docid
     
-    def __len__(self):
-        return len(self.docindex.entries)
-
     def __key_to_docid(self, key):
         """
         Given either a URI or docID, return the docID itself or the docID
@@ -112,7 +107,7 @@ class DocumentIndex(object):
             key = self.urimap.get(key, None)
             if key is None:
                 raise KeyError("URI not found in urimap")
-        for e in self.docindex.entries:
+        for e in self.__iter__():
             if e.docid == key:
                 return e
         raise KeyError("docid %d not found in doc index" % key)
@@ -122,12 +117,37 @@ class DocumentIndex(object):
             key = self.urimap.get(key, None)
             if key is None:
                 return False
-        return key in self.docids()
+        for e in self.__iter__():
+            if e.docid == key:
+                return True
+        return False
 
-    def docids(self):
-        """Returns a list of all docids."""
-        return [e.docid for e in self.docindex.entries]
+    def __iter__(self):
+        self.docindexfile.flush()
+        return DocumentIndexIterator(self.docindexpath)
 
+class DocumentIndexIterator(object):
+
+    def __init__(self, path):
+        self.file = open(path, 'r')
+
+    def next(self):
+        try:
+            data = self.file.read(DocumentIndex.size_header.size)
+            if len(data) != DocumentIndex.size_header.size:
+                raise EOFError
+            size = DocumentIndex.size_header.unpack(data)[0]
+        except EOFError:
+            self.file.close()
+            raise StopIteration
+        data = self.file.read(size)
+        e = proto_DocumentIndexEntry()
+        e.ParseFromString(data)
+        return e
+
+    def __iter__(self):
+        return self
+    
 class rptr(object):
     file = -1
     ofs = -1

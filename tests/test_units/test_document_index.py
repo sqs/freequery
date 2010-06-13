@@ -41,5 +41,6 @@ class TestDocumentIndex(unittest.TestCase):
     def test_iterates_docids(self):
         i = self.docindex.add('http://example.com', rptr(0,0))
         j = self.docindex.add('http://apple.com', rptr(0,1))
-        assert list(self.docindex.docids()) == [i, j]
+        iter_docids = map(lambda e: e.docid, list(self.docindex.__iter__()))
+        assert [i, j] == iter_docids
         

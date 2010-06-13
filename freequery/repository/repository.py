@@ -36,7 +36,8 @@ class Repository(object):
         self.docindex.close()
 
     def clear(self):
-        for docid in self.docindex.docids():
+        for e in self.docindex:
+            docid = e.docid
             ptr_file = self.docindex[docid].ptr_file
             f = self.__path_for_file_num(ptr_file)
             if os.path.isfile(f):

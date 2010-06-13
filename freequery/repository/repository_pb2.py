@@ -45,35 +45,35 @@ _DOCUMENT = descriptor.Descriptor(
   options=None)
 
 
-_DOCUMENTINDEX_DOCUMENTINDEXENTRY = descriptor.Descriptor(
+_DOCUMENTINDEXENTRY = descriptor.Descriptor(
   name='DocumentIndexEntry',
-  full_name='freequery.repository.DocumentIndex.DocumentIndexEntry',
+  full_name='freequery.repository.DocumentIndexEntry',
   filename='repository.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='docid', full_name='freequery.repository.DocumentIndex.DocumentIndexEntry.docid', index=0,
+      name='docid', full_name='freequery.repository.DocumentIndexEntry.docid', index=0,
       number=1, type=5, cpp_type=1, label=2,
       default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='uri', full_name='freequery.repository.DocumentIndex.DocumentIndexEntry.uri', index=1,
+      name='uri', full_name='freequery.repository.DocumentIndexEntry.uri', index=1,
       number=2, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='ptr_file', full_name='freequery.repository.DocumentIndex.DocumentIndexEntry.ptr_file', index=2,
+      name='ptr_file', full_name='freequery.repository.DocumentIndexEntry.ptr_file', index=2,
       number=3, type=5, cpp_type=1, label=2,
       default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='ptr_ofs', full_name='freequery.repository.DocumentIndex.DocumentIndexEntry.ptr_ofs', index=3,
+      name='ptr_ofs', full_name='freequery.repository.DocumentIndexEntry.ptr_ofs', index=3,
       number=4, type=5, cpp_type=1, label=2,
       default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -87,39 +87,13 @@ _DOCUMENTINDEX_DOCUMENTINDEXENTRY = descriptor.Descriptor(
   ],
   options=None)
 
-_DOCUMENTINDEX = descriptor.Descriptor(
-  name='DocumentIndex',
-  full_name='freequery.repository.DocumentIndex',
-  filename='repository.proto',
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='entries', full_name='freequery.repository.DocumentIndex.entries', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],  # TODO(robinson): Implement.
-  enum_types=[
-  ],
-  options=None)
 
-
-_DOCUMENTINDEX.fields_by_name['entries'].message_type = _DOCUMENTINDEX_DOCUMENTINDEXENTRY
 
 class Document(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _DOCUMENT
 
-class DocumentIndex(message.Message):
+class DocumentIndexEntry(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  
-  class DocumentIndexEntry(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _DOCUMENTINDEX_DOCUMENTINDEXENTRY
-  DESCRIPTOR = _DOCUMENTINDEX
+  DESCRIPTOR = _DOCUMENTINDEXENTRY
 
