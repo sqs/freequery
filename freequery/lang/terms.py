@@ -10,6 +10,8 @@ def prep_terms(terms):
     return filter(bool, map(prep_term, terms))
 
 def prep_term(t):
+    if len(t) <= 1:
+        return None
     assert t[0] not in string.whitespace and t[-1] not in string.whitespace
     t = t.lower()
     if t in stopwords:

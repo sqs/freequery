@@ -14,3 +14,7 @@ class TestLang(unittest.TestCase):
         ts = ['THE', 'Running']
         assert ['run'] == terms.prep_terms(ts)
 
+    def test_prep_bad_terms(self):
+        assert None == terms.prep_term('')
+        assert None == terms.prep_term('z')
+
