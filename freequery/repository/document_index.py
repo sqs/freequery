@@ -113,14 +113,11 @@ class DocumentIndex(object):
         raise KeyError("docid %d not found in doc index" % key)
 
     def __contains__(self, key):
-        if not isinstance(key, int):
-            key = self.urimap.get(key, None)
-            if key is None:
-                return False
-        for e in self.__iter__():
-            if e.docid == key:
-                return True
-        return False
+        try:
+            self.__getitem__(key)
+            return True
+        except KeyError:
+            return False
 
     def __iter__(self):
         self.docindexfile.flush()
