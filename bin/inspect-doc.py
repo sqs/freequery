@@ -3,6 +3,7 @@ from freequery.repository.repository import Repository
 
 if len(sys.argv) != 3:
     print "Usage: %s <repos> <docid>" % sys.argv[0]
+    exit(1)
 
 repospath = sys.argv[1]
 docid = int(sys.argv[2])
