@@ -1,4 +1,5 @@
 import os, cPickle as pickle, copy
+from freequery.lang.terms import prep_term
 
 class InvertedIndex(object):
 
@@ -76,4 +77,4 @@ class InvertedIndex(object):
         
     def lookup(self, term):
         """Returns a list of docids of `Document`s that contain `term`."""
-        return self.term_doclists.get(term, [])
+        return self.term_doclists.get(prep_term(term), [])

@@ -1,5 +1,6 @@
 import re, struct
 from freequery.repository.repository_pb2 import Document as proto_Document
+from freequery.lang.terms import prep_terms
 
 class Document(object):
 
@@ -62,6 +63,21 @@ class Document(object):
         proto_doc = proto_Document()
         proto_doc.ParseFromString(data)
         return klass.from_proto(proto_doc)
+
+    def tokens(self):
+        return NotImplementedError
+    
+    def term_hits(self):
+        pos = 0
+        term_hits = {}
+        terms = prep_terms(self.tokens())
+        for term in terms:
+            if term not in term_hits:
+                term_hits[term] = []
+            hit = Hit(pos)
+            term_hits[term].append(hit)
+            pos += 1
+        return term_hits
     
     def __eq__(self, other):
         return isinstance(other, Document) and self.__dict__ == other.__dict__
@@ -77,26 +93,17 @@ class HTMLDocument(Document):
 
     strip_tags_re = re.compile(r'<[^>]+>')
     collapse_space_re = re.compile(r'\s+')
-    alphanum_re = re.compile(r'[^a-z0-9]+')
+    alphanum_re = re.compile(r'[^\w\d]+')
     
-    def term_hits(self):
+    def tokens(self):
         html = self.raw
         txt = re.sub(self.strip_tags_re, ' ', html)
-        txt = txt.lower().strip()
+        txt = txt.strip()
         txt = re.sub(self.alphanum_re, ' ', txt)
         txt = re.sub(self.collapse_space_re, ' ', txt)
+        return txt.split(' ')
                 
-        pos = 0
-        term_hits = {}
-        for term in txt.split(' '):
-            if term not in term_hits:
-                term_hits[term] = []
-            hit = Hit(pos)
-            term_hits[term].append(hit)
-            pos += 1
-        return term_hits
         
-
 class Hit(object):
     """
     Represents an occurrence of a term in a document.

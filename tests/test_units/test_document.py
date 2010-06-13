@@ -14,4 +14,13 @@ class TestDocument(unittest.TestCase):
         d1 = Document('http://example.com', '<h1>Welcome to example</h1>')
         proto_d1 = Document.from_proto_string(d1.to_proto_string())
         assert d1 == proto_d1
+
+class TestHTMLDocument(unittest.TestCase):
+
+    def setUp(self):
+        self.d1 = Document('http://example.com', '<h1>Welcome to example</h1>')
+        self.d1.make_typed('text/html')
+
+    def test_tokens(self):
+        assert ['Welcome', 'to', 'example'] == self.d1.tokens()
         
