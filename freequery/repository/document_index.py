@@ -15,7 +15,7 @@ class DocumentIndex(object):
         exist.
         """
         self.path = path
-        self.docindexpath = os.path.join(self.path, "entries")
+        self.docindexpath = os.path.join(self.path, "docindex")
         self.urimappath = os.path.join(self.path, "urimap")
         self.dirty = False
         
