@@ -1,5 +1,5 @@
 import os
-from freequery.repository.document_index import DocumentIndex, RepositoryPointer
+from freequery.repository.document_index import DocumentIndex, rptr
 from freequery.repository.document import Document
 
 
@@ -14,7 +14,7 @@ class Repository(object):
         Opens a repository at `path`, creating it if needed.
         """
         self.path = path
-        self.cur = RepositoryPointer(file=0, ofs=0)
+        self.cur = rptr(-1,-1)
         self.docindex = DocumentIndex(self.path)
 
         self.__open_file()
@@ -37,7 +37,7 @@ class Repository(object):
 
     def clear(self):
         for docid in self.docindex.docids():
-            ptr_file = self.docindex[docid].ptr.file
+            ptr_file = self.docindex[docid].ptr_file
             f = self.__path_for_file_num(ptr_file)
             if os.path.isfile(f):
                 os.remove(f)
@@ -47,8 +47,7 @@ class Repository(object):
         """
         Adds `doc` to the repository. Returns `doc`'s docid.
         """
-        ptr = RepositoryPointer(0, self.cur.ofs)
-        docid = self.docindex.add(doc.uri, ptr)
+        docid = self.docindex.add(doc.uri, self.cur)
         doc.docid = docid
         s = doc.to_proto_string()
         self.file.write(s)
@@ -61,7 +60,8 @@ class Repository(object):
         """
         if not isinstance(docid, int):
             raise KeyError("docid must be int")
-        ptr = self.docindex[docid].ptr
+        entry = self.docindex[docid]
+        ptr = rptr(entry.ptr_file, entry.ptr_ofs)
         return self.get_at(ptr)
 
     def get_at(self, ptr):
@@ -88,3 +88,4 @@ class RepositoryIterator(object):
     
     def __iter__(self):
         return self
+

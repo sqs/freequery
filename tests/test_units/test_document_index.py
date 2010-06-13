@@ -1,9 +1,7 @@
 import unittest
-from freequery.repository.document_index import DocumentIndex, RepositoryPointer
+from freequery.repository.document_index import DocumentIndex, rptr
 
 TEST_DOCUMENT_INDEX_PATH = "/tmp/fq-test/"
-
-def rptr(file, ofs): return RepositoryPointer(file=file, ofs=ofs)
 
 class TestDocumentIndex(unittest.TestCase):
 
@@ -38,7 +36,7 @@ class TestDocumentIndex(unittest.TestCase):
         self.docindex.close()
         self.docindex = DocumentIndex(TEST_DOCUMENT_INDEX_PATH)
         j = self.docindex['http://example.com']
-        assert j.ptr == rptr(1,2)
+        assert rptr(j.ptr_file, j.ptr_ofs) == rptr(1,2)
 
     def test_iterates_docids(self):
         i = self.docindex.add('http://example.com', rptr(0,0))

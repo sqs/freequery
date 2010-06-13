@@ -5,3 +5,14 @@ message Document {
 	required string uri = 2;
 	required string raw = 3;
 };
+
+message DocumentIndex {
+	message DocumentIndexEntry {
+		required int32 docid = 1;
+		required string uri = 2;
+		required int32 ptr_file = 3;
+		required int32 ptr_ofs = 4;
+	};
+
+	repeated DocumentIndexEntry entries = 1;
+};
