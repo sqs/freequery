@@ -19,9 +19,7 @@ class Document(object):
         self.__class__ = MIMETYPE_CLASS[mimetype]
         return self
 
-    
     size_header = struct.Struct('I')
-    size_header_size = size_header.size
     
     def to_proto(self):
         proto_doc = proto_Document()
@@ -44,8 +42,8 @@ class Document(object):
         """
         Read string `s` to parse a protobuf Document. See `from_proto_file`.
         """
-        size = klass.size_header.unpack(s[:klass.size_header_size])[0]
-        data = s[klass.size_header_size:]
+        size = klass.size_header.unpack(s[:klass.size_header.size])[0]
+        data = s[klass.size_header.size:]
         proto_doc = proto_Document()
         proto_doc.ParseFromString(data)
         return klass.from_proto(proto_doc)
@@ -57,7 +55,7 @@ class Document(object):
         unsigned int `size`; the next `size` bytes are the serialized data.
         """
         try:
-            size = klass.size_header.unpack(file.read(klass.size_header_size))[0]
+            size = klass.size_header.unpack(file.read(klass.size_header.size))[0]
         except:
             raise EOFError
         data = file.read(size)
