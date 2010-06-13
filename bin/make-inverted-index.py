@@ -1,6 +1,6 @@
 import sys
 from freequery.index.forward_index import ForwardIndex
-from freequery.index.inverted_index import InvertedIndex
+from freequery.index.inverted_index import InvertedIndexWriter
 
 if len(sys.argv) != 3:
     print "Usage: %s <fwdindex> <invindex>" % sys.argv[0]
@@ -10,7 +10,7 @@ fwdindexpath = sys.argv[1]
 invindexpath = sys.argv[2]
 
 fwdindex = ForwardIndex(fwdindexpath)
-invindex = InvertedIndex(invindexpath)
+invindex = InvertedIndexWriter(invindexpath)
 
 i = 0
 for e in fwdindex:
