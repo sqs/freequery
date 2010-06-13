@@ -1,80 +1,124 @@
-import os, cPickle as pickle, copy
+import os, struct, collections, copy
+from freequery.index.inverted_index_pb2 import InvertedIndexEntry as proto_InvertedIndexEntry, Posting as proto_Posting
 from freequery.lang.terms import prep_term
+
+size_header = struct.Struct('I')
 
 class InvertedIndex(object):
 
-    """
-    Inverted index of terms to documents.
-    """
-
     def __init__(self, path):
         """
-        Opens an inverted index file at `path`, creating it if it doesn't
-        exist.
+        Opens an inverted index at `path`.
         """
         self.path = path
-        try:
-            self.file = open(self.path, 'r+')
-            self.term_doclists = pickle.load(self.file)
-            self.new = False
-        except (IOError, EOFError):
-            self.file = open(self.path, 'w+')
-            self.term_doclists = dict()
-            self.new = True
-
-    def save(self):
-        """
-        Saves the index to disk.
-        """
-        if not self.new:
-            raise NotImplementedError("can't update an existing index")
-        pickle.dump(self.term_doclists, self.file)
-        self.new = False
-        return True
 
     def close(self):
         """Closes the index file."""
-        if self.file:
+        self.file.close()
+        self.file = None
+    
+    def __unicode__(self):
+        return "<%s path='%s'>" % (self.__class__.__name__, self.path)
+
+    __str__ = __unicode__
+    __repr__ = __unicode__
+
+    
+class InvertedIndexReader(InvertedIndex):
+
+    """
+    Reads and queries an inverted index.
+    """
+
+    def __init__(self, path):
+        super(InvertedIndexReader, self).__init__(path)
+        self.__open_file()
+
+    def __open_file(self):
+        self.file = open(self.path, 'rb')
+
+    def __iter__(self):
+        return InvertedIndexIterator(self.path)
+        
+    def lookup(self, token):
+        """Returns a list of postings for `Document`s that contain `token`."""
+        term = prep_term(token)
+        for e in self.__iter__():
+            if e.term == term:
+                return e.postings
+        return []
+
+class InvertedIndexIterator(object):
+
+    def __init__(self, path):
+        self.file = open(path, 'rb')
+
+    def next(self):
+        try:
+            data = self.file.read(size_header.size)
+            if len(data) != size_header.size:
+                raise EOFError
+            size = size_header.unpack(data)[0]
+        except EOFError:
             self.file.close()
-            self.file = None
+            raise StopIteration
+        data = self.file.read(size)
+        e = proto_InvertedIndexEntry()
+        e.ParseFromString(data)
+        return e
+
+    def __iter__(self):
+        return self
+
+
+class InvertedIndexWriter(InvertedIndex):
+
+    """
+    Writes an inverted index.
+    """
+
+    def __init__(self, path):
+        super(InvertedIndexWriter, self).__init__(path)
+        self.__open_file()
+    
+    def __open_file(self):
+        self.file = open(self.path, 'w+b')
+        self.postings = collections.defaultdict(list)
+        self.saved = False
 
     def clear(self):
         """Removes the index file."""
-        if self.file:
-            self.file.close()
+        self.close()
         os.remove(self.path)
-
-    def __unicode__(self):
-        return "<InvertedIndex path='%s' size=%d new=%s>" % \
-           (self.path, len(self.index), self.new)
-
+        
     def add(self, e):
-        """Adds a `ForwardIndexEntry` `e` to the inverted index."""
-        if not self.new:
-            raise NotImplementedError("can't add to existing index")
+        """Adds a `ForwardIndexEntry` `e` to the inverted index in memory."""
+        if self.saved:
+            raise NotImplementedError("can't add to index after saving")
+        docid = e.docid
         term_hits = e.term_hits
         for th in term_hits:
-            term = th.term
-            hits = map(lambda h: h.pos, th.hits)
-            if term not in self.term_doclists:
-                self.term_doclists[term] = []
-            self.term_doclists[term].append((e.docid, hits))
+            posting = proto_Posting()
+            posting.docid = docid
+            for th_hit in th.hits:
+                h = posting.hits.add()
+                h.CopyFrom(th_hit)
+            self.postings[th.term].append(posting)
+    
+    def save(self):
+        terms = self.postings.keys()
+        terms.sort()
 
-    def merge(self, invindex1, invindex2):
-        """
-        Merges two other `InvertedIndex`es together into this one. The two
-        indexes must not share any documents.
-        """
-        if not self.new:
-            raise NotImplementedError("can't merge into existing index")
-        self.term_doclists = copy.deepcopy(invindex1.term_doclists)
-        term_doclists2 = copy.deepcopy(invindex2.term_doclists)
-        for term,doclist in term_doclists2.items():
-            if term in self.term_doclists:
-                self.term_doclists[term].extend(doclist)
-            else:
-                self.term_doclists[term] = doclist
-        
-    def lookup(self, term):
-        """Returns a list of docids of `Document`s that contain `term`."""
-        return self.term_doclists.get(prep_term(term), [])
+        entry = proto_InvertedIndexEntry()
+
+        for term in terms:
+            entry.term = term
+            for posting in self.postings[term]:
+                proto_posting = entry.postings.add()
+                proto_posting.CopyFrom(posting)
+            s = entry.SerializeToString()
+            size = entry.ByteSize()
+            self.file.write(size_header.pack(size))
+            self.file.write(s)
+            entry.Clear()
+        self.file.flush()

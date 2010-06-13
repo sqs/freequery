@@ -1,0 +1,12 @@
+package freequery.index.inverted_index;
+import "freequery/index/forward_index.proto";
+
+message Posting {
+	required int32 docid = 1;
+	repeated freequery.index.forward_index.Hit hits = 2;
+};
+
+message InvertedIndexEntry {
+	required string term = 1;
+	repeated Posting postings = 2;
+};
