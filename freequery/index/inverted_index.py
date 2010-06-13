@@ -47,16 +47,17 @@ class InvertedIndex(object):
         return "<InvertedIndex path='%s' size=%d new=%s>" % \
            (self.path, len(self.index), self.new)
 
-    def add(self, docs):
-        """Adds a list of `Document`s to the inverted index."""
+    def add(self, e):
+        """Adds a `ForwardIndexEntry` `e` to the inverted index."""
         if not self.new:
             raise NotImplementedError("can't add to existing index")
-        for doc in docs:
-            term_hits = doc.term_hits()
-            for term,hits in term_hits.items():
-                if term not in self.term_doclists:
-                    self.term_doclists[term] = []
-                self.term_doclists[term].append((doc.docid, hits))
+        term_hits = e.term_hits
+        for th in term_hits:
+            term = th.term
+            hits = map(lambda h: h.pos, th.hits)
+            if term not in self.term_doclists:
+                self.term_doclists[term] = []
+            self.term_doclists[term].append((e.docid, hits))
 
     def merge(self, invindex1, invindex2):
         """
