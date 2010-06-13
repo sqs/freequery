@@ -11,6 +11,9 @@ class TestDocumentIndex(unittest.TestCase):
     def tearDown(self):
         self.docindex.clear()
 
+    def test_urimap_dirty(self):
+        self.docindex.save()
+        
     def test_notfound(self):
         assert 'http://apple.com' not in self.docindex
         self.assertRaises(KeyError, lambda: self.docindex['http://stanford.edu'])

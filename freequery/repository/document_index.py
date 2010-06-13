@@ -16,7 +16,7 @@ class DocumentIndex(object):
         self.path = path
         self.docindexpath = os.path.join(self.path, "docindex")
         self.urimappath = os.path.join(self.path, "urimap")
-        self.dirty = False
+        self.urimap_dirty = False
         
         self.__open_files()
         
