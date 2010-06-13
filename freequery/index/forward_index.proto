@@ -1,0 +1,15 @@
+package freequery.index.forward_index;
+
+message Hit {
+	required int32 pos = 1;
+};
+
+message TermHits {
+	required string term = 1;
+	repeated Hit hits = 2;
+};
+
+message ForwardIndexEntry {
+	required int32 docid = 1;
+	repeated TermHits term_hits = 2;
+};
