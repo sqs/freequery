@@ -32,6 +32,15 @@ class TestRepository(unittest.TestCase):
         self.repos = Repository(TEST_REPOSITORY_PATH)
         assert self.doc == self.repos.get(i)
 
+    def test_reopenable_for_appends(self):
+        i = self.repos.add(self.doc)
+        doc2 = Document('http://apple.com', '<h1>Welcome to Apple</h1>')
+        self.repos.close()
+        self.repos = Repository(TEST_REPOSITORY_PATH)
+        j = self.repos.add(doc2)
+        assert self.doc == self.repos.get(i)
+        assert doc2 == self.repos.get(j)
+
     def test_iterates(self):
         i = self.repos.add(self.doc)
         doc2 = Document('http://apple.com', '<h1>Welcome to Apple</h1>')

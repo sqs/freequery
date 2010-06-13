@@ -155,3 +155,9 @@ class rptr(object):
 
     def __eq__(self, other):
         return self.file == other.file and self.ofs == other.ofs
+
+    def __str__(self):
+        return "rptr(%d,%d)" % (self.file, self.ofs)
+
+    __unicode__ = __str__
+    __repr__ = __str__

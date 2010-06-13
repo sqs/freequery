@@ -28,6 +28,7 @@ class Repository(object):
         if not os.path.exists(filepath):
             open(filepath, 'a').close() # create if doesn't exist
         self.file = open(filepath, 'a+b')
+        self.file.seek(0, os.SEEK_END)
         self.cur.ofs = self.file.tell()
 
     def close(self):
