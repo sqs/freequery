@@ -10,7 +10,6 @@ repospath = sys.argv[1]
 wikipath = os.path.join(sys.argv[2], 'articles')
 
 repos = Repository(repospath)
-i = 1
 
 for root, dirs, files in os.walk(wikipath):
     for f in files:
@@ -20,9 +19,8 @@ for root, dirs, files in os.walk(wikipath):
             with open(path, 'r') as ff:
                 raw = ff.read()
             doc = Document(uri, raw)
-            repos.add(doc)
-            print "%d. %s" % (i, uri)
-            i += 1
+            docid = repos.add(doc)
+            print "%d. %s" % (docid, uri)
 
 repos.close()
 
