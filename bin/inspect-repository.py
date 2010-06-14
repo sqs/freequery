@@ -7,8 +7,7 @@ if len(sys.argv) != 2:
 repospath = sys.argv[1]
 repos = Repository(repospath)
 
-for docid in repos.docindex.docids():
-    doc = repos.get(docid)
-    print "%06d\t%s\n      \tsize=%d" % (docid, doc.uri, len(doc.raw))
+for doc in repos:
+    print "%06d\t%s\n      \tsize=%d" % (doc.docid, doc.uri, len(doc.raw))
 
 repos.close()
