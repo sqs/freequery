@@ -32,15 +32,21 @@ class TestInvertedIndex(unittest.TestCase):
     def test_lookup(self):
         self.iiwriter.add(self.e1)
         self.iiwriter.save()
-        assert [1] == result_docids(self.iireader.lookup('welcome'))
+        
+        r1 = result_docids(self.iireader.lookup('welcome'))
+        assert [1] == r1
         assert [] == self.iireader.lookup('nonexistent')
 
     def test_add_two(self):
         self.iiwriter.add(self.e1)
         self.iiwriter.add(self.e2)
         self.iiwriter.save()
-        assert [1,2] == result_docids(self.iireader.lookup('welcome'))
-        assert [1] == result_docids(self.iireader.lookup('example'))
-        assert [2] == result_docids(self.iireader.lookup('Apple'))
+        
+        r12 = result_docids(self.iireader.lookup('welcome'))
+        assert [1,2] == r12
+        r1 = result_docids(self.iireader.lookup('example'))
+        assert [1] == r1
+        r2 = result_docids(self.iireader.lookup('Apple'))
+        assert [2] == r2
         assert [] == self.iireader.lookup('nonexistent')
         
