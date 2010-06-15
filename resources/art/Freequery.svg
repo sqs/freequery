@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="550"
+   height="136"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="Freequery.svg"
+   style="display:inline;enable-background:new"
+   inkscape:export-filename="/home/sqs/proj/freequery/resources/Freequery.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <filter
+       inkscape:collect="always"
+       id="filter3654"
+       color-interpolation-filters="sRGB">
+      <feBlend
+         inkscape:collect="always"
+         mode="lighten"
+         in2="BackgroundImage"
+         id="feBlend3656" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="253.8724"
+     inkscape:cy="64.350663"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1918"
+     inkscape:window-height="1179"
+     inkscape:window-x="0"
+     inkscape:window-y="19"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Freequery"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-116.164,-444.85018)">
+    <text
+       xml:space="preserve"
+       style="font-size:144px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#004be4;fill-opacity:1;stroke:none;font-family:LMSansDemiCond10;-inkscape-font-specification:Andale Mono"
+       x="114.5"
+       y="551.36218"
+       id="text2858"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan2860"
+         x="114.5"
+         y="551.36218"
+         dx="0 -12.020813 -0.70710713"><tspan
+           style="font-weight:normal;fill:#000000;fill-opacity:1;-inkscape-font-specification:Andale Mono"
+           id="tspan4153">Free</tspan><tspan
+           style="font-weight:normal;fill:#2462e0;fill-opacity:1;stroke:none;-inkscape-font-specification:Andale Mono"
+           id="tspan4145">query</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="855.59918"
+       y="268.91873"
+       id="text3710"
+       transform="translate(0,308.2677)"><tspan
+         sodipodi:role="line"
+         id="tspan3712"
+         x="855.59918"
+         y="268.91873" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="548.71484"
+       y="70.928825"
+       id="text4278"
+       transform="translate(0,308.2677)"><tspan
+         sodipodi:role="line"
+         id="tspan4280"
+         x="548.71484"
+         y="70.928825" /></text>
+  </g>
+</svg>
