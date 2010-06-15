@@ -10,17 +10,15 @@ fwdindexpath = sys.argv[1]
 invindexpath = sys.argv[2]
 
 fwdindex = ForwardIndex(fwdindexpath)
-invindex = InvertedIndexWriter(invindexpath)
+iiwriter = InvertedIndexWriter(invindexpath)
 
 i = 0
 for e in fwdindex:
-    invindex.add(e)
+    iiwriter.add(e)
     print i
     i += 1
 
-
-invindex.save()
-invindex.close()
+iiwriter.finish()
 fwdindex.close()
 
 

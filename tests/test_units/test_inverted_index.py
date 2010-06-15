@@ -13,7 +13,7 @@ def result_docids(res):
 class TestInvertedIndex(unittest.TestCase):
     
     def setUp(self):
-        self.iiwriter = InvertedIndexWriter(TEST_INVERTED_INDEX_PATH)
+        self.iiwriter = InvertedIndexWriter(TEST_INVERTED_INDEX_PATH, postings_per_tmp_file=1)
         self.iireader = InvertedIndexReader(TEST_INVERTED_INDEX_PATH)
 
         self.e1 = term_hits_to_proto(docs.example.term_hits())
@@ -28,7 +28,7 @@ class TestInvertedIndex(unittest.TestCase):
     
     def test_lookup(self):
         self.iiwriter.add(self.e1)
-        self.iiwriter.save()
+        self.iiwriter.finish()
         
         r1 = result_docids(self.iireader.lookup('welcome'))
         assert [1] == r1
@@ -37,7 +37,7 @@ class TestInvertedIndex(unittest.TestCase):
     def test_add_two(self):
         self.iiwriter.add(self.e1)
         self.iiwriter.add(self.e2)
-        self.iiwriter.save()
+        self.iiwriter.finish()
         
         r12 = result_docids(self.iireader.lookup('welcome'))
         assert [1,2] == r12

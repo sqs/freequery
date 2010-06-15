@@ -18,8 +18,7 @@ class TestIntegration(IntegrationTestCase):
         
         for e in fwdindex:
             iiwriter.add(e)
-        iiwriter.save()
-        iiwriter.close()        
+        iiwriter.finish()
         fwdindex.close()
 
         iireader = InvertedIndexReader(TEST_REPOSITORY_PATH + 'invindex')
