@@ -3,6 +3,7 @@ from freequery.index.inverted_index import InvertedIndexReader, InvertedIndexWri
 from freequery.index.forward_index import term_hits_to_proto
 from freequery.index.forward_index_pb2 import ForwardIndexEntry as proto_ForwardIndexEntry
 from freequery.repository.document import HTMLDocument
+from tests.fixtures import docs
 
 TEST_INVERTED_INDEX_PATH = '/tmp/fq-test/invindex'
 
@@ -15,14 +16,10 @@ class TestInvertedIndex(unittest.TestCase):
         self.iiwriter = InvertedIndexWriter(TEST_INVERTED_INDEX_PATH)
         self.iireader = InvertedIndexReader(TEST_INVERTED_INDEX_PATH)
 
-        self.d1 = HTMLDocument('http://example.com', '<h1>Welcome to example</h1>')
-        self.d1.docid = 1
-        self.e1 = term_hits_to_proto(self.d1.term_hits())
+        self.e1 = term_hits_to_proto(docs.example.term_hits())
         self.e1.docid = 1
-        
-        self.d2 = HTMLDocument('http://apple.com', '<h1>Welcome to Apple</h1>')
-        self.d2.docid = 2
-        self.e2 = term_hits_to_proto(self.d2.term_hits())
+
+        self.e2 = term_hits_to_proto(docs.apple.term_hits())
         self.e2.docid = 2
 
     def tearDown(self):
