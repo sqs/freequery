@@ -118,7 +118,7 @@ class InvertedIndexWriter(InvertedIndex):
     Writes an inverted index.
     """
 
-    def __init__(self, path, postings_per_tmp_file=20000):
+    def __init__(self, path, postings_per_tmp_file=5000):
         self.path = path
         self.postings_per_tmp_file = postings_per_tmp_file
         self.tmp_num = 0
@@ -246,7 +246,7 @@ class Merger(object):
                 # finished writing this term's postings - no other tmp file
                 # has postings for this term or else it would have been
                 # returned by term_pqueue
-                self.__write_term(entry_buf)
+                self.__write_term(cur_term, entry_buf)
                 
                 entry_buf = []
                 cur_term = this_term
@@ -259,7 +259,7 @@ class Merger(object):
             self.__enqueue_next_term_in_reader(this_reader)
             
         # finish writing last term
-        self.__write_term(entry_buf)
+        self.__write_term(cur_term, entry_buf)
         entry_buf = []
 
     def __enqueue_next_term_in_reader(self, reader):
@@ -271,9 +271,10 @@ class Merger(object):
         except StopIteration:
             pass    
         
-    def __write_term(self, entry_buf):
+    def __write_term(self, term, entry_buf):
         s = ''.join(entry_buf)
         size = len(s)
         self.file.write(size_header.pack(size))
         self.file.write(s)
         self.file.write(SYNC)
+        logging.info("write_term %s" % term)
