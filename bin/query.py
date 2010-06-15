@@ -15,7 +15,7 @@ invindex = InvertedIndexReader(invindexpath)
 
 docids = map(lambda p: p.docid, invindex.lookup(term))
 for docid in docids:
-    print repos.get(docid).uri
+    print "%d\t%s" % (docid, repos.get(docid).uri)
 
 repos.close()
 invindex.close()
