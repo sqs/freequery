@@ -14,13 +14,11 @@ end_docid = int(sys.argv[4])
 repos = Repository(repospath)
 fwdindex = ForwardIndex(fwdindexpath)
 
-i = 1
 for doc in repos:
     if doc.docid in range(start_docid, end_docid+1):
         doc.make_typed('text/html')
-        print "%d. %s" % (i, doc.uri)
+        print "%d\t%s" % (doc.docid, doc.uri)
         fwdindex.add(doc)
-        i += 1
     elif doc.docid > end_docid:
         break
 
