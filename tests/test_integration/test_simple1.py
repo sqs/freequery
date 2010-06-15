@@ -1,20 +1,7 @@
-import unittest, commands
+from freequery.test import IntegrationTestCase
+from freequery.test.base import sh
 
-def sh(s):
-    return commands.getoutput(s).strip()
-
-
-class TestSimple1(unittest.TestCase):
-
-    def setUp(self):
-        self.clear_tmp()
-    
-    def tearDown(self):
-        self.clear_tmp()
-
-    def clear_tmp(self):
-        sh("rm -rf /tmp/fq-test/")
-        sh("mkdir /tmp/fq-test/")        
+class TestSimple1(IntegrationTestCase):
 
     def test_simple1(self):
         # add documents

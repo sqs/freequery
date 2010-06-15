@@ -1,5 +1,7 @@
 import unittest
 from freequery.repository.document_index import DocumentIndex, rptr
+from freequery.test import fixtures as docs
+
 
 TEST_DOCUMENT_INDEX_PATH = "/tmp/fq-test/"
 

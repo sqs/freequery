@@ -1,6 +1,6 @@
 import unittest
 from freequery.repository.document import Document
-from tests.fixtures import docs
+from freequery.test import fixtures as docs
 
 
 class TestDocument(unittest.TestCase):
