@@ -1,5 +1,5 @@
 import os, struct
-from freequery.repository.document import Document
+from freequery.document import Document
 from freequery.index.forward_index_pb2 import ForwardIndexEntry as proto_ForwardIndexEntry
 
 def term_hits_to_proto(term_hits):

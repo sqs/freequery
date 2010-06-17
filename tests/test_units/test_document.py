@@ -1,5 +1,5 @@
 import unittest
-from freequery.repository.document import Document
+from freequery.document import Document
 from freequery.test import fixtures as docs
 
 

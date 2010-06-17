@@ -1,0 +1,7 @@
+package freequery.document;
+
+message Document {
+	required int32 docid = 1;
+	required string uri = 2;
+	required string raw = 3;
+};

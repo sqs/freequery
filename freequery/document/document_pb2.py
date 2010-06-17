@@ -9,37 +9,30 @@ from google.protobuf import descriptor_pb2
 
 
 
-_DOCUMENTINDEXENTRY = descriptor.Descriptor(
-  name='DocumentIndexEntry',
-  full_name='freequery.repository.DocumentIndexEntry',
-  filename='freequery/repository/repository.proto',
+_DOCUMENT = descriptor.Descriptor(
+  name='Document',
+  full_name='freequery.document.Document',
+  filename='freequery/document/document.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='docid', full_name='freequery.repository.DocumentIndexEntry.docid', index=0,
+      name='docid', full_name='freequery.document.Document.docid', index=0,
       number=1, type=5, cpp_type=1, label=2,
       default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='uri', full_name='freequery.repository.DocumentIndexEntry.uri', index=1,
+      name='uri', full_name='freequery.document.Document.uri', index=1,
       number=2, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='ptr_file', full_name='freequery.repository.DocumentIndexEntry.ptr_file', index=2,
-      number=3, type=5, cpp_type=1, label=2,
-      default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='ptr_ofs', full_name='freequery.repository.DocumentIndexEntry.ptr_ofs', index=3,
-      number=4, type=5, cpp_type=1, label=2,
-      default_value=0,
+      name='raw', full_name='freequery.document.Document.raw', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -53,7 +46,7 @@ _DOCUMENTINDEXENTRY = descriptor.Descriptor(
 
 
 
-class DocumentIndexEntry(message.Message):
+class Document(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _DOCUMENTINDEXENTRY
+  DESCRIPTOR = _DOCUMENT
 

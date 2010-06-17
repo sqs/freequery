@@ -1,6 +1,7 @@
 import sys, os
-from freequery.repository.repository import Repository
-from freequery.repository.document import Document
+from freequery.document import Document
+from freequery.repository import Repository
+
 
 if len(sys.argv) != 3:
     print "Usage: %s <repos> <wiki>" % sys.argv[0]

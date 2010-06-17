@@ -1,5 +1,5 @@
 import unittest
-from freequery.repository.document_index import DocumentIndex, rptr
+from freequery.repository import DocumentIndex, rptr
 from freequery.test import fixtures as docs
 
 

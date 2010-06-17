@@ -1,6 +1,6 @@
 import sys
-from freequery.repository.document import Document
-from freequery.repository.repository import Repository
+from freequery.document import Document
+from freequery.repository import Repository
 
 
 if len(sys.argv) != 4:

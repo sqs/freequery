@@ -1,5 +1,6 @@
 import sys
-from freequery.repository.repository import Repository
+from freequery.repository import Repository
+
 
 if len(sys.argv) != 3:
     print "Usage: %s <repos> <docid>" % sys.argv[0]

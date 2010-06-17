@@ -1,6 +1,6 @@
 import sys
-from freequery.repository.document_index import DocumentIndex
-from freequery.index.forward_index import ForwardIndex
+from freequery.repository import DocumentIndex
+from freequery.index import ForwardIndex
 
 if len(sys.argv) != 3:
     print "Usage: %s <docindex> <fwdindex>" % sys.argv[0]

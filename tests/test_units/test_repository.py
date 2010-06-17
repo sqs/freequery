@@ -1,6 +1,6 @@
 import os, unittest
-from freequery.repository.repository import Repository
-from freequery.repository.document import Document
+from freequery.repository import Repository
+from freequery.document import Document
 from freequery.test import fixtures as docs
 
 TEST_REPOSITORY_PATH = '/tmp/fq-test/'

@@ -1,5 +1,5 @@
 import re, struct
-from freequery.repository.repository_pb2 import Document as proto_Document
+from freequery.document.document_pb2 import Document as proto_Document
 from freequery.lang.terms import prep_terms
 
 class Document(object):

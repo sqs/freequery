@@ -2,7 +2,7 @@ import unittest
 from freequery.index.inverted_index import InvertedIndexReader, InvertedIndexWriter
 from freequery.index.forward_index import term_hits_to_proto
 from freequery.index.forward_index_pb2 import ForwardIndexEntry as proto_ForwardIndexEntry
-from freequery.repository.document import HTMLDocument
+from freequery.document import HTMLDocument
 from freequery.test import fixtures as docs
 
 TEST_INVERTED_INDEX_PATH = '/tmp/fq-test/invindex'

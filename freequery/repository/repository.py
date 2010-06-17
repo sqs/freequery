@@ -1,6 +1,6 @@
 import os
 from freequery.repository.document_index import DocumentIndex, rptr
-from freequery.repository.document import Document
+from freequery.document import Document
 
 
 class Repository(object):

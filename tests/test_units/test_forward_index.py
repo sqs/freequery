@@ -1,6 +1,6 @@
 import unittest
 from freequery.index.forward_index import ForwardIndex
-from freequery.repository.document import Document
+from freequery.document import Document
 from freequery.test import fixtures as docs
 
 TEST_FORWARD_INDEX_PATH = '/tmp/fq-test/fwdindex'
