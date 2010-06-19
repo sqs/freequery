@@ -1,5 +1,4 @@
-import re, struct
-from freequery.document.document_pb2 import Document as proto_Document
+import re
 from freequery.lang.terms import prep_terms
 
 class Document(object):
@@ -12,6 +11,7 @@ class Document(object):
         self.uri = uri
         self.raw = raw
         self.docid = docid
+        self.make_typed('text/html')
 
     def terms(self):
         raise NotImplementedError
@@ -20,58 +20,16 @@ class Document(object):
         self.__class__ = MIMETYPE_CLASS[mimetype]
         return self
 
-    size_header = struct.Struct('I')
-    
-    def to_proto(self):
-        proto_doc = proto_Document()
-        proto_doc.docid = self.docid
-        proto_doc.uri = self.uri.decode('utf8')
-        proto_doc.raw = self.raw.decode('utf8')
-        return proto_doc
-        
-    def to_proto_string(self):
-        proto_doc = self.to_proto()
-        size = proto_doc.ByteSize()
-        return self.size_header.pack(size) + proto_doc.SerializeToString()
-
-    @classmethod
-    def from_proto(klass, proto_doc):
-        return klass(proto_doc.uri, proto_doc.raw, proto_doc.docid)
-
-    @classmethod
-    def from_proto_string(klass, s):
-        """
-        Read string `s` to parse a protobuf Document. See `from_proto_file`.
-        """
-        size = klass.size_header.unpack(s[:klass.size_header.size])[0]
-        data = s[klass.size_header.size:]
-        proto_doc = proto_Document()
-        proto_doc.ParseFromString(data)
-        return klass.from_proto(proto_doc)
-    
-    @classmethod
-    def from_proto_file(klass, file):
-        """
-        Read `file` to parse a protobuf Document. The first sizeof(int) bytes are
-        unsigned int `size`; the next `size` bytes are the serialized data.
-        """
-        try:
-            size = klass.size_header.unpack(file.read(klass.size_header.size))[0]
-        except:
-            raise EOFError
-        data = file.read(size)
-        proto_doc = proto_Document()
-        proto_doc.ParseFromString(data)
-        return klass.from_proto(proto_doc)
-
     def tokens(self):
         return NotImplementedError
+
+    def terms(self):
+        return prep_terms(self.tokens())
     
     def term_hits(self):
         pos = 0
         term_hits = {}
-        terms = prep_terms(self.tokens())
-        for term in terms:
+        for term in self.terms():
             if term not in term_hits:
                 term_hits[term] = []
             hit = Hit(pos)

@@ -1,15 +1,6 @@
 import unittest
 from freequery.repository.formats import QTableFile
-
-qtable_file1 = """http://example.com
-a:b=c
-x:y=z
-
-<h1>Welcome to example</h1>
-@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
-http://apple.com
-
-<h1>Welcome to Apple</h1>"""
+from freequery.test.fixtures import qtable_file1
 
 class TestQTableFile(unittest.TestCase):
 

@@ -33,4 +33,4 @@ class QTableFile(object):
         return Document(uri, ''.join(raw))
 
     def __iter__(self):
-        pass
+        return self
