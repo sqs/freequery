@@ -3,10 +3,15 @@ MapReduce functions for indexing with Discodex.
 """
 
 def docparse(iterable, size, fname, params):
-    """Iterates through a Web dump. For each page, strips HTML
-    and other control data and uses each stemmed term as a key for the value ``uri`` of the page.
-    """
+    """Iterates through a Web dump and emits each document."""    
+    from discodex.mapreduce import Record
     from freequery.repository.formats import QTableFile
     for doc in QTableFile(iterable):
-        for word in set(doc.terms()):
-            yield word, doc.uri
+        yield doc
+
+def docdemux(doc, params):
+    """For each document, strips HTML and other control data from the
+    content and emits `(uri, tf)`, where `tf` is the term frequency in
+    this document (uses in-mapper combining to calculate these here)."""
+    for term,tf in doc.term_frequencies().items():
+        yield term, doc.uri
