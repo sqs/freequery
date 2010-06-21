@@ -8,5 +8,5 @@ def docparse(iterable, size, fname, params):
     """
     from freequery.repository.formats import QTableFile
     for doc in QTableFile(iterable):
-        for word in doc.terms():
+        for word in set(doc.terms()):
             yield word, doc.uri
