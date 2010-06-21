@@ -25,6 +25,15 @@ class Document(object):
 
     def terms(self):
         return prep_terms(self.tokens())
+
+    def term_frequencies(self):
+        tfs = dict()
+        for term in self.terms():
+            if term in tfs:
+                tfs[term] += 1
+            else:
+                tfs[term] = 1
+        return tfs
     
     def term_hits(self):
         pos = 0

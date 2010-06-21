@@ -19,4 +19,6 @@ class TestHTMLDocument(unittest.TestCase):
         
     def test_terms(self):
         assert ['welcom', 'exampl'] == docs.example.terms()
-        
+
+    def test_term_frequences(self):
+        self.assertEquals(dict(welcom=1, exampl=1), docs.example.term_frequencies())
