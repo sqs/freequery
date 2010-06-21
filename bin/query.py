@@ -1,24 +1,10 @@
-import sys
-from freequery.repository.repository import Repository
-from freequery.index.inverted_index import InvertedIndexReader
+import sys, commands
 
-if len(sys.argv) != 4:
-    print "Usage: %s <repos> <invindex> <term>" % sys.argv[0]
+if len(sys.argv) != 2:
+    print "Usage: %s <query>" % sys.argv[0]
     exit(1)
 
-repospath = sys.argv[1]
-invindexpath = sys.argv[2]
-term = sys.argv[3]
+query = sys.argv[1]
 
-repos = Repository(repospath)
-invindex = InvertedIndexReader(invindexpath)
-
-docids = map(lambda p: p.docid, invindex.lookup(term))
-for docid in docids:
-    print "%d\t%s" % (docid, repos.get(docid).uri)
-
-repos.close()
-invindex.close()
-
-
+print commands.getoutput("discodex query fq %s" % query)
 
