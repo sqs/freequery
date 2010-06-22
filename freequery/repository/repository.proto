@@ -1,9 +1,0 @@
-package freequery.repository;
-
-message DocumentIndexEntry {
-	required int32 docid = 1;
-	required string uri = 2;
-	required int32 ptr_file = 3;
-	required int32 ptr_ofs = 4;
-};
-
