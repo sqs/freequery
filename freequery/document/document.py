@@ -45,6 +45,9 @@ class Document(object):
             term_hits[term].append(hit)
             pos += 1
         return term_hits
+
+    def link_uris(self):
+        return (link.dest_uri for link in self.links())
     
     def __eq__(self, other):
         return isinstance(other, Document) and self.__dict__ == other.__dict__
@@ -69,7 +72,11 @@ class HTMLDocument(Document):
         txt = re.sub(self.alphanum_re, ' ', txt)
         txt = re.sub(self.collapse_space_re, ' ', txt)
         return txt.split(' ')
-                
+
+    a_href_re = re.compile(r"""<a href=['"](?P<href>[^'"]+)['"]""")
+    def links(self):
+        hrefs = self.a_href_re.findall(self.raw)
+        return (Link(href) for href in hrefs)
         
 class Hit(object):
     """
@@ -82,6 +89,18 @@ class Hit(object):
     def __str__(self):
         return "<Hit pos=%d>" % self.pos
 
+class Link(object):
+    """
+    Represents a link in a document.
+    """
+
+    def __init__(self, dest_uri, attrs=None):
+        self.dest_uri = dest_uri
+        self.attrs = attrs
+
+    def __str__(self):
+        return "<Link to='%s' attrs=%r>" % (self.dest_uri, self.attrs)
+    
 
 MIMETYPE_CLASS = {
     'text/html': HTMLDocument

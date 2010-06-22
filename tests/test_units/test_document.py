@@ -22,3 +22,6 @@ class TestHTMLDocument(unittest.TestCase):
 
     def test_term_frequences(self):
         self.assertEquals(dict(welcom=1, exampl=1), docs.example.term_frequencies())
+
+    def test_link_uris(self):
+        self.assertEquals(['http://cs.stanford.edu'], list(docs.stanford.link_uris()))
