@@ -2,17 +2,24 @@
 Indexes a Web dump file given as a command-line argument.
 """
 
-import sys, commands, time
+import sys
 
 if len(sys.argv) != 2:
     print "Usage: %s <dump>" % sys.argv[0]
     exit(1)
 
-index_id = commands.getoutput(
-    "echo '%s' | discodex index --parser freequery.index.mapreduce.docparse " \
-    "--demuxer freequery.index.mapreduce.docdemux " \
-    % sys.argv[1]).strip()
+from discodex.client import DiscodexClient
+from discodex.objects import DataSet
 
-print index_id
-time.sleep(1)
-print commands.getoutput("discodex clone %s fq" % index_id)
+if len(sys.argv) != 2:
+    print "Usage: %s <dump>" % sys.argv[0]
+    exit(1)
+
+dumpfile = sys.argv[1]
+ds = DataSet(input=[dumpfile],
+             options=dict(parser='freequery.index.mapreduce.docparse',
+                          demuxer='freequery.index.mapreduce.docdemux'))
+
+client = DiscodexClient()
+orig_spec = client.index(ds)
+client.clone(orig_spec, 'fqinvindex')
