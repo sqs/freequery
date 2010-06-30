@@ -4,7 +4,6 @@ MapReduce functions for indexing with Discodex.
 
 def docparse(iterable, size, fname, params):
     """Iterates through a Web dump and emits each document."""    
-    from discodex.mapreduce import Record
     from freequery.repository.formats import QTableFile
     for doc in QTableFile(iterable):
         yield doc
@@ -15,3 +14,4 @@ def docdemux(doc, params):
     this document (uses in-mapper combining to calculate these here)."""
     for term,tf in doc.term_frequencies().items():
         yield term, doc.uri
+
