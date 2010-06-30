@@ -18,6 +18,8 @@ tmpoutpath = '/tmp/fq-graph-links.dot'
 tmpout = open(tmpoutpath, 'w+b')
 
 def uri_to_node_name(uri):
+    return uri
+    # below is for wikipedia
     nn = None
     if uri.startswith('/wiki/'):
         nn = uri[6:]
