@@ -1,8 +1,9 @@
 
 
-def doclinks(doc, params):
+def doclinkdemux(doc, params):
     """
-    Emits a `(doc_uri, link_destination_uri)` tuple for each link in `doc`.
+    Emits `(doc_uri, (link_destination_uri, ...))` for each link
+    in `doc`.
     """
-    yield doc.uri, list(doc.link_uris())
-    
+    for link_uri in doc.link_uris():
+        yield doc.uri, link_uri
