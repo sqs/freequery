@@ -26,10 +26,10 @@ class QTableFile(object):
         # raw
         raw = []
         for line in self.iterable:
-            if line != self.DELIM:
+            if line == self.DELIM:
+                break # doc finished
+            else:
                 raw.append(line)
-            else: # doc finished
-                break
 
         # remove "\n" from last line of raw, since it delimits
         # the raw from the end-of-document and is not actually part
