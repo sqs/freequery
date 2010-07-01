@@ -7,7 +7,7 @@ class Docset(object):
         self.name = name
         self.ddfs = DDFS()
 
-    def add(self, dumpname, dump):
+    def add_dump(self, dumpname, dump):
         return self.ddfs.push(self.name, [(dump, dumpname)])
 
     def dump_uris(self):
