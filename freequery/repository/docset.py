@@ -7,6 +7,9 @@ class Docset(object):
         self.name = name
         self.ddfs = DDFS()
 
+    def delete(self):
+        return self.ddfs.delete(self.name)
+        
     def add_dump(self, dumpname, dump):
         return self.ddfs.push(self.name, [(dump, dumpname)])
 

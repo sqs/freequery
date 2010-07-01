@@ -16,6 +16,13 @@ class TestDocset(unittest.TestCase):
 #    def test_list(self):
 #        assert False
 
+    def test_delete(self):
+        self.docset.add_dump('d1', dump1)
+        self.docset.delete()
+        # TODO: might need to wait for garbage collection here,
+        # but it seems to work fine
+        self.assertFalse('d1' in self.docset.dump_names())
+        
     def test_add_dump(self):
         self.docset.add_dump('d1', dump1)
         # check that it was uploaded
