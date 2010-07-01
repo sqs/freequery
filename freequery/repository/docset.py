@@ -5,7 +5,7 @@ class Docset(object):
 
     def __init__(self, name):
         self.name = name
-        self.tag = 'docset:' + name
+        self.tag = 'fq:docset:' + name
         self.ddfs = DDFS()
 
     def delete(self):
