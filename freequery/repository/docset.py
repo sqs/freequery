@@ -5,16 +5,17 @@ class Docset(object):
 
     def __init__(self, name):
         self.name = name
+        self.tag = 'docset:' + name
         self.ddfs = DDFS()
 
     def delete(self):
-        return self.ddfs.delete(self.name)
+        return self.ddfs.delete(self.tag)
         
     def add_dump(self, dumpname, dump):
-        return self.ddfs.push(self.name, [(dump, dumpname)])
+        return self.ddfs.push(self.tag, [(dump, dumpname)])
 
     def dump_uris(self):
-        return (uri for (uri,) in self.ddfs.blobs(self.name))
+        return (uri for (uri,) in self.ddfs.blobs(self.tag))
     
     def __blob_uri_to_dump_name(self, bloburi):
         """
