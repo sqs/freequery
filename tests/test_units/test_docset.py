@@ -22,8 +22,18 @@ class TestDocset(unittest.TestCase):
         
     def test_add_dump(self):
         self.docset.add_dump('d1', dump1)
-        # check that it was uploaded
+
+        # check that it's in list of dumps
         self.assertTrue('d1' in self.docset.dump_names())
+
+        # check accessible over http
+        from disco.ddfs import DDFS
+        from disco.util import urlresolve
+        import urllib2
+        uri = list(self.docset.dump_uris())[0]
+        httpuri = urlresolve(uri)
+        d = urllib2.urlopen(httpuri).read()
+        self.assertEquals(d, fixtures.qtable_file1)
 
     def test_exists(self):
         self.assertFalse(self.docset.exists())
