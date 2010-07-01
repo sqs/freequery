@@ -8,6 +8,9 @@ class Docset(object):
         self.tag = 'fq:docset:' + name
         self.ddfs = DDFS()
 
+    def exists(self):
+        return self.ddfs.exists(self.tag)
+        
     def delete(self):
         return self.ddfs.delete(self.tag)
         

@@ -25,6 +25,11 @@ class TestDocset(unittest.TestCase):
         # check that it was uploaded
         self.assertTrue('d1' in self.docset.dump_names())
 
+    def test_exists(self):
+        self.assertFalse(self.docset.exists())
+        self.docset.add_dump('d1', dump1)
+        self.assertTrue(self.docset.exists())
+
     def __write_dump(self):
         with open(dump1, 'w+b') as f:
             f.write(fixtures.qtable_file1)
