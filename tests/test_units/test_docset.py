@@ -13,9 +13,6 @@ class TestDocset(unittest.TestCase):
             WROTE_DUMP = True
         self.docset = Docset('fq-test')
 
-#    def test_list(self):
-#        assert False
-
     def test_delete(self):
         self.docset.add_dump('d1', dump1)
         self.docset.delete()
