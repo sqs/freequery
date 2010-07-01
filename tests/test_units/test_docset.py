@@ -16,7 +16,7 @@ class TestDocset(unittest.TestCase):
 #    def test_list(self):
 #        assert False
 
-    def test_add(self):
+    def test_add_dump(self):
         self.docset.add_dump('d1', dump1)
         # check that it was uploaded
         self.assertTrue('d1' in self.docset.dump_names())
