@@ -21,8 +21,7 @@ def query(program, q):
     Search the inverted index for docs matching `query`.
     """
     import commands
-    print commands.getoutput("discodex query fq %s" % q)
-    
+    print commands.getoutput("discodex query fq %s" % q)    
 
 if __name__ == '__main__':
     Freequery(option_parser=FreequeryOptionParser()).main()
