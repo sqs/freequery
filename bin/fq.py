@@ -82,6 +82,19 @@ def rank(program, docsetname):
     docset = Docset(docsetname)
     job = PagerankJob(docset)
     job.start()
+
+    show_scores(program, '/s/a/scoredb')
+
+@Freequery.command
+def show_scores(program, scoredbfile):
+    """Usage: <scoredb>
+
+    Shows the scores of documents in the specified ScoreDB file.
+    """
+    from freequery.graph.scoredb import ScoreDB
+    scoredb = ScoreDB(scoredbfile)
+    for uri, score in scoredb.items():
+        print "%.8f\t%s" % (score, uri)
     
 if __name__ == '__main__':
     Freequery(option_parser=FreequeryOptionParser()).main()

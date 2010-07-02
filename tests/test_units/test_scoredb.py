@@ -25,4 +25,4 @@ class TestScoreDB(unittest.TestCase):
     def test_iterates(self):
         self.__write_fixture()
         scoredb = ScoreDB(TEST_SCOREDB_PATH)
-        self.assertEquals(self.sample_scores, scoredb.__iter__())
+        self.assertEquals(sorted(self.sample_scores.items()), sorted(scoredb.items()))

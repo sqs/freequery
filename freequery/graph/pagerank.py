@@ -113,9 +113,6 @@ class PagerankJob(object):
         from freequery.graph.pagerank import pagerank_mass_map, \
             pagerank_mass_reduce, pagerank_teleport_distribute_map
 
-        print "docset %s dump uris: %r" % \
-            (self.docset.name, list(self.docset.dump_uris()))
-        
         results = self.disco.new_job(
             name="pagerank_mass0",
             input=self.docset.dump_uris(),
@@ -124,7 +121,7 @@ class PagerankJob(object):
             reduce=pagerank_mass_reduce,
             sort=True,
             params=dict(iter=0, doc_count=self.doc_count)).wait()
-        print "Iteration 0:\n", self.__result_stats(results)
+        ## print "Iteration 0:\n", self.__result_stats(results)
 
         for i in range(1, self.niter+1):
             # get sum of dangling node pageranks
@@ -142,9 +139,9 @@ class PagerankJob(object):
                             lost_mass_per=float(lost_mass)/self.doc_count)
             ).wait()
     
-            print "Iteration %d:" % i
-            print self.__result_stats(results)
-            print "Lost mass: %f" % lost_mass
+            ## print "Iteration %d:" % i
+            ## print self.__result_stats(results)
+            ## print "Lost mass: %f" % lost_mass
 
             results = self.disco.new_job(
                 name="pagerank_mass%d" % i,
@@ -154,6 +151,15 @@ class PagerankJob(object):
                 reduce=pagerank_mass_reduce,
                 sort=True,
                 params=dict(iter=i)).wait()
+
+        # write scoredb
+        from freequery.graph.scoredb import ScoreDBWriter
+        from freequery.document import Document
+        db = ScoreDBWriter('/s/a/scoredb') # TODO: don't hardcode
+        score_iter = ((doc.uri, doc.pagerank) for doc,_
+                      in result_iterator(results) if isinstance(doc, Document))
+        db.set_scores(score_iter)
+        db.save_and_close()            
 
     def __result_stats(self, results):
         from disco.core import result_iterator
