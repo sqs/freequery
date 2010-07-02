@@ -20,13 +20,14 @@ def pagerank_mass_map(doc, params):
     if len(outlinks) > 0:
         out_pr = doc.pagerank / len(outlinks)
         for out_uri in outlinks:
+            if isinstance(out_uri, unicode):
+                out_uri = out_uri.encode('utf8')
             yield out_uri, out_pr
     else:
         # This is a dangling node. We will sum the
         # pageranks of all dangling nodes and redistribute
         # it proportionally to all other nodes in a later
         # job.
-        print "!!!!!!!!!!!!!! doc=%r pr=%f" % (doc,doc.pagerank)
         yield DANGLING_MASS_KEY, doc.pagerank
 
 def pagerank_teleport_distribute_map((doc,__ignore), params):
@@ -56,16 +57,24 @@ def pagerank_mass_reduce(in_iter, out, params):
     dangling_mass = 0.0
     last_uri = None
     for uri, v in in_iter:
+        # msg("(uri,v) = (%r, %r)" % (uri,v))
+        
         if uri == DANGLING_MASS_KEY:
             dangling_mass += v
             continue
         
-        if doc and uri != last_uri:
-            doc.pagerank = pr
-            out.add(doc, 0)
-            doc = None
+        if uri != last_uri:
+            if doc:
+                doc.pagerank = pr
+                out.add(doc, 0)
+                doc = None
+            else:
+                # If this pr value were for a document in the docset,
+                # then (because the input is sorted) `doc` would be set
+                # here. Since it's not, this is a dangling node.
+                out.add(DANGLING_MASS_KEY, pr)
             pr = 0.0
-
+                
         if isinstance(v, Document):
             doc = v
         elif isinstance(v, float):
@@ -75,8 +84,88 @@ def pagerank_mass_reduce(in_iter, out, params):
         last_uri = uri
         
     # emit last doc
-    doc.pagerank = pr
-    out.add(doc, 0)
+    if doc:
+        doc.pagerank = pr
+        out.add(doc, 0)
+    else:
+        # See explanation in the `for`-loop above about why we know this is a
+        # dangling node.
+        out.add(DANGLING_MASS_KEY, pr)
 
     # emit dangling mass
     out.add(DANGLING_MASS_KEY, dangling_mass)
+
+class PagerankJob(object):
+
+    def __init__(self, docset, disco_addr="disco://localhost",
+                 alpha=0.15, niter=3):
+        from disco.core import Disco
+        self.docset = docset
+        self.disco = Disco("disco://localhost")
+        self.alpha = alpha
+        self.niter = niter
+        self.doc_count = 184 # TODO: don't hardcode
+
+    def start(self):
+        from disco.core import result_iterator
+        from disco.func import chain_reader
+        from freequery.index.mapreduce import docparse
+        from freequery.graph.pagerank import pagerank_mass_map, \
+            pagerank_mass_reduce, pagerank_teleport_distribute_map
+
+        print "docset %s dump uris: %r" % \
+            (self.docset.name, list(self.docset.dump_uris()))
+        
+        results = self.disco.new_job(
+            name="pagerank_mass0",
+            input=self.docset.dump_uris(),
+            map_reader=docparse,
+            map=pagerank_mass_map,
+            reduce=pagerank_mass_reduce,
+            sort=True,
+            params=dict(iter=0, doc_count=self.doc_count)).wait()
+        print "Iteration 0:\n", self.__result_stats(results)
+
+        for i in range(1, self.niter+1):
+            # get sum of dangling node pageranks
+            lost_mass = sum(v for k,v in result_iterator(results) \
+                              if k == DANGLING_MASS_KEY)
+    
+            results = self.disco.new_job(
+                name="pagerank_teleport_distribute%d" % (i-1),
+                input=results,
+                map_reader=chain_reader,
+                map=pagerank_teleport_distribute_map,
+                sort=True,
+                params=dict(iter=i, alpha=self.alpha,
+                            doc_count=self.doc_count,
+                            lost_mass_per=float(lost_mass)/self.doc_count)
+            ).wait()
+    
+            print "Iteration %d:" % i
+            print self.__result_stats(results)
+            print "Lost mass: %f" % lost_mass
+
+            results = self.disco.new_job(
+                name="pagerank_mass%d" % i,
+                input=results,
+                map_reader=chain_reader,
+                map=pagerank_mass_map,
+                reduce=pagerank_mass_reduce,
+                sort=True,
+                params=dict(iter=i)).wait()
+
+    def __result_stats(self, results):
+        from disco.core import result_iterator
+        o = []
+        p_sum = 0.0
+        for k,v in result_iterator(results):
+            if hasattr(k, 'pagerank'):
+                doc = k
+                o.append("%f\t%s" % (doc.pagerank, doc.uri))
+                p_sum += doc.pagerank
+            else:
+                o.append("%f\t(dangling mass)" % v)
+                p_sum += v
+        o.append("%f\tSUM" % p_sum)
+        return "\n".join(o)
