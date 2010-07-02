@@ -16,6 +16,9 @@ class ScoreDB(object):
         """Returns the score for the document specified by `uri`."""
         return self.scoredict[uri]
 
+    def __iter__(self):
+        return self.scoredict
+
 class ScoreDBWriter(object):
 
     def __init__(self, path):
