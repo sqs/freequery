@@ -74,6 +74,14 @@ def inspect_index(program, index):
     r = urllib2.urlopen("http://localhost:8080/indices/%s/items" % index).read()
     for k,v in simplejson.loads(r):
         print "'%s': %r" % (k,v)
+
+@Freequery.command
+def rank(program, docsetname):
+    from freequery.repository.docset import Docset
+    from freequery.graph.pagerank import PagerankJob
+    docset = Docset(docsetname)
+    job = PagerankJob(docset)
+    job.start()
     
 if __name__ == '__main__':
     Freequery(option_parser=FreequeryOptionParser()).main()
