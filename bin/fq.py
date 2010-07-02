@@ -36,6 +36,7 @@ def index(program, docsetname):
 
     Indexes the specified docset.
     """
+    import sys, time
     from discodex.objects import DataSet
     from freequery.repository.docset import Docset
     docset = Docset(docsetname)
@@ -47,10 +48,24 @@ def index(program, docsetname):
                       options=dict(parser='freequery.index.mapreduce.docparse',
                                    demuxer='freequery.index.mapreduce.docdemux'))
     orig_spec = program.discodex_client.index(dataset)
-    if orig_spec is None:
+    if orig_spec:
+        print "indexing: %s " % orig_spec,
+    else:
         print "fq: discodex failed to index `%s'" % docsetname
         exit(2)
-    program.discodex_client.clone(orig_spec, "fq:%s:invindex" % docsetname)
+        
+    # wait for indexing to complete
+    while True:
+        try:
+            program.discodex_client.get(orig_spec)
+            break
+        except:
+            time.sleep(2)
+            sys.stdout.write(".")
+            sys.stdout.flush()
+    spec = "fq:%s:invindex" % docsetname
+    program.discodex_client.clone(orig_spec, spec)
+    print "\n", spec
 
 @Freequery.command
 def inspect_index(program, index):
