@@ -11,9 +11,21 @@ class QTableFile(object):
     DELIM = "@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@\n"
     
     def __init__(self, iterable):
-        self.iterable = iterable.__iter__()
+        if isinstance(iterable, file):
+            self.iterable = iterable.__iter__()
+        elif hasattr(iterable, 'read'):
+            # disco.comm.Connection objects are iterator-like, but they don't
+            # define __iter__ or next(), so just read in the whole
+            # buffer. TODO: submit a patch to disco to have Connection expose
+            # an iterator interface.
+            self.iterable = iter(iterable.read().splitlines(True))
+        elif isinstance(iterable, list):
+            self.iterable = iter(iterable)
 
     def next(self):
+        if self.iterable is None:
+            raise Exception("iterable shouldn't be none")
+        
         # URI
         uri = self.iterable.next().strip()
 
