@@ -18,17 +18,7 @@ tmpoutpath = '/tmp/fq-graph-links.dot'
 tmpout = open(tmpoutpath, 'w+b')
 
 def uri_to_node_name(uri):
-    return uri
-    # below is for wikipedia
-    nn = None
-    if uri.startswith('/wiki/'):
-        nn = uri[6:]
-    elif uri.startswith('http://en.wikipedia.org'):
-        nn = uri[29:]
-    else:
-        return None
-    nn = re.sub(r'[^a-zA-Z0-9_]', '', nn)
-    return nn
+    return re.sub(r'[^a-zA-Z0-9_]', '', uri)
 
 from collections import defaultdict
 nodelinks = defaultdict(set) # uri->name
@@ -44,8 +34,7 @@ for uri, link_uris in result_iterator(results):
 # only graph links to docs in the collection
 for orig,dests in nodelinks.items():
     for dest in dests:
-        if dest in nodelinks:
-            tmpout.write('"%s" -> "%s";\n' % (orig, dest))
+        tmpout.write('"%s" -> "%s";\n' % (orig, dest))
 
 tmpout.write("}")
 tmpout.flush()
