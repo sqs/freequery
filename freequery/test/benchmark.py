@@ -13,4 +13,4 @@ def bench(n, procs):
 
     print "%s\ttotal\teach (%d)" % (' ' * max_label_len, n)
     for label, t in results:
-        print "%s\t%.3f\t%.3f" % (label, t, t/n)
+        print "%*s\t%.3f\t%.3f" % (max_label_len, label, t, t/n)
