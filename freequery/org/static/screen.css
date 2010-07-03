@@ -1,0 +1,21 @@
+section.search {
+    margin:85px auto 10px;
+    width:75%;
+    text-align:center;
+}
+
+#search_form input {
+    font-size:1.1em;
+}
+
+#q {
+    display:block;
+    max-width:600px;
+    width:100%;
+    margin:20px auto 15px;
+    padding:4px;
+}
+
+#q_submit {
+    padding:3px 12px;
+}

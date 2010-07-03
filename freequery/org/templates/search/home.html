@@ -3,5 +3,11 @@
 {% block page_title %}Freequery{% endblock %}
 
 {% block body %}
-home
+<section class="search">
+  <img src="/static/Freequery.png">
+  <form action="/search" method="get" id="search_form">
+    <input type="search" id="q" name="q" autofocus="true">
+    <input type="submit" id="q_submit" value="Freequery Search">
+  </form>
+</section>
 {% endblock %}
