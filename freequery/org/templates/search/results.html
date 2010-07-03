@@ -1,7 +1,22 @@
 {% extends "base.html" %}
 
 {% block page_local_title %}{{ q }}{% endblock %}
+{% block body_class %}results{% endblock %}
 
 {% block body %}
-hello
+<header>
+  <div id="logo_"><a href="/"><img id="logo" src="/static/Freequery.png"></a></div>
+  <form action="/search" method="get" id="search_form">
+    <input type="search" id="q" name="q">
+    <input type="submit" id="q_submit" value="Freequery Search">
+  </form>
+</header>
+
+<section class="results">
+  <ol>
+    {% for doc in docs %}
+    <li><a href="{{ doc.uri }}">{{ doc.uri }}</a></li>
+    {% endfor %}
+  </ol>
+</section>
 {% endblock %}
