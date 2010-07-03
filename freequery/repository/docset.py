@@ -3,22 +3,21 @@ from disco.ddfs import DDFS
 
 class Docset(object):
 
-    def __init__(self, name):
-        self.name = name
-        self.tag = 'fq:docset:' + name
+    def __init__(self, docset_name):
+        self.ddfs_tag = docset_name
         self.ddfs = DDFS()
 
     def exists(self):
-        return self.ddfs.exists(self.tag)
+        return self.ddfs.exists(self.ddfs_tag)
         
     def delete(self):
-        return self.ddfs.delete(self.tag)
+        return self.ddfs.delete(self.ddfs_tag)
         
     def add_dump(self, dumpname, dump):
-        return self.ddfs.push(self.tag, [(dump, dumpname)])
+        return self.ddfs.push(self.ddfs_tag, [(dump, dumpname)])
 
     def dump_uris(self):
-        return (uri for (uri,) in self.ddfs.blobs(self.tag))
+        return (uri for (uri,) in self.ddfs.blobs(self.ddfs_tag))
     
     def __blob_uri_to_dump_name(self, bloburi):
         """

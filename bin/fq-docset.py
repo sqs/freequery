@@ -28,23 +28,25 @@ class FreequeryDocset(Program):
         ls(program)
 
 @FreequeryDocset.command
-def ls(program, docsetname=None):
-    """Usage: [docsetname]
+def ls(program, spec=None):
+    """Usage: [spec]
 
     Prints the names of all docsets, or of the dumps in the specified docset.
     """
-    if docsetname is None:
-        docsets = program.ddfs.list('fq:docset:')
+    from freequery.client.client import Spec
+    if spec is None:
+        docsets = program.ddfs.list(Spec.docset_prefix)
         if docsets:
             print "\n".join(docsets)
     else:
-        docset = program.docset(docsetname)
+        docset_name = Spec(spec).docset_name
+        docset = program.docset(docset_name)
         if docset.exists():
             dumps = docset.dump_names()
             if dumps:
                 print "\n".join(dumps)
         else:
-            print "fq-docset: cannot access `%s': no such docset" % docsetname
+            print "fq-docset: cannot access `%s': no such docset" % docset_name
             exit(1)
 
 @FreequeryDocset.command
