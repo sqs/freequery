@@ -1,5 +1,5 @@
 import re, urlparse
-from BeautifulSoup import BeautifulSoup
+import lxml.html
 from freequery.lang.terms import prep_terms
 
 class Document(object):
@@ -68,11 +68,18 @@ class HTMLDocument(Document):
     alphanum_re = re.compile(r'[^\w\d]+')
 
     @property
-    def html_parser(self):
-        if not hasattr(self, '__html_parser'):
-            self.__html_parser = BeautifulSoup(self.raw)
-        return self.__html_parser
+    def html_parser_lxml_html(self):
+        if self.__html_parser_lxml_html is None:
+            self.__html_parser_lxml_html = lxml.html.document_fromstring(self.raw, base_url=self.uri)
+        return self.__html_parser_lxml_html
+    __html_parser_lxml_html = None
     
+    html_parser = html_parser_lxml_html
+
+    @property
+    def title(self):
+        return self.html_parser.xpath('.//title')[0].text
+
     def tokens(self):
         html = self.raw
         txt = re.sub(self.strip_tags_re, ' ', html)
@@ -81,29 +88,15 @@ class HTMLDocument(Document):
         txt = re.sub(self.collapse_space_re, ' ', txt)
         return txt.split(' ')
 
-    def base_uri(self):
-        """
-        Returns the base URI for links in the document. This is the document's
-        URI if no <base href="..."> tag exists, or else the base href applied
-        to the document's URI if it does.
-        """
-        base_uri = self.uri
+    def links_lxml_html(self):
+        self.html_parser.make_links_absolute(self.uri,
+                                             resolve_base_href=True)
+        for e,attr,uri,pos in self.html_parser.iterlinks():
+            tag = e.tag
+            if tag == "a" or tag == "A":
+                yield Link(uri)
 
-        # look for <base href="...">
-        base_tag = self.html_parser.find('base', href=True)
-        if base_tag:
-            base_uri = urlparse.urljoin(base_uri, base_tag['href'])
-
-        # remove file component from path
-        u = urlparse.urlsplit(base_uri)
-        newpath = '/'.join(u.path.split('/')[:-1]) + '/'
-        
-        return urlparse.urlunsplit((u[0], u[1], newpath, u[3], None))
-    
-    def links(self):
-        atags = self.html_parser.findAll('a', href=True)
-        base_uri = self.base_uri()
-        return [Link(urlparse.urljoin(base_uri, a['href'])) for a in atags]
+    links = links_lxml_html
         
 class Hit(object):
     """

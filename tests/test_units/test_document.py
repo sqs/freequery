@@ -23,36 +23,13 @@ class TestHTMLDocument(unittest.TestCase):
     def test_term_frequences(self):
         self.assertEquals(dict(welcom=1, exampl=1), docs.example.term_frequencies())
 
-    def test_link_uris(self):
+    def test_link_uris_simple(self):
         self.assertEquals(['http://cs.stanford.edu'], list(docs.stanford.link_uris()))
 
-    # base URI tests
-    base_uri_data = {
-        # trivial
-        ('http://example.com/', None): 'http://example.com/',
-        # absolute root base
-        ('http://example.com/', 'http://example.com/'): 'http://example.com/',
-        # trivial dir
-        ('http://example.com/dir/', None): 'http://example.com/dir/',
-        # absolute dir base
-        ('http://example.com/', 'http://example.com/dir/'): 'http://example.com/dir/',
-        # trivial file
-        ('http://example.com/file', None): 'http://example.com/',
-        # absolute root base
-        ('http://example.com/file', 'http://example.com/'): 'http://example.com/',
-    }
-
-    def test_base_uri(self):
-        for (uri,basehref),exp_base_uri in self.base_uri_data.items():
-            raw = ""
-            if basehref:
-                raw = "<html><head><base href='%s'></head><body></body></html>" % basehref
-            d = Document(uri, raw)
-            base_uri = d.base_uri()
-            self.assertEquals(exp_base_uri, base_uri,
-                              "expected (%s, %s) -> %s, got %s" % \
-                                  (uri, basehref, exp_base_uri, base_uri))
-
+    def test_title(self):
+        raw = "<html><head><title>Example</title></head><body></body></html>"
+        self.assertEquals('Example', Document('http://example.com/', raw).title)
+    
     # link URI tests                              
     link_uri_data = {
         # (base uri, a href) -> link uri
@@ -66,7 +43,9 @@ class TestHTMLDocument(unittest.TestCase):
 
     def test_link_uris(self):
         for (baseuri,href),exp_uri in self.link_uri_data.items():
+            print baseuri
             d = Document(baseuri, '<a href="%s">text</a>' % href)
+            print list(d.link_uris())
             link_uri = list(d.link_uris())[0]
             self.assertEquals(exp_uri, link_uri,
                               "expected (%s, %s) -> %s, got %s" % \
