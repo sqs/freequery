@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
            {'document_root': 'static/'}),
-    (r'', include('freequery.org.search.urls')),
+    (r'^search', include('freequery.org.search.urls')),
+    (r'^$', 'freequery.org.search.views.home'),
 )
