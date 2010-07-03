@@ -1,0 +1,46 @@
+!hline_c = #ccc
+
+body
+  :margin 0
+  :padding 0
+  :font-family sans-serif
+
+#search_form
+  input
+    :font-size 1.1em
+  #q
+    :padding 4px
+  #q_submit
+    :padding 3px 12px
+
+body.home section.search
+  :margin 85px auto 10px
+  :width 75%
+  :text-align center
+  #search_form
+    #q
+      :display block
+      :max-width 600px
+      :width 100%
+      :margin 20px auto 15px   
+
+body.results
+  header
+    :padding 15px
+    :border-bottom = "solid" 1px !hline_c
+    
+    !logo_height = 68px
+    :min-height = !logo_height
+    img
+      :width 275px
+      :height = !logo_height
+    #logo_
+      :float left
+      :margin-right 20px
+
+    #search_form
+      :margin-top = 0.26 * !logo_height
+    #q
+      :min-width 200px
+      :max-width 375px
+      :width 100%
