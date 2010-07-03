@@ -47,6 +47,17 @@ def pagerank_teleport_distribute_map((doc,__ignore), params):
     pp = alpha*(1.0/doc_count) + (1-alpha)*(lost_mass_per+p)
     doc.pagerank = pp
     yield doc, 0
+
+
+def pagerank_partition(key, nr_partitions, params):
+    from freequery.document import Document
+    if isinstance(key, Document):
+        doc = key
+        return hash(doc.uri) % nr_partitions
+    elif isinstance(key, str):
+        return hash(key) % nr_partitions
+    else:
+        raise Exception("unknown key type: %r" % key)
     
 def pagerank_mass_reduce(in_iter, out, params):
     from freequery.document import Document
@@ -94,7 +105,8 @@ def pagerank_mass_reduce(in_iter, out, params):
 
     # emit dangling mass
     out.add(DANGLING_MASS_KEY, dangling_mass)
-
+    
+    
 class PagerankJob(object):
 
     def __init__(self, docset, disco_addr="disco://localhost",
@@ -104,14 +116,17 @@ class PagerankJob(object):
         self.disco = Disco("disco://localhost")
         self.alpha = alpha
         self.niter = niter
-        self.doc_count = 184 # TODO: don't hardcode
+        self.doc_count = 716 # TODO: don't hardcode
+        self.nr_partitions = 16
+        self.merge_partitions = True
 
     def start(self):
         from disco.core import result_iterator
         from disco.func import chain_reader
         from freequery.index.mapreduce import docparse
         from freequery.graph.pagerank import pagerank_mass_map, \
-            pagerank_mass_reduce, pagerank_teleport_distribute_map
+            pagerank_mass_reduce, pagerank_teleport_distribute_map, \
+            pagerank_partition
 
         results = self.disco.new_job(
             name="pagerank_mass0",
@@ -120,6 +135,9 @@ class PagerankJob(object):
             map=pagerank_mass_map,
             reduce=pagerank_mass_reduce,
             sort=True,
+            partitions=self.nr_partitions,
+            partition=pagerank_partition,
+            merge_partitions=self.merge_partitions,
             params=dict(iter=0, doc_count=self.doc_count)).wait()
         ## print "Iteration 0:\n", self.__result_stats(results)
 
@@ -134,6 +152,9 @@ class PagerankJob(object):
                 map_reader=chain_reader,
                 map=pagerank_teleport_distribute_map,
                 sort=True,
+                partitions=self.nr_partitions,
+                partition=pagerank_partition,
+                merge_partitions=self.merge_partitions,
                 params=dict(iter=i, alpha=self.alpha,
                             doc_count=self.doc_count,
                             lost_mass_per=float(lost_mass)/self.doc_count)
@@ -150,6 +171,9 @@ class PagerankJob(object):
                 map=pagerank_mass_map,
                 reduce=pagerank_mass_reduce,
                 sort=True,
+                partitions=self.nr_partitions,
+                partition=pagerank_partition,
+                merge_partitions=self.merge_partitions,
                 params=dict(iter=i)).wait()
 
         # write scoredb
