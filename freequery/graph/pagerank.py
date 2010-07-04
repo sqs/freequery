@@ -54,7 +54,7 @@ def pagerank_partition(key, nr_partitions, params):
     if isinstance(key, Document):
         doc = key
         return hash(doc.uri) % nr_partitions
-    elif isinstance(key, unicode):
+    elif isinstance(key, unicode) or isinstance(key, str):
         return hash(key) % nr_partitions
     else:
         raise Exception("unknown key type: %r" % key)
