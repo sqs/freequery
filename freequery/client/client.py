@@ -1,10 +1,12 @@
-import discodb
 from disco.util import urlresolve
 from discodex.client import DiscodexClient
 from discodex.objects import DataSet
 from freequery.repository.docset import Docset
 from freequery.document import Document
 from freequery.graph.pagerank import PagerankJob
+from freequery.graph.scoredb import ScoreDB
+from freequery.query import Query
+
 
 class Spec(object):
     docset_prefix = 'fq:docset:'
@@ -26,14 +28,21 @@ class FreequeryClient(object):
             self.spec = Spec(spec)
         self.discodex_client = DiscodexClient()
 
-    def query(self, q):
-        """Return list `Document` instances matching query `q`, without ranking."""
-        qq = discodb.Q.parse(q)
+    def raw_query(self, q):
+        """Return a list of `Document` instances matching query `q`, without
+        ranking."""
+        qq = Query.parse(q)
         return (Document(uri, "TODO") for uri in
                 self.discodex_client.query(self.spec.invindex_name, qq))
 
-    def search(self, q):
-        pass
+    def query(self, q):
+        """Return a ranked list of matching `Document` instances."""
+        qq = Query.parse(q)
+        scoredb = ScoreDB(self.spec.scoredb_path)
+        return [Document(uri, "TODO") for uri in
+                scoredb.ranked_uris(
+                    self.discodex_client.query(self.spec.invindex_name, qq)
+                )]
 
     def index(self):
         import sys, time
@@ -64,7 +73,7 @@ class FreequeryClient(object):
                 sys.stdout.write(".")
                 sys.stdout.flush()
         self.discodex_client.clone(orig_invindex_name, self.spec.invindex_name)
-
+        
     def rank(self):
          job = PagerankJob(self.spec)
          job.start()
