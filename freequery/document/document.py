@@ -1,7 +1,7 @@
 import urlparse
 from cStringIO import StringIO
 import lxml.html
-from freequery.lang.terms import prep_terms, prep_terms_unique
+from freequery.lang.terms import prep_terms
 
 class Document(object):
 
@@ -26,7 +26,7 @@ class Document(object):
         return NotImplementedError
 
     def terms(self):
-        return prep_terms_unique(self.tokens())
+        return prep_terms(self.tokens())
 
     def term_frequencies(self):
         tfs = dict()

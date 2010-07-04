@@ -5,16 +5,16 @@ from freequery.lang import stemmer, stopwords, terms
 class TestLang(unittest.TestCase):
 
     def test_stemmer(self):
-        assert 'run' == stemmer.stem_word('running')
+        self.assertEquals('run', stemmer.stem_word('running'))
     
     def test_stopwords(self):
-        assert 'the' in stopwords.stopwords
+        self.assertTrue('the' in stopwords.stopwords)
 
     def test_prep_terms(self):
         ts = ['THE', 'Running']
-        assert ['run'] == terms.prep_terms(ts)
+        self.assertEquals(['run'], terms.prep_terms(ts))
 
     def test_prep_bad_terms(self):
-        assert None == terms.prep_term('')
-        assert None == terms.prep_term('z')
+        self.assertEquals(None, terms.prep_term(''))
+        self.assertEquals(None, terms.prep_term('z'))
 
