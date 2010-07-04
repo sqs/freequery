@@ -38,7 +38,7 @@ MEDIA_URL = ''
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
-SECRET_KEY = '--TODO-change-this--'
+SECRET_KEY = '--secret--'
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',

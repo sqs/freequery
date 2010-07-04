@@ -1,0 +1,2 @@
+1. make install
+2. Change freequery.org.settings.SECRET_KEY to something secret.
