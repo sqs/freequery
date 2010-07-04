@@ -28,21 +28,14 @@ class FreequeryClient(object):
             self.spec = Spec(spec)
         self.discodex_client = DiscodexClient()
 
-    def raw_query(self, q):
-        """Return a list of `Document` instances matching query `q`, without
-        ranking."""
-        qq = Query.parse(q)
-        return (Document(uri, "TODO") for uri in
-                self.discodex_client.query(self.spec.invindex_name, qq))
-
-    def query(self, q):
+    def query(self, q, ranked=True):
         """Return a ranked list of matching `Document` instances."""
         qq = Query.parse(q)
-        scoredb = ScoreDB(self.spec.scoredb_path)
-        return [Document(uri, "TODO") for uri in
-                scoredb.ranked_uris(
-                    self.discodex_client.query(self.spec.invindex_name, qq)
-                )]
+        uris = self.discodex_client.query(self.spec.invindex_name, qq)
+        if ranked:
+            scoredb = ScoreDB(self.spec.scoredb_path)
+            uris = scoredb.ranked_uris(uris)
+        return [Document(uri, "TODO") for uri in uris]
 
     def index(self):
         import sys, time

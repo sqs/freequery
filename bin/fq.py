@@ -7,6 +7,10 @@ from clx import OptionParser, Program
 class FreequeryOptionParser(OptionParser):
     def __init__(self, **kwargs):
         OptionParser.__init__(self, **kwargs)
+        self.add_option('-u', '--unranked',
+                        action='store_true',
+                        help='return unranked query results')
+
 
 class Freequery(Program):
     @property
@@ -26,11 +30,12 @@ class Freequery(Program):
     
 @Freequery.command
 def query(program, spec, q):
-    """Usage: <spec> <query>
+    """Usage: [--unranked] <spec> <query>
 
     Query the `spec` inverted index for docs matching `query`.
     """
-    for i,doc in enumerate(program.fqclient(spec).query(q)):
+    unranked = program.option_dict.get('unranked', False)
+    for i,doc in enumerate(program.fqclient(spec).query(q, ranked=not unranked)):
         print "%d. %s" % (i+1, doc.uri)
 
 @Freequery.command
