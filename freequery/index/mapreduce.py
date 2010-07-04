@@ -9,6 +9,6 @@ def docparse(iterable, size, fname, params):
 
 def docdemux(doc, params):
     """Emits (term, docuri) for each term in `doc`."""
-    tfs = ((k.encode('utf8'), v) for k,v in doc.term_frequencies())
+    tfs = ((k.encode('utf8'), v) for k,v in doc.term_frequencies().items())
     for term,tf in tfs:
         yield term, doc.uri.encode('utf8')
