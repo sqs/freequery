@@ -56,15 +56,9 @@ def inspect_index(program, soec):
 
 @Freequery.command
 def rank(program, spec):
-    from freequery.repository.docset import Docset
-    from freequery.graph.pagerank import PagerankJob
     from freequery.client.client import Spec
-    spec = Spec(spec)
-    docset = Docset(spec.docset_name)
-    job = PagerankJob(docset)
-    job.start()
-
-    show_scores(program, spec.name)
+    program.fqclient(spec).rank()
+    show_scores(program, spec)
 
 @Freequery.command
 def show_scores(program, spec):

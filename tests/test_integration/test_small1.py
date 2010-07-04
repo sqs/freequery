@@ -6,4 +6,4 @@ class TestDuplicateURIs(IntegrationTestCase):
         'welcom': ['http://example.com/'],
     }
     index = True
-    rank = False
+    rank = True

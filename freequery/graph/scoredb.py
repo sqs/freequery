@@ -3,8 +3,11 @@ import simplejson
 class ScoreDB(object):
     """ScoreDB reader."""
 
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, spec):
+        if isinstance(spec, str):
+            self.path = spec
+        else:
+            self.path = spec.scoredb_path
         self.__load()
 
     def __load(self):
@@ -21,9 +24,12 @@ class ScoreDB(object):
 
 class ScoreDBWriter(object):
 
-    def __init__(self, path):
-        self.path = path
-        self.dbfile = open(path, 'w+b')
+    def __init__(self, spec):
+        if isinstance(spec, str):
+            self.path = spec
+        else:
+            self.path = spec.scoredb_path
+        self.dbfile = open(self.path, 'w+b')
 
     def set_scores(self, iterator):
         scoredict = dict(iterator)

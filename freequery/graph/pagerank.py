@@ -1,3 +1,7 @@
+from disco.core import Disco
+from freequery.repository.docset import Docset
+
+
 DANGLING_MASS_KEY = '::dangling_node::'
 
 def pagerank_mass_map(doc, params):
@@ -14,7 +18,7 @@ def pagerank_mass_map(doc, params):
     if params['iter'] == 0:
         doc.pagerank = 1.0/params['doc_count']
         
-    yield doc.uri, doc
+    yield str(doc.uri), doc
     
     outlinks = set(doc.link_uris())
     if len(outlinks) > 0:
@@ -109,16 +113,17 @@ def pagerank_mass_reduce(in_iter, out, params):
     
 class PagerankJob(object):
 
-    def __init__(self, docset, disco_addr="disco://localhost",
-                 alpha=0.15, niter=3):
-        from disco.core import Disco
-        self.docset = docset
+    def __init__(self, spec, disco_addr="disco://localhost",
+                 alpha=0.15, niter=2):
+        self.spec = spec
+        self.docset = Docset(spec.docset_name)
         self.disco = Disco("disco://localhost")
         self.alpha = alpha
         self.niter = niter
-        self.doc_count = 716 # TODO: don't hardcode
+        self.doc_count = 31875 # TODO: don't hardcode
         self.nr_partitions = 16
-        self.merge_partitions = True
+        self.merge_partitions = False
+        self.mem_sort_limit = 1024*1024*1024*1.5 # 1.5 GB
 
     def start(self):
         from disco.core import result_iterator
@@ -138,6 +143,7 @@ class PagerankJob(object):
             partitions=self.nr_partitions,
             partition=pagerank_partition,
             merge_partitions=self.merge_partitions,
+            mem_sort_limit=self.mem_sort_limit,
             params=dict(iter=0, doc_count=self.doc_count)).wait()
         ## print "Iteration 0:\n", self.__result_stats(results)
 
@@ -155,6 +161,7 @@ class PagerankJob(object):
                 partitions=self.nr_partitions,
                 partition=pagerank_partition,
                 merge_partitions=self.merge_partitions,
+                mem_sort_limit=self.mem_sort_limit,
                 params=dict(iter=i, alpha=self.alpha,
                             doc_count=self.doc_count,
                             lost_mass_per=float(lost_mass)/self.doc_count)
@@ -174,12 +181,13 @@ class PagerankJob(object):
                 partitions=self.nr_partitions,
                 partition=pagerank_partition,
                 merge_partitions=self.merge_partitions,
+                mem_sort_limit=self.mem_sort_limit,
                 params=dict(iter=i)).wait()
 
         # write scoredb
         from freequery.graph.scoredb import ScoreDBWriter
         from freequery.document import Document
-        db = ScoreDBWriter('/s/a/scoredb') # TODO: don't hardcode
+        db = ScoreDBWriter(self.spec.scoredb_path) # TODO: don't hardcode
         score_iter = ((doc.uri, doc.pagerank) for doc,_
                       in result_iterator(results) if isinstance(doc, Document))
         db.set_scores(score_iter)

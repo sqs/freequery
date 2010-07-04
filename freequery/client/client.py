@@ -4,6 +4,7 @@ from discodex.client import DiscodexClient
 from discodex.objects import DataSet
 from freequery.repository.docset import Docset
 from freequery.document import Document
+from freequery.graph.pagerank import PagerankJob
 
 class Spec(object):
     docset_prefix = 'fq:docset:'
@@ -14,7 +15,7 @@ class Spec(object):
         self.name = name
         self.docset_name = '%s%s' % (self.docset_prefix, name)
         self.invindex_name = 'discodex:fq:%s:invindex' % name
-        self.scoredb_path = '/tmp/fq-scoredb'
+        self.scoredb_path = '/s/a/scoredb-%s' % name
 
 class FreequeryClient(object):
 
@@ -63,3 +64,7 @@ class FreequeryClient(object):
                 sys.stdout.write(".")
                 sys.stdout.flush()
         self.discodex_client.clone(orig_invindex_name, self.spec.invindex_name)
+
+    def rank(self):
+         job = PagerankJob(self.spec)
+         job.start()
