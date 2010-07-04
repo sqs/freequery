@@ -1,6 +1,5 @@
 import os
 from freequery.test.benchmark import bench
-
 from freequery.document import Document
 
 path = os.path.join(os.path.dirname(__file__), 'large_sample_doc.html')
@@ -14,5 +13,5 @@ def newdoc():
 def run_gen(c):
     return lambda: list(c())
 
-bench((#('links_bsoup', newdoc().links_bsoup),
-      ('links_lxml_etree', run_gen(newdoc().links_lxml_html)),))
+bench((('terms_old', run_gen(newdoc().terms_old)),
+       ('terms_new', run_gen(newdoc().terms))))

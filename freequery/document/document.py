@@ -1,7 +1,7 @@
 import re, urlparse
 from cStringIO import StringIO
 import lxml.html
-from freequery.lang.terms import prep_terms
+from freequery.lang.terms import prep_terms, prep_terms_unique
 
 class Document(object):
 
@@ -10,8 +10,8 @@ class Document(object):
     """
 
     def __init__(self, uri, raw, docid=-1):
-        self.uri = unicode(uri)
-        self.raw = unicode(raw)
+        self.uri = uri
+        self.raw = raw
         self.docid = docid
         self.make_typed('text/html')
 
@@ -25,8 +25,13 @@ class Document(object):
     def tokens(self):
         return NotImplementedError
 
-    def terms(self):
-        return prep_terms(self.tokens())
+    def terms_old(self):
+        return prep_terms(self.tokens_old())
+
+    def terms_new(self):
+        return prep_terms_unique(self.tokens_new())
+
+    terms = terms_new
 
     def term_frequencies(self):
         tfs = dict()
@@ -53,7 +58,8 @@ class Document(object):
         return (link.dest_uri for link in self.links())
     
     def __eq__(self, other):
-        return isinstance(other, Document) and self.__dict__ == other.__dict__
+        return isinstance(other, Document) and self.uri == other.uri and \
+            self.raw == other.raw and self.docid == other.docid
     
     def __str__(self):
         return "<Document docid=%d uri='%s' raw=(%d bytes)>" % (self.docid, self.uri, len(self.raw))
@@ -81,13 +87,19 @@ class HTMLDocument(Document):
     def title(self):
         return self.html_parser.xpath('.//title')[0].text
 
-    def tokens(self):
+    def tokens_old(self):
         html = self.raw
         txt = re.sub(self.strip_tags_re, ' ', html)
         txt = txt.strip()
         txt = re.sub(self.alphanum_re, ' ', txt)
         txt = re.sub(self.collapse_space_re, ' ', txt)
         return txt.split(' ')
+
+    def tokens_new(self):
+        return [w for w in self.html_parser.text_content().split() \
+                    if w.isalnum()]
+
+    tokens = tokens_new
 
     def links_lxml_html(self):
         self.html_parser.make_links_absolute(self.uri, resolve_base_href=True)

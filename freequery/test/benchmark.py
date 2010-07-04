@@ -1,6 +1,12 @@
-import time
+import time, sys
 
-def bench(n, procs):
+def bench(procs, n=None):
+    if n is None:
+        if len(sys.argv) == 2:
+            n = int(sys.argv[1])
+        else:
+            n = 20
+
     results = []
     max_label_len = 0
     for label, func in procs:
