@@ -1,4 +1,5 @@
 import re, urlparse
+from cStringIO import StringIO
 import lxml.html
 from freequery.lang.terms import prep_terms
 
@@ -9,8 +10,8 @@ class Document(object):
     """
 
     def __init__(self, uri, raw, docid=-1):
-        self.uri = uri
-        self.raw = raw
+        self.uri = unicode(uri)
+        self.raw = unicode(raw)
         self.docid = docid
         self.make_typed('text/html')
 
@@ -70,7 +71,8 @@ class HTMLDocument(Document):
     @property
     def html_parser_lxml_html(self):
         if self.__html_parser_lxml_html is None:
-            self.__html_parser_lxml_html = lxml.html.document_fromstring(self.raw, base_url=self.uri)
+            self.__html_parser_lxml_html = lxml.html.parse(StringIO(self.raw), base_url=self.uri)
+#lxml.html.document_fromstring(self.raw, base_url=self.uri)
         return self.__html_parser_lxml_html
     __html_parser_lxml_html = None
     
@@ -89,9 +91,9 @@ class HTMLDocument(Document):
         return txt.split(' ')
 
     def links_lxml_html(self):
-        self.html_parser.make_links_absolute(self.uri,
-                                             resolve_base_href=True)
-        for e,attr,uri,pos in self.html_parser.iterlinks():
+        root = self.html_parser.getroot()
+        root.make_links_absolute(self.uri, resolve_base_href=True)
+        for e,attr,uri,pos in root.iterlinks():
             tag = e.tag
             if tag == "a" or tag == "A":
                 yield Link(uri)
