@@ -62,6 +62,7 @@ class FreequeryClient(object):
                 self.discodex_client.get(orig_invindex_name)
                 break
             except:
+                # TODO: find a better way of monitoring job status
                 time.sleep(2)
                 sys.stdout.write(".")
                 sys.stdout.flush()
