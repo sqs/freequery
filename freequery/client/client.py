@@ -3,7 +3,7 @@ from discodex.client import DiscodexClient
 from discodex.objects import DataSet
 from freequery.repository.docset import Docset
 from freequery.document import Document
-from freequery.graph.pagerank import PagerankJob
+from freequery.graph.pagerank_job import PagerankJob
 from freequery.graph.scoredb import ScoreDB
 from freequery.query import Query
 
