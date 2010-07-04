@@ -7,6 +7,10 @@ class Query(discodb.Q):
     @classmethod
     def parse(klass, q):
         def stem_match(m):
-            return prep_term(m.group(0))
+            t = prep_term(m.group(0))
+            if t:
+                return t
+            else:
+                raise Exception("stopwords not yet supported in Query")
         stemmed_q = klass.stemmer_re.sub(stem_match, q)
         return discodb.Q.parse(stemmed_q)
