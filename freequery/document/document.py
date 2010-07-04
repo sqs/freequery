@@ -1,4 +1,4 @@
-import re, urlparse
+import urlparse
 from cStringIO import StringIO
 import lxml.html
 from freequery.lang.terms import prep_terms, prep_terms_unique
@@ -25,13 +25,8 @@ class Document(object):
     def tokens(self):
         return NotImplementedError
 
-    def terms_old(self):
-        return prep_terms(self.tokens_old())
-
-    def terms_new(self):
-        return prep_terms_unique(self.tokens_new())
-
-    terms = terms_new
+    def terms(self):
+        return prep_terms_unique(self.tokens())
 
     def term_frequencies(self):
         tfs = dict()
@@ -70,10 +65,6 @@ class Document(object):
 
 class HTMLDocument(Document):
 
-    strip_tags_re = re.compile(r'<[^>]+>')
-    collapse_space_re = re.compile(r'\s+')
-    alphanum_re = re.compile(r'[^\w\d]+')
-
     @property
     def html_parser_lxml_html(self):
         if self.__html_parser_lxml_html is None:
@@ -87,19 +78,9 @@ class HTMLDocument(Document):
     def title(self):
         return self.html_parser.xpath('.//title')[0].text
 
-    def tokens_old(self):
-        html = self.raw
-        txt = re.sub(self.strip_tags_re, ' ', html)
-        txt = txt.strip()
-        txt = re.sub(self.alphanum_re, ' ', txt)
-        txt = re.sub(self.collapse_space_re, ' ', txt)
-        return txt.split(' ')
-
-    def tokens_new(self):
+    def tokens(self):
         return [w for w in self.html_parser.text_content().split() \
                     if w.isalnum()]
-
-    tokens = tokens_new
 
     def links_lxml_html(self):
         self.html_parser.make_links_absolute(self.uri, resolve_base_href=True)
