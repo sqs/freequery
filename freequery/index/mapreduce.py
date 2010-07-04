@@ -8,10 +8,8 @@ def docparse(iterable, size, fname, params):
     return QTableFile(iterable)
 
 def docdemux(doc, params):
-    """For each document, strips HTML and other control data from the
-    content... TODO. The following is not currently true: and emits `(uri,
-    tf)`, where `tf` is the term frequency in this document (uses in-mapper
-    combining to calculate these here)."""
-    str_terms = (t.encode('utf8') for t in doc.terms())
-    for term in set(str_terms):
+    """Emits (term, docuri) for each term in `doc`."""
+    tfs = ((k.encode('utf8'), v) for k,v in doc.term_frequencies())
+    
+    for term,tf in tfs:
         yield term, doc.uri.encode('utf8')
