@@ -51,24 +51,28 @@ def ls(program, spec=None):
 
 @FreequeryDocset.command
 def rm(program, docsetname):
-    """Usage: <docsetname>
+    """Usage: <spec>
 
     Deletes the specified docset.
     """
-    docset = program.docset(docsetname)
+    from freequery.client.client import Spec
+    docset_name = Spec(spec).docset_name
+    docset = program.docset(docset_name)
     if docset.exists():
-        program.docset(docsetname).delete()
+        program.docset(docset_name).delete()
     else:
-        print "fq-docset: cannot remove `%s': no such docset" % docsetname
+        print "fq-docset: cannot remove `%s': no such docset" % docset_name
         exit(1)
 
 @FreequeryDocset.command
-def add(program, docsetname, dump):
+def add(program, spec, dump):
     """Usage: <docsetname> <dump>
 
     Adds the dumpfile `dump` to the specified docset.
     """
-    docset = program.docset(docsetname)
+    from freequery.client.client import Spec
+    spec = Spec(spec)
+    docset = program.docset(spec.docset_name)
     dumpname = os.path.basename(dump)
     docset.add_dump(dumpname, dump)
 
