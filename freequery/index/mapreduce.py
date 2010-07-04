@@ -13,6 +13,6 @@ def docdemux(doc, params):
     tf)`, where `tf` is the term frequency in this document (uses in-mapper
     combining to calculate these here)."""
     for term in set(doc.terms()):
-        yield term, doc.uri
+        yield term.decode('utf8'), doc.uri
 
 
