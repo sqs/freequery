@@ -40,36 +40,9 @@ def index(program, spec):
     Indexes the specified docset.
     """
     import sys, time
-    from discodex.objects import DataSet
-    from freequery.repository.docset import Docset
     from freequery.client.client import Spec
-    spec = Spec(spec)
-    docset = Docset(spec.docset_name)
-    if not docset.exists():
-        print "fq: cannot index `%s': no such docset" % spec.docset_name
-        exit(1)
-    from disco.util import urlresolve
-    dataset = DataSet(input=map(urlresolve, list(docset.dump_uris())),
-                      options=dict(parser='freequery.index.mapreduce.docparse',
-                                   demuxer='freequery.index.mapreduce.docdemux'))
-    orig_invindex_name = program.discodex_client.index(dataset)
-    if orig_invindex_name:
-        print "indexing: %s " % orig_invindex_name,
-    else:
-        print "fq: discodex failed to index `%s'" % spec.name
-        exit(2)
-        
-    # wait for indexing to complete
-    while True:
-        try:
-            program.discodex_client.get(orig_invindex_name)
-            break
-        except:
-            time.sleep(2)
-            sys.stdout.write(".")
-            sys.stdout.flush()
-    program.discodex_client.clone(orig_invindex_name, spec.invindex_name)
-    print "\n", spec.invindex_name
+    program.fqclient(spec).index()
+    print "\n", Spec(spec).invindex_name
 
 @Freequery.command
 def inspect_index(program, soec):
@@ -105,6 +78,30 @@ def show_scores(program, spec):
     scoredb = ScoreDB(spec.scoredb_path)
     for uri, score in scoredb.items():
         print "%.8f\t%s" % (score, uri)
+
+@Freequery.command
+def dump_lint(program, *dumps):
+    """Usage: <dump1> <dump2> ...
+
+    Checks the validity of the specified dump file:
+      - No two documents have the same URI.
+    """
+    from freequery.repository.formats import QTableFile
+    from collections import defaultdict
+    uri_dump = defaultdict(list)
+    for dump in dumps:
+        with open(dump, 'rb') as f:
+            for doc in QTableFile(f):
+                uri_dump[doc.uri].append(dump)
+    ok = True
+    for uri,dumps in uri_dump.items():
+        if len(dumps) > 1:
+            print "*** Duplicate URI '%s' in: " % uri
+            for dump in dumps:
+                print "    - %s" % dump
+            ok = False
+    if ok:
+        print "OK"
     
 if __name__ == '__main__':
     Freequery(option_parser=FreequeryOptionParser()).main()
