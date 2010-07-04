@@ -11,6 +11,10 @@ class Query(discodb.Q):
             if t:
                 return t
             else:
-                raise Exception("stopwords not yet supported in Query")
+                # handle stopwords by making them equivalent to
+                # (a | ~a) = True - this essentially removes them,
+                # but without having to simplify the entire expression, which
+                # would be much more complex.
+                return "(a | ~a)"
         stemmed_q = klass.stemmer_re.sub(stem_match, q)
         return discodb.Q.parse(stemmed_q)
