@@ -1,5 +1,8 @@
 import discodb
+from disco.util import urlresolve
 from discodex.client import DiscodexClient
+from discodex.objects import DataSet
+from freequery.repository.docset import Docset
 from freequery.document import Document
 
 class Spec(object):
@@ -16,7 +19,10 @@ class Spec(object):
 class FreequeryClient(object):
 
     def __init__(self, spec):
-        self.spec = Spec(spec)
+        if isinstance(spec, Spec):
+            self.spec = spec
+        else:
+            self.spec = Spec(spec)
         self.discodex_client = DiscodexClient()
 
     def query(self, q):
@@ -27,3 +33,33 @@ class FreequeryClient(object):
 
     def search(self, q):
         pass
+
+    def index(self):
+        import sys, time
+        
+        docset = Docset(self.spec.docset_name)
+        if not docset.exists():
+            print "fq: cannot index `%s': no such docset" % self.spec.docset_name
+            exit(1)
+
+        dataset = DataSet(input=map(urlresolve, list(docset.dump_uris())),
+                          options=dict(parser='freequery.index.mapreduce.docparse',
+                                       demuxer='freequery.index.mapreduce.docdemux',
+                                       ))
+        orig_invindex_name = self.discodex_client.index(dataset)
+        if orig_invindex_name:
+            print "indexing: %s " % orig_invindex_name,
+        else:
+            print "fq: discodex failed to index `%s'" % self.spec.name
+            exit(2)
+        
+        # wait for indexing to complete
+        while True:
+            try:
+                self.discodex_client.get(orig_invindex_name)
+                break
+            except:
+                time.sleep(2)
+                sys.stdout.write(".")
+                sys.stdout.flush()
+        self.discodex_client.clone(orig_invindex_name, self.spec.invindex_name)

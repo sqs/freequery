@@ -15,5 +15,3 @@ def docdemux(doc, params):
     str_terms = (str(t.decode('utf8')) for t in doc.terms())
     for term in set(str_terms):
         yield term, doc.uri
-
-

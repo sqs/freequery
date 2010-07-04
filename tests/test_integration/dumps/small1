@@ -1,0 +1,15 @@
+http://example.com/
+
+<h1>Welcome to example</h1>
+<p><a href="http://example.com/about">About example</a></p>
+@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
+http://example.com/about
+
+<h1>About example</h1>
+<p>We are <a href="http://example.com/">example.com</a>. Check out <a href="http://example.com/contact">our contact info</a>.</p>
+@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
+http://example.com/contact
+
+<h1>Contact us</h1>
+<p>Phone: 800-555-1212. Web: <a href="http://example.com/">http://example.com</a>.</p>
+
