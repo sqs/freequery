@@ -65,7 +65,7 @@ def rm(program, docsetname):
         exit(1)
 
 @FreequeryDocset.command
-def add(program, spec, dump):
+def add(program, spec, *dumps):
     """Usage: <docsetname> <dump>
 
     Adds the dumpfile `dump` to the specified docset.
@@ -73,8 +73,9 @@ def add(program, spec, dump):
     from freequery.client.client import Spec
     spec = Spec(spec)
     docset = program.docset(spec.docset_name)
-    dumpname = os.path.basename(dump)
-    docset.add_dump(dumpname, dump)
+    for dump in dumps:
+        dumpname = os.path.basename(dump)
+        docset.add_dump(dumpname, dump)
 
 @FreequeryDocset.command
 def info(program, docsetname):
