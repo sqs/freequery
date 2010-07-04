@@ -27,7 +27,7 @@ class QTableFile(object):
             raise Exception("iterable shouldn't be none")
         
         # URI
-        uri = self.iterable.next().strip()
+        uri = self.iterable.next().strip().decode('utf8')
 
         # meta
         # ignoring for now
@@ -41,7 +41,7 @@ class QTableFile(object):
             if line == self.DELIM:
                 break # doc finished
             else:
-                raw.append(line)
+                raw.append(line.decode('utf8'))
 
         # remove "\n" from last line of raw, since it delimits
         # the raw from the end-of-document and is not actually part
@@ -49,7 +49,7 @@ class QTableFile(object):
         if len(raw) > 0:
             raw[-1] = raw[-1].rstrip()
             
-        return Document(uri, ''.join(raw))
+        return Document(uri, u''.join(raw))
 
     def __iter__(self):
         return self

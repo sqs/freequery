@@ -18,15 +18,13 @@ def pagerank_mass_map(doc, params):
     if params['iter'] == 0:
         doc.pagerank = 1.0/params['doc_count']
         
-    yield str(doc.uri), doc
+    yield doc.uri.encode('utf8'), doc
     
     outlinks = set(doc.link_uris())
     if len(outlinks) > 0:
         out_pr = doc.pagerank / len(outlinks)
         for out_uri in outlinks:
-            if isinstance(out_uri, unicode):
-                out_uri = out_uri.encode('utf8')
-            yield out_uri, out_pr
+            yield out_uri.encode('utf8'), out_pr
     else:
         # This is a dangling node. We will sum the
         # pageranks of all dangling nodes and redistribute

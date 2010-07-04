@@ -12,6 +12,6 @@ def docdemux(doc, params):
     content... TODO. The following is not currently true: and emits `(uri,
     tf)`, where `tf` is the term frequency in this document (uses in-mapper
     combining to calculate these here)."""
-    str_terms = (str(t.decode('utf8')) for t in doc.terms())
+    str_terms = (t.encode('utf8') for t in doc.terms())
     for term in set(str_terms):
-        yield term, doc.uri
+        yield term, doc.uri.encode('utf8')
