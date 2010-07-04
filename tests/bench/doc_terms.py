@@ -13,5 +13,5 @@ def newdoc():
 def run_gen(c):
     return lambda: list(c())
 
-bench((('terms_old', run_gen(newdoc().terms_old)),
-       ('terms_new', run_gen(newdoc().terms))))
+bench((#('terms_old', run_gen(newdoc().terms_old)),
+       ('terms_new', run_gen(newdoc().terms)),))
