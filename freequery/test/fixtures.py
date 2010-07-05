@@ -19,3 +19,11 @@ x:y=z
 http://apple.com
 
 <h1>Welcome to Apple</h1>"""
+
+qtable_file2 = """http://example.com/m.html
+
+<h1>Example m</h1>
+@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
+http://example.com/z.html
+
+<h1>Example z</h1>"""

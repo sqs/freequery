@@ -39,7 +39,7 @@ def pagerank_teleport_distribute_map((doc,__ignore), params):
     # params['lost_mass_per'].
     if doc == DANGLING_MASS_KEY:
         return
-    
+
     alpha = params['alpha']
     doc_count = params['doc_count']
     lost_mass_per = params['lost_mass_per']

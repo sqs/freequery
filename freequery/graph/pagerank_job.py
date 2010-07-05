@@ -11,7 +11,7 @@ class PagerankJob(object):
         self.disco = Disco("disco://localhost")
         self.alpha = alpha
         self.niter = niter
-        self.doc_count = 31875 # TODO: don't hardcode
+        self.doc_count = self.docset.doc_count()
         self.nr_partitions = 16
         self.merge_partitions = False
         self.mem_sort_limit = 1024*1024*1024*1.5 # 1.5 GB
