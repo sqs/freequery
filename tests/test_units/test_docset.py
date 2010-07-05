@@ -31,7 +31,6 @@ class TestDocset(unittest.TestCase):
         self.assertTrue('d1' in self.docset.dump_names_without_doc_counts())
 
         # check accessible over http
-        from disco.ddfs import DDFS
         from disco.util import urlresolve
         import urllib2
         uri = list(self.docset.dump_uris())[0]
