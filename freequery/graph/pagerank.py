@@ -1,8 +1,30 @@
+'''
+Pagerank MapReduce functions
+============================
 
+Notation
+--------
+:math:`n` : number of documents.
+
+:math:`\\alpha \\in (0,1]` : parameter; a random surfer will teleport to a random
+page with probability :math:`(1-\\alpha)`.
+
+:math:`P(i)` : pagerank of node :math:`i`.
+
+:math:`C(i)` : number of outgoing links in node :math:`i`.
+'''
 
 DANGLING_MASS_KEY = '::dangling_node::'
 
 def pagerank_mass_map(doc, params):
+    """
+    Passes node :math:`i`'s pagerank along its outgoing links.
+
+    On the first iteration, initializes :math:`P(i) := 1/n`. 
+
+    For each of :math:`i`'s outgoing links, emits
+    :math:`\\left( \\mathrm{out\_uri}, P(i)/C(i) \\right)`.
+    """
     from freequery.document import Document
     from freequery.graph.pagerank import DANGLING_MASS_KEY
 
