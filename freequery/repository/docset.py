@@ -6,14 +6,11 @@ from freequery.repository.formats import QTableFile
 class Docset(object):
     """
     A `Docset` represents a set of documents, contained in dump files stored on
-    DDFS.
+    DDFS. Class instantiation alone doesn't do anything to DDFS; the DDFS tag
+    for this docset won't exist until a dump is added.
     """
 
     def __init__(self, docset_name):
-        """
-        Creates a new Docset class. Class instantiation alone doesn't do
-        anything to DDFS; the docset tag won't exist until a dump is added.
-        """
         self.ddfs_tag = docset_name
         self.ddfs = DDFS()
 
