@@ -1,5 +1,6 @@
-import re
+import re, urllib2
 from disco.ddfs import DDFS
+from disco.util import urlresolve
 from freequery.repository.formats import QTableFile
 
 class Docset(object):
@@ -47,3 +48,11 @@ class Docset(object):
     def dump_names_without_doc_counts(self):
         return [self.NDOCS_RE.match(s).group('name') for s in self.dump_names()]
     
+    def get(self, uri):
+        """Returns the `Document` with the specified `uri`."""
+        for dump_uri in self.dump_uris():
+            f = urllib2.urlopen(urlresolve(dump_uri))
+            for doc in QTableFile(f):
+                if doc.uri == uri:
+                    return doc
+        raise KeyError

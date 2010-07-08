@@ -5,6 +5,7 @@ apple = Document('http://apple.com', '<h1>Welcome to Apple</h1>')
 stanford = Document('http://stanford.edu', '<h1>Stanford</h1>' \
                     '<p><a href="http://cs.stanford.edu">' \
                     'Stanford Computer Science</a></p>')
+examplez = Document('http://example.com/z.html', '<h1>Example z</h1>')
 
 all_docs = [example, apple, stanford]
 for doc in all_docs:

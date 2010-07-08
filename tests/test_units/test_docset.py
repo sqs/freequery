@@ -50,6 +50,13 @@ class TestDocset(unittest.TestCase):
         self.docset.add_dump('d2', dump2)
         self.assertEquals(4, self.docset.doc_count())
 
+    def test_get(self):
+        self.docset.add_dump('d1', dump1)
+        self.docset.add_dump('d2', dump2)
+        self.assertEquals(fixtures.example, self.docset.get('http://example.com'))
+        self.assertEquals(fixtures.apple, self.docset.get('http://apple.com'))
+        self.assertEquals(fixtures.examplez, self.docset.get('http://example.com/z.html'))
+
     def __write_dumps(self):
         with open(dump1, 'w+b') as f:
             f.write(fixtures.qtable_file1)
