@@ -22,13 +22,13 @@ class TestDocset(unittest.TestCase):
         self.docset.delete()
         # If this test is failing, then we might need to wait for DDFS garbage
         # collection here, but it seems to work fine for now.
-        self.assertFalse('d1' in self.docset.dump_names_without_doc_counts())
+        self.assertFalse('d1' in self.docset.dump_names())
         
     def test_add_dump(self):
         self.docset.add_dump('d1', dump1)
 
         # check that it's in list of dumps
-        self.assertTrue('d1' in self.docset.dump_names_without_doc_counts())
+        self.assertTrue('d1' in self.docset.dump_names())
 
         # check accessible over http
         from disco.util import urlresolve
