@@ -37,13 +37,15 @@ class Docset(object):
         """
         # index positions
         doc_count = 0
-        pos = 0
+        startpos = 0
+        endpos = None
         with open(dump, 'rb') as f:
             dociter = QTableFile(f)
             for doc in dociter:
                 doc_count += 1
-                self.index[doc.uri] = (dumpname, pos)
-                pos = dociter.tell()
+                endpos = dociter.tell()
+                self.index[doc.uri] = (dumpname, startpos, endpos - startpos)
+                startpos = endpos
             
         if self.NDOCS_SUFFIX not in dumpname:
             dumpname += "%s%d" % (self.NDOCS_SUFFIX, doc_count)
