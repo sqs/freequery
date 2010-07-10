@@ -11,6 +11,7 @@ class QTableFile(object):
     DELIM = "@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@\n"
     
     def __init__(self, iterable):
+        self.pos = 0
         if isinstance(iterable, file):
             self.iterable = iterable.__iter__()
         elif hasattr(iterable, 'read'):
@@ -22,22 +23,31 @@ class QTableFile(object):
         elif isinstance(iterable, list):
             self.iterable = iter(iterable)
 
+    def tell(self):
+        """Returns the cursor position (in bytes) in `iterable`. Used for the
+        :class:`Docset` index."""
+        return self.pos
+            
     def next(self):
         if self.iterable is None:
             raise Exception("iterable shouldn't be none")
         
         # URI
-        uri = self.iterable.next().strip().decode('utf8')
+        uri = self.iterable.next()
+        self.pos += len(uri)
+        uri = uri.strip().decode('utf8')
 
         # meta
         # ignoring for now
         for line in self.iterable:
+            self.pos += len(line)
             if line == "\n":
                 break
 
         # raw
         raw = []
         for line in self.iterable:
+            self.pos += len(line)
             if line == self.DELIM:
                 break # doc finished
             else:

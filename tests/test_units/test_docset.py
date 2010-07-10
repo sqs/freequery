@@ -50,6 +50,18 @@ class TestDocset(unittest.TestCase):
         self.docset.add_dump('d2', dump2)
         self.assertEquals(4, self.docset.doc_count())
 
+    def test_get_pos(self):
+        self.docset.add_dump('d1', dump1)
+        self.docset.add_dump('d2', dump2)
+        pos1 = self.docset.get_pos('http://example.com')
+        self.assertEquals(('d1', 0), pos1)
+        pos2 = self.docset.get_pos('http://apple.com')
+        self.assertEquals(('d1', 112), pos2)
+        pos3 = self.docset.get_pos('http://example.com/m.html')
+        self.assertEquals(('d2', 0), pos3)
+        pos4 = self.docset.get_pos('http://example.com/z.html')
+        self.assertEquals(('d2', 98), pos4)
+      
     def test_get(self):
         self.docset.add_dump('d1', dump1)
         self.docset.add_dump('d2', dump2)

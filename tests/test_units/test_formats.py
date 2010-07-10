@@ -6,7 +6,9 @@ class TestQTableFile(unittest.TestCase):
 
     def test_parses_file1(self):
         parser = QTableFile(fixtures.qtable_file1.splitlines(True))
+        self.assertEquals(0, parser.tell())
         example = parser.next()
+        self.assertEquals(112, parser.tell())
         apple = parser.next()
         self.assertRaises(StopIteration, parser.next)
         self.assertEquals("http://example.com", example.uri)

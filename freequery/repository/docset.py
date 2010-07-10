@@ -13,6 +13,7 @@ class Docset(object):
     def __init__(self, docset_name):
         self.ddfs_tag = docset_name
         self.ddfs = DDFS()
+        self.index = {}
 
     def exists(self):
         """Returns True if this Docset exists in DDFS."""
@@ -30,12 +31,22 @@ class Docset(object):
     NDOCS_RE = re.compile(r'^(?P<name>[\w\d.:_\-]+)_ndocs(?P<ndocs>\d+)$')
     def add_dump(self, dumpname, dump):
         """
-        Adds a dump to this docset, appending the doc count to the name of the
-        dump and then uploading the dump to DDFS with the tag for this docset.
+        Adds a dump to this docset and indexes its documents by position,
+        appending the doc count to the name of the dump and then uploading the
+        dump to DDFS with the tag for this docset.
         """
+        # index positions
+        doc_count = 0
+        pos = 0
+        with open(dump, 'rb') as f:
+            dociter = QTableFile(f)
+            for doc in dociter:
+                doc_count += 1
+                self.index[doc.uri] = (dumpname, pos)
+                pos = dociter.tell()
+            
         if self.NDOCS_SUFFIX not in dumpname:
-            dumpname += "%s%d" % \
-                (self.NDOCS_SUFFIX, self.__doc_count_in_dump(dump))
+            dumpname += "%s%d" % (self.NDOCS_SUFFIX, doc_count)
         return self.ddfs.push(self.ddfs_tag, [(dump, dumpname)])
 
     def doc_count(self):
@@ -45,10 +56,6 @@ class Docset(object):
         """
         return sum(int(self.NDOCS_RE.match(s).group('ndocs')) \
                        for s in self.dump_names())
-
-    def __doc_count_in_dump(self, dump):
-        with open(dump, 'rb') as f:
-            return sum(1 for doc in QTableFile(f))
 
     def dump_uris(self):
         """
@@ -72,6 +79,11 @@ class Docset(object):
     def dump_names_without_doc_counts(self):
         """Returns the names, without doc counts, of dumps in the docset."""
         return [self.NDOCS_RE.match(s).group('name') for s in self.dump_names()]
+
+    def get_pos(self, uri):
+        """Returns a tuple `(dump_name, byte pos)` of the location of the
+        document `uri` in the docset."""
+        return self.index[uri]
     
     def get(self, uri):
         """Returns the `Document` with the specified `uri`."""
