@@ -1,5 +1,6 @@
 import unittest
 from freequery.document import Document
+from freequery.query import Query
 from freequery.test import fixtures as docs
 
 
@@ -52,8 +53,11 @@ class TestHTMLDocument(unittest.TestCase):
                                   (baseuri, href, exp_uri, link_uri))
 
     def test_excerpt(self):
-        from freequery.query import Query
         qq = Query.parse('example')
         self.assertEquals('Welcome to example', docs.example.excerpt(qq, radius=11))
         self.assertEquals('... example', docs.example.excerpt(qq, radius=1))
+
+    def test_excerpt_lowercases(self):
+        qq = Query.parse('welcome')
+        self.assertEquals('Welcome to example', docs.example.excerpt(qq, radius=20))
         

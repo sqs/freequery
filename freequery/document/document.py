@@ -97,8 +97,9 @@ class HTMLDocument(Document):
         :class:`freequery.query.Query` `qq`.
         """
         txt = self.html_parser.text_content()
+        txt_lower = txt.lower()
         for term in qq.non_negated_literals():
-            i = txt.index(term)
+            i = txt_lower.find(term)
             if i != -1:
                 startpos = max(i - radius, 0)
                 # Want full term in excerpt, even if it's longer than radius.
@@ -117,7 +118,8 @@ class HTMLDocument(Document):
                     endmarker = ''
                 return startmarker + txt[startpos:endpos] + endmarker
                 
-        raise Exception("couldn't make excerpt with qq=%r" % qq)
+        raise Exception("couldn't make excerpt for doc '%s' txt='%s' with lits=%r" % \
+                            (self.uri, txt, qq.non_negated_literals()))
         
 class Hit(object):
     """
