@@ -90,6 +90,34 @@ class HTMLDocument(Document):
                 yield Link(uri)
 
     links = links_lxml_html
+
+    def excerpt(self, qq, radius=10):
+        """
+        Returns a textual excerpt of the document for the
+        :class:`freequery.query.Query` `qq`.
+        """
+        txt = self.html_parser.text_content()
+        for term in qq.non_negated_literals():
+            i = txt.index(term)
+            if i != -1:
+                startpos = max(i - radius, 0)
+                # Want full term in excerpt, even if it's longer than radius.
+                # TODO: This compensates by the length of the stemmed term in
+                # the query, not by the length of the actual term in the doc.
+                endpos = min(i + len(term) + radius, len(txt))
+
+                # Add '...' if truncated at start or end.
+                if startpos != 0:
+                    startmarker = '...'
+                else:
+                    startmarker = ''
+                if endpos != len(txt):
+                    endmarker = '...'
+                else:
+                    endmarker = ''
+                return startmarker + txt[startpos:endpos] + endmarker
+                
+        raise Exception("couldn't make excerpt with qq=%r" % qq)
         
 class Hit(object):
     """

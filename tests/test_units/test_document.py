@@ -50,3 +50,10 @@ class TestHTMLDocument(unittest.TestCase):
             self.assertEquals(exp_uri, link_uri,
                               "expected (%s, %s) -> %s, got %s" % \
                                   (baseuri, href, exp_uri, link_uri))
+
+    def test_excerpt(self):
+        from freequery.query import Query
+        qq = Query.parse('example')
+        self.assertEquals('Welcome to example', docs.example.excerpt(qq, radius=11))
+        self.assertEquals('... example', docs.example.excerpt(qq, radius=1))
+        
