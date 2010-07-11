@@ -1,7 +1,10 @@
-import re, urllib2
+import re, urllib2, os, cPickle as pickle
+from cStringIO import StringIO
 from disco.ddfs import DDFS
 from disco.util import urlresolve
 from freequery.repository.formats import QTableFile
+
+class DocumentNotFound(Exception): pass
 
 class Docset(object):
     """
@@ -12,8 +15,10 @@ class Docset(object):
 
     def __init__(self, docset_name):
         self.ddfs_tag = docset_name
+        self.ddfs_index_tag = docset_name + ':index'
         self.ddfs = DDFS()
-        self.index = {}
+        self.__index = None
+        self.dirty = False
 
     def exists(self):
         """Returns True if this Docset exists in DDFS."""
@@ -25,7 +30,43 @@ class Docset(object):
         of dumps in this docset with no other tags. If other docsets link to
         this docset's dumps, then those dumps will remain.
         """
+        self.ddfs.delete(self.ddfs_index_tag)
         self.ddfs.delete(self.ddfs_tag)
+
+    INDEX_VERSION_PAD = 4
+    @property
+    def index(self):
+        # Lazily load index data from DDFS.
+        if self.__index is None:
+            blobs = [uri for (uri,) in self.ddfs.blobs(self.ddfs_index_tag)]
+            if len(blobs) == 0:
+                self.__index = {}
+                self.__index_version = 0
+            else:
+                # Find blob with highest version number.
+                ver, discouri = sorted([(self.__blob_uri_to_dump_name(uri), uri)
+                                        for uri in blobs], reverse=True)[0]
+                uri = urlresolve(discouri)
+                data = urllib2.urlopen(uri).read()
+                try:
+                    self.__index = pickle.loads(data)
+                    self.__index_version = int(ver)
+                except EOFError:
+                    raise EOFError("EOF reading docset index at %s in tag %s" % \
+                                       (uri, self.ddfs_index_tag))
+        return self.__index
+
+    def save(self):
+        self.index # load if hasn't been loaded yet
+        self.__index_version += 1
+        ver = "%0*d" % (self.INDEX_VERSION_PAD, self.__index_version)
+        tmp_fname = os.path.join("/tmp/", "%s%s" % (self.ddfs_index_tag, ver))
+        with open(tmp_fname, 'r+b') as f:
+            pickle.dump(self.__index, f)
+            f.flush()
+            f.seek(0)
+            self.ddfs.push(self.ddfs_index_tag, [(f, ver)])
+        self.dirty = False
 
     def add_dump(self, dumpname, dump):
         """
@@ -42,15 +83,21 @@ class Docset(object):
                 endpos = dociter.tell()
                 self.index[doc.uri] = (dumpname, startpos, endpos - startpos)
                 startpos = endpos
-            
-        return self.ddfs.push(self.ddfs_tag, [(dump, dumpname)])
+        self.ddfs.push(self.ddfs_tag, [(dump, dumpname)])
+        self.dirty = True
 
+    @property
     def doc_count(self):
         """
         Returns the total number of documents contained in all dumps in this
         docset.
         """
         return len(self.index)
+
+    def doc_uris(self):
+        """Returns all URIs of documents contained in all dumps in this
+        docset."""
+        return self.index.keys()
     
     def dump_uris(self):
         """
@@ -74,7 +121,10 @@ class Docset(object):
     def get_pos(self, uri):
         """Returns a tuple `(dump_name, byte pos)` of the location of the
         document `uri` in the docset."""
-        return self.index[uri]
+        if uri in self.index:
+            return self.index[uri]
+        else:
+            raise DocumentNotFound()
     
     def get(self, uri):
         """Returns the `Document` with the specified `uri`."""
@@ -83,4 +133,4 @@ class Docset(object):
             for doc in QTableFile(f):
                 if doc.uri == uri:
                     return doc
-        raise KeyError
+        raise DocumentNotFound()
