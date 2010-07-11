@@ -1,6 +1,6 @@
 from freequery.test import IntegrationTestCase
 
-class TestDuplicateURIs(IntegrationTestCase):
+class TestSmall1(IntegrationTestCase):
     dumps = ['small1']
     expected_results = {
         'welcom': ['http://example.com/'],

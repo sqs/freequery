@@ -61,7 +61,7 @@ class Docset(object):
         self.__index_version += 1
         ver = "%0*d" % (self.INDEX_VERSION_PAD, self.__index_version)
         tmp_fname = os.path.join("/tmp/", "%s%s" % (self.ddfs_index_tag, ver))
-        with open(tmp_fname, 'r+b') as f:
+        with open(tmp_fname, 'w+b') as f:
             pickle.dump(self.__index, f)
             f.flush()
             f.seek(0)

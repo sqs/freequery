@@ -21,7 +21,8 @@ class IntegrationTestCase(unittest.TestCase):
         for dumpname in self.dumps:
             path = os.path.join(os.path.dirname(__file__), "../../tests/test_integration/dumps", dumpname)
             self.docset.add_dump(dumpname, path)
-
+        self.docset.save()
+        
         # index
         if self.index:
             self.fqclient.index()

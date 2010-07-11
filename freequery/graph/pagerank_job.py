@@ -11,7 +11,6 @@ class PagerankJob(object):
         self.disco = Disco("disco://localhost")
         self.alpha = alpha
         self.niter = niter
-        self.doc_count = self.docset.doc_count()
         self.nr_partitions = 16
         self.merge_partitions = False
         self.mem_sort_limit = 1024*1024*1024*1.5 # 1.5 GB
@@ -35,7 +34,7 @@ class PagerankJob(object):
             partition=pagerank_partition,
             merge_partitions=self.merge_partitions,
             mem_sort_limit=self.mem_sort_limit,
-            params=dict(iter=0, doc_count=self.doc_count)).wait()
+            params=dict(iter=0, doc_count=self.docset.doc_count)).wait()
         ## print "Iteration 0:\n", self.__result_stats(results)
 
         for i in range(1, self.niter+1):
@@ -54,8 +53,8 @@ class PagerankJob(object):
                 merge_partitions=self.merge_partitions,
                 mem_sort_limit=self.mem_sort_limit,
                 params=dict(iter=i, alpha=self.alpha,
-                            doc_count=self.doc_count,
-                            lost_mass_per=float(lost_mass)/self.doc_count)
+                            doc_count=self.docset.doc_count,
+                            lost_mass_per=float(lost_mass)/self.docset.doc_count)
             ).wait()
     
             ## print "Iteration %d:" % i
