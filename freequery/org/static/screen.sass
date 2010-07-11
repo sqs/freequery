@@ -1,9 +1,17 @@
 !hline_c = #ccc
+!c1 = #2462e0
+!c_visited = #5924e0
+!c_faded = #777
 
 body
   :margin 0
   :padding 0
   :font-family sans-serif
+
+a
+  :color = !c1
+  &:visited
+    :color = !c_visited
 
 #search_form
   input
@@ -44,3 +52,25 @@ body.results
       :min-width 200px
       :max-width 375px
       :width 100%
+  
+section.results
+  :padding 15px
+  ol
+    :margin 0
+    :padding 0
+    :width 75%
+    :max-width 1000px
+    :min-width 600px
+  ol, li
+    :list-style-type none
+  li
+    :margin-bottom 10px
+    h1
+      :font-size 1.0em
+    h1, p
+      :padding 0
+      :margin 0
+    cite
+      :font-size 0.9em
+      :color = !c_faded
+      :font-style normal

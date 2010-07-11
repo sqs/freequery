@@ -3,6 +3,11 @@ body {
   padding: 0;
   font-family: sans-serif; }
 
+a {
+  color: #2462e0; }
+  a:visited {
+    color: #5924e0; }
+
 #search_form input {
   font-size: 1.1em; }
 #search_form #q {
@@ -36,3 +41,25 @@ body.results header {
     min-width: 200px;
     max-width: 375px;
     width: 100%; }
+
+section.results {
+  padding: 15px; }
+  section.results ol {
+    margin: 0;
+    padding: 0;
+    width: 75%;
+    max-width: 1000px;
+    min-width: 600px; }
+  section.results ol, section.results li {
+    list-style-type: none; }
+  section.results li {
+    margin-bottom: 10px; }
+    section.results li h1 {
+      font-size: 1.0em; }
+    section.results li h1, section.results li p {
+      padding: 0;
+      margin: 0; }
+    section.results li cite {
+      font-size: 0.9em;
+      color: #777777;
+      font-style: normal; }
