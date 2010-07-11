@@ -36,7 +36,10 @@ class FreequeryClient(object):
         if ranked:
             scoredb = ScoreDB(self.spec.scoredb_path)
             uris = scoredb.ranked_uris(uris)
-        return [self.docset.get(uri) for uri in uris]
+        docs = [self.docset.get(uri) for uri in uris]
+        for doc in docs:
+            doc.excerpt = doc.excerpt(qq)
+        return docs
 
     def index(self):
         import sys, time

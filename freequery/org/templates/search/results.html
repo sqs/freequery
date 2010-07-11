@@ -14,8 +14,11 @@
 
 <section class="results">
   <ol>
-    {% for doc in docs %}
-    <li><a href="{{ doc.uri }}">{{ doc.uri }}</a></li>
+    {% for doc in results %}
+    <li>
+      <h1><a href="{{ doc.uri }}">{{ doc.uri }}</a></h1>
+      <p>{{ doc.excerpt }}</p>
+    </li>
     {% endfor %}
   </ol>
 </section>

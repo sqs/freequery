@@ -91,7 +91,7 @@ class HTMLDocument(Document):
 
     links = links_lxml_html
 
-    def excerpt(self, qq, radius=10):
+    def excerpt(self, qq, radius=175):
         """
         Returns a textual excerpt of the document for the
         :class:`freequery.query.Query` `qq`.
