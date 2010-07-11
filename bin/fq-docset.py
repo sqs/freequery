@@ -76,6 +76,7 @@ def add(program, spec, *dumps):
     for dump in dumps:
         dumpname = os.path.basename(dump)
         docset.add_dump(dumpname, dump)
+    docset.save()
 
 @FreequeryDocset.command
 def info(program, docsetname):
