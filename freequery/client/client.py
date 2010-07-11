@@ -27,6 +27,7 @@ class FreequeryClient(object):
         else:
             self.spec = Spec(spec)
         self.discodex_client = DiscodexClient()
+        self.docset = Docset(self.spec.docset_name)
 
     def query(self, q, ranked=True):
         """Return a ranked list of matching `Document` instances."""
@@ -35,17 +36,16 @@ class FreequeryClient(object):
         if ranked:
             scoredb = ScoreDB(self.spec.scoredb_path)
             uris = scoredb.ranked_uris(uris)
-        return [Document(uri, "TODO") for uri in uris]
+        return [self.docset.get(uri) for uri in uris]
 
     def index(self):
         import sys, time
         
-        docset = Docset(self.spec.docset_name)
-        if not docset.exists():
+        if not self.docset.exists():
             print "fq: cannot index `%s': no such docset" % self.spec.docset_name
             exit(1)
 
-        dataset = DataSet(input=map(urlresolve, list(docset.dump_uris())),
+        dataset = DataSet(input=map(urlresolve, list(self.docset.dump_uris())),
                           options=dict(parser='freequery.index.mapreduce.docparse',
                                        demuxer='freequery.index.mapreduce.docdemux',
                                        ))
