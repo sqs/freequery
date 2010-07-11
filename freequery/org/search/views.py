@@ -11,9 +11,6 @@ def search(req):
     spec = req.GET.get('spec', 'a')
     if not q or q.isspace():
         return HttpResponseRedirect('/')
-    if spec != "__test":
-        fq = FreequeryClient(spec)
-        docs = fq.query(q)
-    else:
-        docs = ['http://example.com/', 'http://example.com/a.html']
+    fq = FreequeryClient(spec)
+    docs = fq.query(q)
     return render_to_response('search/results.html', {'q': q, 'docs': docs})
