@@ -109,10 +109,20 @@ class Docset(object):
     def __blob_uri_to_dump_name(self, bloburi):
         """
         Takes a blob URI like
-           disco://host/ddfs/vol0/blob/b4/dumpname1$4fd-ea750-6d4e1
+           disco://host/ddfs/vol0/blob/b4/dumpname$4fd-ea750-6d4e1
         and returns "dumpname".
         """
         return re.search(r'/([\w0-9_\-@:]+)\$', bloburi).group(1)
+
+    def __dump_name_to_blob_uri(self, dumpname):
+        """
+        Takes a dump name like "dumpname" and returns the blob URI like
+           disco://host/ddfs/vol0/blob/b4/dumpname$000-11111-fffff
+        """
+        for uri in self.dump_uris():
+            if dumpname == self.__blob_uri_to_dump_name(uri):
+                return uri
+        raise KeyError
     
     def dump_names(self):
         """Returns the names of dumps in the docset."""
@@ -125,12 +135,16 @@ class Docset(object):
             return self.index[uri]
         else:
             raise DocumentNotFound()
-    
+        
     def get(self, uri):
         """Returns the `Document` with the specified `uri`."""
-        for dump_uri in self.dump_uris():
-            f = urllib2.urlopen(urlresolve(dump_uri))
-            for doc in QTableFile(f):
-                if doc.uri == uri:
-                    return doc
-        raise DocumentNotFound()
+        name, startpos, size = self.get_pos(uri)
+        try:
+            dump_uri = urlresolve(self.__dump_name_to_blob_uri(name))
+        except KeyError:
+            raise DocumentNotFound("couldn't find doc with dump name '%s'" % name)
+
+        req = urllib2.Request(dump_uri)
+        req.add_header("Range", "bytes=%d-%d" % (startpos, startpos + size - 1))
+        res = urllib2.urlopen(req)
+        return QTableFile(res).next()
