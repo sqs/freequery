@@ -17,4 +17,14 @@ class Query(discodb.Q):
                 # would be much more complex.
                 return "(a | ~a)"
         stemmed_q = klass.stemmer_re.sub(stem_match, q)
-        return discodb.Q.parse(stemmed_q)
+        qq = discodb.Q.parse(stemmed_q)
+        qq.__class__ = klass
+        return qq
+
+    def non_negated_literals(self):
+        """
+        Returns all literals in the query that are not negated.
+        """
+        # TODO: should this preserve order of literals?
+        lits = [item for sublist in [cl.literals for cl in self.clauses] for item in sublist]
+        return [lit.term for lit in lits if not lit.negated]
