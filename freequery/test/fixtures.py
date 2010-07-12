@@ -28,3 +28,11 @@ qtable_file2 = """http://example.com/m.html
 http://example.com/z.html
 
 <h1>Example z</h1>"""
+
+def dumppath(dumpname):
+    import os
+    return os.path.join(os.path.dirname(__file__), '../../test/dumps/', dumpname)
+
+def dumpdocs(dumpname):
+    from freequery.repository.formats import QTableFile
+    return dict((doc.uri, doc) for doc in QTableFile(open(dumppath(dumpname), 'rb')))
