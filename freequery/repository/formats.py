@@ -73,6 +73,7 @@ class QTableFileWriter(object):
 
     def write(self, doc):
         """Writes `doc` to the output stream."""
-        self.out.writelines((doc.uri, "\n\n", doc.raw, "\n", QTableFile.DELIM))
+        self.out.writelines((doc.uri.encode('utf8'), "\n\n",
+                             doc.raw.encode('utf8'), "\n", QTableFile.DELIM))
 
     
