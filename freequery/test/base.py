@@ -1,43 +1,49 @@
 import os, unittest
 from freequery.client.client import Spec, FreequeryClient
 from freequery.repository.docset import Docset
+from freequery.graph.scoredb import ScoreDB
 
 class IntegrationTestCase(unittest.TestCase):
     dumps = None
     expected_results = None
     index = True
     rank = True
-    
-    def setUp(self):
-        if not self.dumps:
+    expected_ranking = None
+
+    @classmethod
+    def setUpClass(klass):
+        if not klass.dumps:
             return
         
-        spec = Spec(self.__class__.__name__)
-        self.fqclient = FreequeryClient(spec)
+        spec = Spec(klass.__name__)
+        print spec
+        klass.fqclient = FreequeryClient(spec)
 
         # docset
-        self.docset = Docset(spec.docset_name)
-        self.clean_up()
-        for dumpname in self.dumps:
+        klass.docset = Docset(spec.docset_name)
+        klass.clean_up()
+        for dumpname in klass.dumps:
             path = os.path.join(os.path.dirname(__file__), "../../test/dumps", dumpname)
-            self.docset.add_dump(dumpname, path)
-        self.docset.save()
+            klass.docset.add_dump(dumpname, path)
+        klass.docset.save()
         
         # index
-        if self.index:
-            self.fqclient.index()
+        if klass.index:
+            klass.fqclient.index()
             
         # rank
-        if self.rank:
-            self.fqclient.linkparse()
-            self.fqclient.rank()
-    
-    def tearDown(self):
-        self.clean_up()
-        
-    def clean_up(self):
-        if hasattr(self, 'docset'):
-            self.docset.delete()
+        if klass.rank:
+            klass.fqclient.linkparse()
+            klass.fqclient.rank()
+
+    @classmethod
+    def tearDownClass(klass):
+        klass.clean_up()
+
+    @classmethod
+    def clean_up(klass):
+        if hasattr(klass, 'docset'):
+            klass.docset.delete()
 
     def test_expected_results(self):
         if not self.dumps:
@@ -47,3 +53,10 @@ class IntegrationTestCase(unittest.TestCase):
             self.assertEqual(exp_uris, result_uris,
                              "expected query '%s' to yield %r, got %r" % \
                                  (q, exp_uris, result_uris))
+
+    def test_expected_ranking(self):
+        if self.expected_ranking is None:
+            return
+        scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
+        result_ranking = scoredb.ranked_uris()
+        self.assertEqual(list(self.expected_ranking), list(result_ranking))
