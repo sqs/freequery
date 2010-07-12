@@ -19,15 +19,15 @@ class PagerankJob(object):
     def start(self):
         from disco.core import result_iterator
         from disco.func import chain_reader
-        from freequery.index.mapreduce import docparse
+        from freequery.graph.links import doclinksparse
         from freequery.graph.pagerank import pagerank_mass_map, \
             pagerank_mass_reduce, pagerank_teleport_distribute_map, \
             pagerank_partition
 
-        job = self.disco.new_job(
+        job = self.disco.new_job( 
             name="pagerank_mass0",
-            input=self.docset.dump_uris(),
-            map_reader=docparse,
+            input=['tag://'+self.docset.ddfs_link_file_tag],
+            map_reader=doclinksparse,
             map=pagerank_mass_map,
             reduce=pagerank_mass_reduce,
             sort=True,

@@ -26,9 +26,10 @@ class IntegrationTestCase(unittest.TestCase):
         # index
         if self.index:
             self.fqclient.index()
-
+            
         # rank
         if self.rank:
+            self.fqclient.linkparse()
             self.fqclient.rank()
     
     def tearDown(self):

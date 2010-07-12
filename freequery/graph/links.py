@@ -1,5 +1,6 @@
 from disco.core import Disco, result_iterator
 from freequery.repository.docset import Docset
+from freequery.document import Document
 
 
 class LinkParseJob(object):
@@ -26,16 +27,27 @@ class LinkParseJob(object):
         )
         results = job.wait()
 
+        self.__tag_results(results)
+
         if self.verbose:
             self.__print_results(results)
 
+    def __tag_results(self, results):
+        from disco.ddfs import DDFS
+        ddfs = DDFS()
+        results_tag = results[0]
+        ddfs.put(self.docset.ddfs_link_file_tag, list(ddfs.blobs(results_tag)))
+
+        # remove old, temporary tag
+        ddfs.delete(results_tag)
+            
     def __print_results(self, results):
-        for k,v in result_iterator(results, reader=doclinksparse):
-            print "%s\n\t%s" % (k,"\n\t".join(v))
+        for doc in result_iterator(results, tempdir=False, reader=doclinksparse):
+            print "%s\n\t%s" % (doc.uri, "\n\t".join(doc.link_uris))
             
 
 def linkparse_map(doc, params):
-    yield doc.uri.encode('utf8'), [uri.encode('utf8') for uri in doc.link_uris()]
+    yield doc.uri.encode('utf8'), [uri.encode('utf8') for uri in doc.link_uris]
 
 def doclinksparse(iterable, size, fname, params):
     from freequery.graph.links import LinkFile
@@ -61,15 +73,17 @@ class LinkFile(object):
         # doc URI
         uri = self.iterable.next().strip().decode('utf8')
         
-        # links
-        links = []
+        # link URIs
+        link_uris = []
         for line in self.iterable:
             if line == "\n":
                 break
             else:
-                links.append(line.strip().decode('utf8'))
+                link_uris.append(line.strip().decode('utf8'))
 
-        return (uri, links)
+        doc = Document(uri)
+        doc.cache_link_uris(link_uris)
+        return doc
 
     def __iter__(self):
         return self
@@ -91,7 +105,9 @@ class LinkFileOutputStream(object):
 
     def add(self, doc_uri, link_uris):
         """Writes data for `doc` and its links to the output stream."""
-        self.write(doc_uri.encode('utf8') + "\n")
+        if isinstance(doc_uri, unicode):
+            doc_uri = doc_uri.encode('utf8')
+        self.write(doc_uri + "\n")
         for link_uri in link_uris:
             self.write(link_uri + "\n")
         self.write("\n")

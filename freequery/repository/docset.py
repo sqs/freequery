@@ -16,6 +16,7 @@ class Docset(object):
     def __init__(self, docset_name):
         self.ddfs_tag = docset_name
         self.ddfs_index_tag = docset_name + ':index'
+        self.ddfs_link_file_tag = docset_name + ':links'
         self.ddfs = DDFS()
         self.__index = None
         self.dirty = False
@@ -98,14 +99,14 @@ class Docset(object):
         """Returns all URIs of documents contained in all dumps in this
         docset."""
         return self.index.keys()
-    
+
     def dump_uris(self):
         """
         Returns disco:// URIs for each dump in the docset. Use
         disco.util.urlresolve to convert the disco:// URIs to http:// URIs.
         """
         return (uri for (uri,) in self.ddfs.blobs(self.ddfs_tag))
-    
+
     def __blob_uri_to_dump_name(self, bloburi):
         """
         Takes a blob URI like

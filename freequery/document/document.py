@@ -9,11 +9,13 @@ class Document(object):
     Represents a document.
     """
 
-    def __init__(self, uri, raw, docid=-1):
+    def __init__(self, uri, raw=None, docid=-1):
         self.uri = uri
         self.raw = raw
         self.docid = docid
         self.make_typed('text/html')
+
+        self.__cached_link_uris = None
 
     def terms(self):
         raise NotImplementedError
@@ -48,16 +50,23 @@ class Document(object):
             pos += 1
         return term_hits
 
+    @property
     def link_uris(self):
         """Returns absolute URIs of all links in the document."""
-        return (link.dest_uri for link in self.links())
+        if self.__cached_link_uris is not None:
+            return self.__cached_link_uris
+        else:
+            return [link.dest_uri for link in self.links()]
+
+    def cache_link_uris(self, link_uris):
+        self.__cached_link_uris = link_uris
     
     def __eq__(self, other):
         return isinstance(other, Document) and self.uri == other.uri and \
             self.raw == other.raw and self.docid == other.docid
     
     def __str__(self):
-        return "<Document docid=%d uri='%s' raw=(%d bytes)>" % (self.docid, self.uri, len(self.raw))
+        return "<Document docid=%d uri='%s' raw=%d>" % (self.docid, self.uri, bool(self.raw))
 
     __unicode__ = __str__
     __repr__ = __str__
@@ -68,6 +77,8 @@ class HTMLDocument(Document):
     @property
     def html_parser_lxml_html(self):
         if self.__html_parser_lxml_html is None:
+            if self.raw is None:
+                raise Exception("can't parse HTML with raw=None")
             self.__html_parser_lxml_html = lxml.html.fromstring(self.raw, base_url=self.uri)
         return self.__html_parser_lxml_html
     __html_parser_lxml_html = None

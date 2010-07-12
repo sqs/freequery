@@ -25,7 +25,7 @@ class TestHTMLDocument(unittest.TestCase):
         self.assertEquals(dict(welcom=1, exampl=1), docs.example.term_frequencies())
 
     def test_link_uris_simple(self):
-        self.assertEquals(['http://cs.stanford.edu'], list(docs.stanford.link_uris()))
+        self.assertEquals(['http://cs.stanford.edu'], list(docs.stanford.link_uris))
 
     def test_title(self):
         raw = "<html><head><title>Example</title></head><body></body></html>"
@@ -46,11 +46,17 @@ class TestHTMLDocument(unittest.TestCase):
         for (baseuri,href),exp_uri in self.link_uri_data.items():
             print baseuri
             d = Document(baseuri, '<a href="%s">text</a>' % href)
-            print list(d.link_uris())
-            link_uri = list(d.link_uris())[0]
+            print list(d.link_uris)
+            link_uri = list(d.link_uris)[0]
             self.assertEquals(exp_uri, link_uri,
                               "expected (%s, %s) -> %s, got %s" % \
                                   (baseuri, href, exp_uri, link_uri))
+
+    def test_cache_link_uris(self):
+        doc = Document('http://stanford.edu/', '<a href="a.html">a</a>')
+        self.assertEquals(['http://stanford.edu/a.html'], doc.link_uris)
+        doc.cache_link_uris(['http://stanford.edu/other.html'])
+        self.assertEquals(['http://stanford.edu/other.html'], doc.link_uris)
 
     def test_excerpt(self):
         qq = Query.parse('example')
