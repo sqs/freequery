@@ -71,6 +71,6 @@ class FreequeryClient(object):
                 sys.stdout.flush()
         self.discodex_client.clone(orig_invindex_name, self.spec.invindex_name)
         
-    def rank(self):
-         job = PagerankJob(self.spec)
+    def rank(self, **kwargs):
+         job = PagerankJob(self.spec, **kwargs)
          job.start()

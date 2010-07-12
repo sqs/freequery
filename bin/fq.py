@@ -10,6 +10,9 @@ class FreequeryOptionParser(OptionParser):
         self.add_option('-u', '--unranked',
                         action='store_true',
                         help='return unranked query results')
+        self.add_option('-p', '--profile',
+                        action='store_true',
+                        help='show profiler stats for Disco jobs')
 
 
 class Freequery(Program):
@@ -62,7 +65,7 @@ def inspect_index(program, soec):
 @Freequery.command
 def rank(program, spec):
     from freequery.client.client import Spec
-    program.fqclient(spec).rank()
+    program.fqclient(spec).rank(profile=program.option_dict.get('profile', False))
     show_scores(program, spec)
 
 @Freequery.command
