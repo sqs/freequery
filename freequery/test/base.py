@@ -19,7 +19,7 @@ class IntegrationTestCase(unittest.TestCase):
         self.docset = Docset(spec.docset_name)
         self.clean_up()
         for dumpname in self.dumps:
-            path = os.path.join(os.path.dirname(__file__), "../../tests/dumps", dumpname)
+            path = os.path.join(os.path.dirname(__file__), "../../test/dumps", dumpname)
             self.docset.add_dump(dumpname, path)
         self.docset.save()
         
