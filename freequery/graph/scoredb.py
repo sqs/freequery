@@ -22,7 +22,10 @@ class ScoreDB(object):
     def items(self):
         return self.scoredict.items()
 
-    def ranked_uris(self, uris):
+    def ranked_uris(self, uris=None):
+        # default to ranking all URIs
+        if uris is None:
+            uris = self.scoredict.keys()
         return sorted(uris, reverse=True, key=lambda u: self.scoredict[u])
 
 class ScoreDBWriter(object):

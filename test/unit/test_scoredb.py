@@ -28,6 +28,6 @@ class TestScoreDB(unittest.TestCase):
         self.assertEquals(sorted(self.sample_scores.items()), sorted(self.scoredb.items()))
 
     def test_ranked_uris(self):
-        self.assertEquals(['http://example.com/', 'http://example.com/a.html', 'http://stanford.edu/'], self.scoredb.ranked_uris(self.sample_scores.keys()))
+        self.assertEquals(['http://example.com/', 'http://example.com/a.html', 'http://stanford.edu/'], self.scoredb.ranked_uris())
         self.assertEquals(['http://example.com/', 'http://stanford.edu/'], self.scoredb.ranked_uris(['http://stanford.edu/', 'http://example.com/']))
         
