@@ -41,17 +41,6 @@ def doclinksparse(iterable, size, fname, params):
     from freequery.graph.links import LinkFile
     return LinkFile(iterable)
 
-def doclinkdemux(doc, params):
-    """
-    Emits `(doc_uri, (link_destination_uri, ...))` for each link
-    in `doc`.
-    """
-    for link_uri in set(doc.link_uris()):
-        yield doc.uri, link_uri
-
-def doclinks(doc, params):
-    yield doc.uri, list(doc.link_uris())
-
 class LinkFile(object):
 
     """Parses a link file and yields (uri, (link1, link2, ...)) when iterated."""
