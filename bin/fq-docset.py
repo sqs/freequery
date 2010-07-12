@@ -8,6 +8,7 @@ class FreequeryDocsetOptionParser(OptionParser):
     def __init__(self, **kwargs):
         OptionParser.__init__(self, **kwargs)
 
+        
 class FreequeryDocset(Program):
     @property
     def option_dict(self):
@@ -18,6 +19,11 @@ class FreequeryDocset(Program):
     def ddfs(self):
         from disco.ddfs import DDFS
         return DDFS()
+
+    @property
+    def fqclient(self):
+        from freequery.client.client import FreequeryClient
+        return FreequeryClient
 
     @property
     def docset(self):
@@ -85,6 +91,16 @@ def info(program, docsetname):
     Prints info about the specified docset.
     """
     pass
+
+@FreequeryDocset.command
+def linkparse(program, spec):
+    """Usage: <docsetname>
+
+    Parses links from all docs in the specified docset.
+    """
+    from freequery.client.client import Spec
+    spec = Spec(spec)
+    program.fqclient(spec).linkparse(**program.option_dict)
 
 @FreequeryDocset.command
 def split(program, k, dump):

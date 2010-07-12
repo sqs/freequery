@@ -1,5 +1,5 @@
 import os, unittest, StringIO
-from freequery.graph.links import LinkFile, LinkFileWriter
+from freequery.graph.links import LinkFile, LinkFileOutputStream
 from freequery.repository.formats import QTableFile
 from freequery.test import fixtures
 
@@ -15,13 +15,13 @@ class TestLinkFile(unittest.TestCase):
         self.assertEquals(exp_doclinks, doclinks)
         
 
-class TestLinkFileWriter(unittest.TestCase):
+class TestLinkFileOutputStream(unittest.TestCase):
 
     def test_writes_file1(self):
         out = StringIO.StringIO()
-        writer = LinkFileWriter(out)
+        writer = LinkFileOutputStream(out)
         docs = fixtures.dumpdocs('small1')
-        writer.write(docs['http://example.com/'])
-        writer.write(docs['http://example.com/about'])
-        writer.write(docs['http://example.com/contact'])
+        writer.add('http://example.com/', docs['http://example.com/'].link_uris())
+        writer.add('http://example.com/about', docs['http://example.com/about'].link_uris())
+        writer.add('http://example.com/contact', docs['http://example.com/contact'].link_uris())
         self.assertEquals(small1_links, out.getvalue())

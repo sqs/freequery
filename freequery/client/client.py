@@ -5,6 +5,7 @@ from freequery.repository.docset import Docset
 from freequery.document import Document
 from freequery.graph.pagerank_job import PagerankJob
 from freequery.graph.scoredb import ScoreDB
+from freequery.graph.links import LinkParseJob
 from freequery.query import Query
 
 
@@ -70,6 +71,10 @@ class FreequeryClient(object):
                 sys.stdout.write(".")
                 sys.stdout.flush()
         self.discodex_client.clone(orig_invindex_name, self.spec.invindex_name)
+
+    def linkparse(self, **kwargs):
+        job = LinkParseJob(self.spec, **kwargs)
+        job.start()
         
     def rank(self, **kwargs):
          job = PagerankJob(self.spec, **kwargs)
