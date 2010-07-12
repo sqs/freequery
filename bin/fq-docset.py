@@ -86,5 +86,40 @@ def info(program, docsetname):
     """
     pass
 
+@FreequeryDocset.command
+def split(program, k, dump):
+    """Usage: <k> <dump>
+
+    Splits the dumpfile `dump` into separate files, each with at most `k` documents.
+    """
+    from freequery.repository.formats import QTableFile, QTableFileWriter
+    if not os.path.isfile(dump):
+        print "fq-docset: cannot access '%s': no such dump" % dump
+        exit(1)
+    try:
+        k = int(k)
+    except ValueError:
+        print "fq-docset: must provide positive integer `k`"
+        exit(1)
+    if k < 1:
+        print "fq-docset: must provide positive integer `k`"
+        exit(1)
+        
+    outfile_name = lambda i: os.path.join(os.path.dirname(dump), "%s-%03d" % (os.path.basename(dump), i))
+    outfile_i = 0
+    outfile = open(outfile_name(outfile_i), 'w+b')
+    writer = QTableFileWriter(outfile)
+    outfile_docs = 0
+    with open(dump, 'rb') as infile:
+        for doc in QTableFile(infile):
+            if outfile_docs >= k:
+                outfile.close()
+                outfile_docs = 0
+                outfile_i += 1
+                outfile = open(outfile_name(outfile_i), 'w+b')
+                writer = QTableFileWriter(outfile)
+            writer.write(doc)
+            outfile_docs += 1
+
 if __name__ == '__main__':
     FreequeryDocset(option_parser=FreequeryDocsetOptionParser()).main()
