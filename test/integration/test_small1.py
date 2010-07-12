@@ -7,3 +7,6 @@ class TestSmall1(IntegrationTestCase):
     }
     index = True
     rank = True
+    expected_ranking = ('http://example.com/',
+                        'http://example.com/about',
+                        'http://example.com/contact')
