@@ -1,7 +1,4 @@
 import os, unittest
-from freequery.client.client import Spec, FreequeryClient
-from freequery.repository.docset import Docset
-from freequery.graph.scoredb import ScoreDB
 
 class IntegrationTestCase(unittest.TestCase):
     dumps = None
@@ -12,6 +9,10 @@ class IntegrationTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(klass):
+        from freequery.client.client import Spec, FreequeryClient
+        from freequery.repository.docset import Docset
+        from freequery.graph.scoredb import ScoreDB
+
         if not klass.dumps:
             return
         

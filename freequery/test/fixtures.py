@@ -34,5 +34,5 @@ def dumppath(dumpname):
     return os.path.join(os.path.dirname(__file__), '../../test/dumps/', dumpname)
 
 def dumpdocs(dumpname):
-    from freequery.repository.formats import QTableFile
-    return dict((doc.uri, doc) for doc in QTableFile(open(dumppath(dumpname), 'rb')))
+    from freequery.repository.formats import WARCParser
+    return dict((doc.uri, doc) for doc in WARCParser(open(dumppath(dumpname), 'rb')))
