@@ -2,6 +2,6 @@ Freequery is a full MapReduce Web search engine, with:
 
 * a MapReduce indexer,
 * MapReduce page rank calculation,
-* a distributed document server,
+* a distributed document server, and
 * a Web interface.
 
