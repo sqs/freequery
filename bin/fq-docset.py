@@ -108,7 +108,7 @@ def split(program, k, dump):
 
     Splits the dumpfile `dump` into separate files, each with at most `k` documents.
     """
-    from freequery.repository.formats import WARCParser, WARCParserWriter
+    from freequery.repository.formats import WARCParser, WARCWriter
     if not os.path.isfile(dump):
         print "fq-docset: cannot access '%s': no such dump" % dump
         exit(1)
@@ -121,10 +121,10 @@ def split(program, k, dump):
         print "fq-docset: must provide positive integer `k`"
         exit(1)
         
-    outfile_name = lambda i: os.path.join(os.path.dirname(dump), "%s-%03d" % (os.path.basename(dump), i))
+    outfile_name = lambda i: os.path.join(os.path.dirname(dump), "%s-%04d" % (os.path.basename(dump), i))
     outfile_i = 0
     outfile = open(outfile_name(outfile_i), 'w+b')
-    writer = WARCParserWriter(outfile)
+    writer = WARCWriter(outfile)
     outfile_docs = 0
     with open(dump, 'rb') as infile:
         for doc in WARCParser(infile):
@@ -133,7 +133,7 @@ def split(program, k, dump):
                 outfile_docs = 0
                 outfile_i += 1
                 outfile = open(outfile_name(outfile_i), 'w+b')
-                writer = WARCParserWriter(outfile)
+                writer = WARCWriter(outfile)
             writer.write(doc)
             outfile_docs += 1
 
