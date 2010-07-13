@@ -97,8 +97,13 @@ class WARCWriter(object):
 
     def write(self, doc):
         """Writes `doc` to the output stream."""
-        uri = doc.uri.encode('utf8')
-        block = ''.join(("\n\n", doc.raw.encode('utf8'), "\n\n"))
+        uri = doc.uri
+        raw = doc.raw
+        if isinstance(uri, unicode):
+            uri = doc.uri.encode('utf8')
+        if isinstance(raw, unicode):
+            raw = doc.raw.encode('utf8')
+        block = ''.join(("\n\n", raw, "\n\n"))
         self.out.write("WARC/0.18\n")
         self.out.write("WARC-Type: response\n")
         self.out.write("WARC-Target-URI: %s\n" % uri)
