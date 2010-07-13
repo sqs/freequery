@@ -37,7 +37,7 @@ class TestDocset(unittest.TestCase):
         uri = list(self.docset.dump_uris())[0]
         httpuri = urlresolve(uri)
         d = urllib2.urlopen(httpuri).read()
-        self.assertEquals(d, fixtures.qtable_file1)
+        self.assertEquals(d, fixtures.warc_file1)
 
     def test_exists(self):
         self.assertFalse(self.docset.exists())
@@ -74,13 +74,13 @@ class TestDocset(unittest.TestCase):
         self.docset.add_dump('d1', dump1)
         self.docset.add_dump('d2', dump2)
         pos1 = self.docset.get_pos('http://example.com')
-        self.assertEquals(('d1', 0, 112), pos1)
+        self.assertEquals(('d1', 0, 117), pos1)
         pos2 = self.docset.get_pos('http://apple.com')
-        self.assertEquals(('d1', 112, 43), pos2)
+        self.assertEquals(('d1', 117, 113), pos2)
         pos3 = self.docset.get_pos('http://example.com/m.html')
-        self.assertEquals(('d2', 0, 98), pos3)
+        self.assertEquals(('d2', 0, 115), pos3)
         pos4 = self.docset.get_pos('http://example.com/z.html')
-        self.assertEquals(('d2', 98, 45), pos4)
+        self.assertEquals(('d2', 115, 115), pos4)
 
     def test_persists_get_pos(self):
         self.docset.add_dump('d1', dump1)
@@ -88,13 +88,13 @@ class TestDocset(unittest.TestCase):
         self.docset.save()
         docsetp = Docset(DOCSET_NAME)
         pos1 = docsetp.get_pos('http://example.com')
-        self.assertEquals(('d1', 0, 112), pos1)
+        self.assertEquals(('d1', 0, 117), pos1)
         pos2 = docsetp.get_pos('http://apple.com')
-        self.assertEquals(('d1', 112, 43), pos2)
+        self.assertEquals(('d1', 117, 113), pos2)
         pos3 = self.docset.get_pos('http://example.com/m.html')
-        self.assertEquals(('d2', 0, 98), pos3)
+        self.assertEquals(('d2', 0, 115), pos3)
         pos4 = self.docset.get_pos('http://example.com/z.html')
-        self.assertEquals(('d2', 98, 45), pos4)
+        self.assertEquals(('d2', 115, 115), pos4)
         
     def test_get(self):
         self.docset.add_dump('d1', dump1)
@@ -111,6 +111,6 @@ class TestDocset(unittest.TestCase):
 
     def __write_dumps(self):
         with open(dump1, 'w+b') as f:
-            f.write(fixtures.qtable_file1)
+            f.write(fixtures.warc_file1)
         with open(dump2, 'w+b') as f:
-            f.write(fixtures.qtable_file2)
+            f.write(fixtures.warc_file2)

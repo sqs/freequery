@@ -1,6 +1,6 @@
 import os, sys
 from freequery.document import Document
-from freequery.repository.formats import QTableFileWriter
+from freequery.repository.formats import WARCParserWriter
 
 if len(sys.argv) != 2:
     print "Usage: %s <wiki-path>" % sys.argv[0]
@@ -9,7 +9,7 @@ if len(sys.argv) != 2:
     
 wikipath = os.path.join(sys.argv[1], 'articles')
 
-dump_writer = QTableFileWriter(sys.stdout)
+dump_writer = WARCParserWriter(sys.stdout)
 
 for root, dirs, files in os.walk(wikipath):
     for f in files:

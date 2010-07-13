@@ -2,6 +2,8 @@
 Parsers and writers for Web page dump files.
 """
 from freequery.document import Document
+from cStringIO import StringIO
+from disco.comm import Connection as disco_comm_Connection
 
 class WARCFormatError(Exception): pass
 
@@ -12,8 +14,9 @@ class WARCParser(object):
     def __init__(self, stream):
         self.pos = 0
         if isinstance(stream, str) or isinstance(stream, unicode):
-            from StringIO import StringIO
             stream = StringIO(stream)
+        elif isinstance(stream, disco_comm_Connection):
+            stream = StringIO(stream.read())            
         self.stream = stream
 
     def tell(self):
@@ -74,7 +77,9 @@ class WARCParser(object):
 
         if warc_type == 'response':
             # skip response headers
-            raw = block[block.index("\n\n")+len("\n\n"):-len("\n\n")]
+            hdr_start = block.index("\n\n")+len("\n\n")
+            hdr_end = -len("\n\n")
+            raw = block[hdr_start:hdr_end]
             return Document(warc_target_uri, raw)
         else:
             return self.next()
@@ -92,7 +97,13 @@ class WARCWriter(object):
 
     def write(self, doc):
         """Writes `doc` to the output stream."""
-        self.out.writelines((doc.uri.encode('utf8'), "\n\n",
-                             doc.raw.encode('utf8'), "\n"))
-
+        uri = doc.uri.encode('utf8')
+        block = ''.join(("\n\n", doc.raw.encode('utf8'), "\n\n"))
+        self.out.write("WARC/0.18\n")
+        self.out.write("WARC-Type: response\n")
+        self.out.write("WARC-Target-URI: %s\n" % uri)
+        self.out.write("Content-Length: %d\n\n" % len(block))
+        # TODO: must have WARC-Record-ID to be compliant
+        # TODO: must have WARC-Date to be compliant
+        self.out.write(block)
     

@@ -1,4 +1,6 @@
 import os, unittest
+from freequery.test.fixtures import dumppath
+
 
 class IntegrationTestCase(unittest.TestCase):
     dumps = None
@@ -11,7 +13,6 @@ class IntegrationTestCase(unittest.TestCase):
     def setUpClass(klass):
         from freequery.client.client import Spec, FreequeryClient
         from freequery.repository.docset import Docset
-        from freequery.graph.scoredb import ScoreDB
 
         if not klass.dumps:
             return
@@ -24,8 +25,7 @@ class IntegrationTestCase(unittest.TestCase):
         klass.docset = Docset(spec.docset_name)
         klass.clean_up()
         for dumpname in klass.dumps:
-            path = os.path.join(os.path.dirname(__file__), "../../test/dumps", dumpname)
-            klass.docset.add_dump(dumpname, path)
+            klass.docset.add_dump(dumpname, dumppath(dumpname))
         klass.docset.save()
         
         # index
@@ -56,6 +56,7 @@ class IntegrationTestCase(unittest.TestCase):
                                  (q, exp_uris, result_uris))
 
     def test_expected_ranking(self):
+        from freequery.graph.scoredb import ScoreDB
         if self.expected_ranking is None:
             return
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)

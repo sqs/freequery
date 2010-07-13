@@ -11,27 +11,50 @@ all_docs = [example, apple, stanford]
 for doc in all_docs:
     doc.make_typed('text/html')
 
-qtable_file1 = """http://example.com
-a:b=c
-x:y=z
+warc_file1 = """WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com
+Content-Length: 31
+
+
 
 <h1>Welcome to example</h1>
-@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
-http://apple.com
 
-<h1>Welcome to Apple</h1>"""
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://apple.com
+Content-Length: 29
 
-qtable_file2 = """http://example.com/m.html
+
+
+<h1>Welcome to Apple</h1>
+
+"""
+
+warc_file2 = """WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/m.html
+Content-Length: 22
+
+
 
 <h1>Example m</h1>
-@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
-http://example.com/z.html
 
-<h1>Example z</h1>"""
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/z.html
+Content-Length: 22
+
+
+
+<h1>Example z</h1>
+
+"""
 
 def dumppath(dumpname):
     import os
-    return os.path.join(os.path.dirname(__file__), '../../test/dumps/', dumpname)
+    return os.path.join(os.path.dirname(__file__),
+                        '../../test/dumps/', dumpname)
 
 def dumpdocs(dumpname):
     from freequery.repository.formats import WARCParser

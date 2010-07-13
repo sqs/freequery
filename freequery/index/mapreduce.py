@@ -4,8 +4,8 @@ MapReduce functions for indexing with Discodex.
 
 def docparse(iterable, size, fname, params):
     """Iterates through a Web dump and emits each document."""    
-    from freequery.repository.formats import QTableFile
-    return QTableFile(iterable)
+    from freequery.repository.formats import WARCParser
+    return WARCParser(iterable)
 
 def docdemux(doc, params):
     """Emits (term, docuri) for each term in `doc`."""
