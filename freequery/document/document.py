@@ -66,7 +66,8 @@ class Document(object):
             self.raw == other.raw and self.docid == other.docid
     
     def __str__(self):
-        return "<Document docid=%d uri='%s' raw=%d>" % (self.docid, self.uri, bool(self.raw))
+        rawstr = "(%d bytes)" % len(self.raw) if self.raw else "None"
+        return "<Document docid=%d uri='%s' raw=%s>" % (self.docid, self.uri, rawstr)
 
     __unicode__ = __str__
     __repr__ = __str__

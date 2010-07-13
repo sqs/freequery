@@ -6,7 +6,8 @@ from freequery.test import fixtures
 class TestDocparse(unittest.TestCase):
 
     def test_docparse(self):
-        o = mapreduce.docparse(fixtures.qtable_file1.splitlines(True), None, None, None)
+        from StringIO import StringIO
+        o = mapreduce.docparse(StringIO(fixtures.warc_file1), None, None, None)
         self.assertEquals([fixtures.example, fixtures.apple], list(o))
 
 class TestDocdemux(unittest.TestCase):

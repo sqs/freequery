@@ -1,15 +1,31 @@
-http://example.com/
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/
+Content-Length: 91
+
+
 
 <h1>Welcome to example</h1>
 <p><a href="http://example.com/about">About example</a></p>
-@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
-http://example.com/about
+
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/about
+Content-Length: 156
+
+
 
 <h1>About example</h1>
 <p>We are <a href="http://example.com/">example.com</a>. Check out <a href="http://example.com/contact">our contact info</a>.</p>
-@@@==-$$123456789-QTABLE-DELIMITER-12345679$$-==@@@
-http://example.com/contact
+
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/contact
+Content-Length: 111
+
+
 
 <h1>Contact us</h1>
 <p>Phone: 800-555-1212. Web: <a href="http://example.com/">http://example.com</a>.</p>
+
 

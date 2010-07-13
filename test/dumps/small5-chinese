@@ -1,4 +1,9 @@
-http://example.com/chinese-test-的人-page
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/chinese-test-的人-page
+Content-Length: 3850
+
+
 
 <h1>Chinese text</h1>
 <p>家
@@ -40,4 +45,5 @@ http://example.com/chinese-test-的人-page
 我过去的爱和恨，悲哀和欢乐，受苦和同情，希望和挣扎，一齐来到我的笔端，我
 写得快，我心里燃烧着的火渐渐地灭了，我才能够平静地闭上眼睛。心上的疙瘩给
 解开了，我得到了拯救。</p>
+
 

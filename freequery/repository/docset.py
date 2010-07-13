@@ -2,7 +2,7 @@ import re, urllib2, os, cPickle as pickle
 from cStringIO import StringIO
 from disco.ddfs import DDFS
 from disco.util import urlresolve
-from freequery.repository.formats import QTableFile
+from freequery.repository.formats import WARCParser
 
 class DocumentNotFound(Exception): pass
 
@@ -79,7 +79,7 @@ class Docset(object):
         startpos = 0
         endpos = None
         with open(dump, 'rb') as f:
-            dociter = QTableFile(f)
+            dociter = WARCParser(f)
             for doc in dociter:
                 endpos = dociter.tell()
                 self.index[doc.uri] = (dumpname, startpos, endpos - startpos)
@@ -148,4 +148,4 @@ class Docset(object):
         req = urllib2.Request(dump_uri)
         req.add_header("Range", "bytes=%d-%d" % (startpos, startpos + size - 1))
         res = urllib2.urlopen(req)
-        return QTableFile(res).next()
+        return WARCParser(res).next()

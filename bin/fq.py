@@ -88,12 +88,12 @@ def dump_lint(program, *dumps):
     Checks the validity of the specified dump file:
       - No two documents have the same URI.
     """
-    from freequery.repository.formats import QTableFile
+    from freequery.repository.formats import WARCParser
     from collections import defaultdict
     uri_dump = defaultdict(list)
     for dump in dumps:
         with open(dump, 'rb') as f:
-            for doc in QTableFile(f):
+            for doc in WARCParser(f):
                 uri_dump[doc.uri].append(dump)
     ok = True
     for uri,dumps in uri_dump.items():

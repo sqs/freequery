@@ -1,4 +1,9 @@
-http://example.com/unicode-test
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/unicode-test
+Content-Length: 23714
+
+
 
 <html>
 <head>
@@ -211,3 +216,4 @@ character blocks.</p>
 </dl>
 </body>
 </html>
+
