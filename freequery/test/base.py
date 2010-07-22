@@ -17,12 +17,11 @@ class IntegrationTestCase(unittest.TestCase):
         if not klass.dumps:
             return
         
-        spec = Spec(klass.__name__)
-        print spec
-        klass.fqclient = FreequeryClient(spec)
+        klass.spec = Spec(klass.__name__)
+        klass.fqclient = FreequeryClient(klass.spec)
 
         # docset
-        klass.docset = Docset(spec.docset_name)
+        klass.docset = Docset(klass.spec.docset_name)
         klass.clean_up()
         for dumpname in klass.dumps:
             klass.docset.add_dump(dumpname, dumppath(dumpname))
@@ -35,7 +34,7 @@ class IntegrationTestCase(unittest.TestCase):
         # rank
         if klass.rank:
             klass.fqclient.linkparse()
-            klass.fqclient.rank()
+            klass.fqclient.rank(niter=5)
 
     @classmethod
     def tearDownClass(klass):
@@ -61,4 +60,33 @@ class IntegrationTestCase(unittest.TestCase):
             return
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
         result_ranking = scoredb.ranked_uris()
-        self.assertEqual(list(self.expected_ranking), list(result_ranking))
+        self.assertEqual(list(self.expected_ranking), list(result_ranking),
+                         "expected ranking %r, got %r (scores: %r)" % \
+                             (self.expected_ranking, result_ranking,
+                              scoredb.items()))
+
+    def test_against_local_pagerank(self):
+        from freequery.graph.local_pagerank import pagerank
+        from freequery.graph.scoredb import ScoreDB
+        
+        if self.expected_ranking is None:
+            return
+
+        docset = self.__class__.docset
+        edges = []
+        for uri in docset.doc_uris():
+            doc = docset.get(uri)
+            for dest_uri in doc.link_uris:
+                edges.append((uri, dest_uri))
+        local_pr = pagerank(edges)
+        print local_pr
+
+        scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
+        print scoredb.items()
+        for uri,score in scoredb.items():
+            delta = abs(local_pr[uri] - score)
+            expected_delta = 0.05
+            self.assertTrue(delta < expected_delta,
+                "expected MapReduce score for URI '%s' to be almost " \
+                "equal to %f (expected_delta=%.3f, delta=%f), but got %f" % \
+                    (uri, local_pr[uri], expected_delta, delta, score))
