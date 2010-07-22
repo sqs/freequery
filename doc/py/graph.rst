@@ -10,6 +10,9 @@ Web Graph
 .. autoclass:: freequery.graph.pagerank_job.PagerankJob
    :members:
 
+.. automodule:: freequery.graph.local_pagerank
+   :members:
+
 .. autoclass:: freequery.graph.scoredb.ScoreDB
    :members:
 
