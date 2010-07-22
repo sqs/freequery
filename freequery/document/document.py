@@ -80,7 +80,17 @@ class HTMLDocument(Document):
         if self.__html_parser_lxml_html is None:
             if self.raw is None:
                 raise Exception("can't parse HTML with raw=None")
-            self.__html_parser_lxml_html = lxml.html.fromstring(self.raw, base_url=self.uri)
+            rawenc = self.raw
+
+            # TODO(sqs): lxml doesn't accept unicode strings with XML encoding
+            # decls, but it also fails on some ascii strings when *it* tries to
+            # convert to unicode. This is a hack.
+            if isinstance(rawenc, str):
+                rawenc = rawenc.decode('utf8', 'ignore')
+            rawenc = rawenc.encode('utf8')
+            
+            self.__html_parser_lxml_html = lxml.html.fromstring(rawenc,
+                                                                base_url=self.uri)
         return self.__html_parser_lxml_html
     __html_parser_lxml_html = None
     
