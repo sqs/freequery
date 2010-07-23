@@ -1,6 +1,17 @@
 from freequery.test import IntegrationTestCase
 
-class TestSmall1(IntegrationTestCase):
+class TestClueWebChinese(IntegrationTestCase):
+    dumps = ['ClueWeb09_Chinese_Sample']
+    expected_results = {
+        'richiezhangzhi': [
+            'http://www.139mlife.com/bbs/forum-129-1.html',
+            'http://www.139mlife.com/bbs/digest.php',
+            ]
+    }
+    index = True
+    rank = True
+
+class TestClueWebEnglish(IntegrationTestCase):
     dumps = ['ClueWeb09_English_Sample']
     expected_results = {
         'hello': ['http://www.snowdirt.com/index.html'],
