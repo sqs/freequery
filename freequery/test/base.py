@@ -34,7 +34,7 @@ class IntegrationTestCase(unittest.TestCase):
         # rank
         if klass.rank:
             klass.fqclient.linkparse()
-            klass.fqclient.rank(niter=5)
+            klass.fqclient.rank(niter=2)
 
     @classmethod
     def tearDownClass(klass):
@@ -45,14 +45,36 @@ class IntegrationTestCase(unittest.TestCase):
         if hasattr(klass, 'docset'):
             klass.docset.delete()
 
+    def assertResultsSimilar(self, expected, actual, msg=''):
+        """
+        Tests whether two lists of search results are similar enough. Right
+        now, this means that the relative ranking of each result is the
+        same. `expected` is a list of URIs in order of decreasing score (ties
+        broken by a lexicographic sort on the URI itself), and `actual` is a
+        list of :class:`freequery.document.Document` instances sorted by score.
+        """
+        # Sort `actual` by score, breaking ties using the URIs' lexigraphic
+        # sort order.
+        actual.sort(reverse=True)
+        actual_uris = [doc.uri for doc in actual]
+        
+        self.assertEqual(
+            list(expected), list(actual_uris),
+            "%sexpected ranking:\n %s\n\ngot ranking:\n%s" \
+            "\n\nscores:\n%s\n\ndiff:\n%s" % \
+                (msg,
+                 "\n".join(expected),
+                 "\n".join(actual_uris),
+                 "\n".join("%f\t%s" % (d.score, d.uri) for d in actual),
+                 self.__diff(expected, actual_uris)))
+
+            
     def test_expected_results(self):
         if not self.dumps:
             return
-        for q, exp_uris in self.expected_results.items():
-            result_uris = [doc.uri for doc in self.fqclient.query(q)]
-            self.assertEqual(exp_uris, result_uris,
-                             "expected query '%s' to yield %r, got %r" % \
-                                 (q, exp_uris, result_uris))
+        for q, expected in self.expected_results.items():
+            actual = self.fqclient.query(q)
+            self.assertResultsSimilar(expected, actual)
 
     def __diff(self, expected, result):
         import difflib
@@ -60,18 +82,12 @@ class IntegrationTestCase(unittest.TestCase):
     
     def test_expected_ranking(self):
         from freequery.graph.scoredb import ScoreDB
+        from freequery.document import Document
         if self.expected_ranking is None:
             return
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
-        result_ranking = scoredb.ranked_uris()
-        self.assertEqual(
-            list(self.expected_ranking), list(result_ranking),
-            "expected ranking:\n %s\n\ngot ranking:\n %s" \
-            "\n\nscores:\n%s\n\ndiff:\n%s" % \
-                ("\n".join(self.expected_ranking),
-                 "\n".join(result_ranking),
-                 "\n".join(["\t".join(map(str,e)) for e in scoredb.items()]),
-                 self.__diff(self.expected_ranking, result_ranking)))
+        actual = [Document(uri, score=score) for uri,score in scoredb.items()]
+        self.assertResultsSimilar(self.expected_ranking, actual)
 
     def test_against_local_pagerank(self):
         from freequery.graph.local_pagerank import pagerank

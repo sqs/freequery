@@ -36,10 +36,13 @@ class FreequeryClient(object):
         uris = self.discodex_client.query(self.spec.invindex_name, qq)
         if ranked:
             scoredb = ScoreDB(self.spec.scoredb_path)
-            uris = scoredb.ranked_uris(uris)
-        docs = [self.docset.get(uri) for uri in uris]
-        for doc in docs:
+            ranking = scoredb.rank(uris)
+        docs = []
+        for uri,score in ranking:
+            doc = self.docset.get(uri)
+            doc.score = score
             doc.excerpt = doc.excerpt(qq)
+            docs.append(doc)
         return docs
 
     def index(self):

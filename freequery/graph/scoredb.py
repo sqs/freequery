@@ -22,11 +22,16 @@ class ScoreDB(object):
     def items(self):
         return self.scoredict.items()
 
-    def ranked_uris(self, uris=None):
-        # default to ranking all URIs
+    def rank(self, uris=None):
+        from freequery.document import Document
+        # default to ranking all URIs in scoredb
         if uris is None:
             uris = self.scoredict.keys()
-        return sorted(uris, reverse=True, key=lambda u: self.scoredict[u])
+        # TODO(sqs): This is very inefficient as it creates a Document class to
+        # wrap each item, just to perform the sort comparison (Document.__lt__).
+        return [(doc.uri, doc.score) for doc in
+                 sorted([Document(uri, score=score) for uri,score in self.items() \
+                           if uri in uris], reverse=True)]
 
 class ScoreDBWriter(object):
 

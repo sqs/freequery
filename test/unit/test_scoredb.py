@@ -27,7 +27,7 @@ class TestScoreDB(unittest.TestCase):
     def test_iterates(self):
         self.assertEquals(sorted(self.sample_scores.items()), sorted(self.scoredb.items()))
 
-    def test_ranked_uris(self):
-        self.assertEquals(['http://example.com/', 'http://example.com/a.html', 'http://stanford.edu/'], self.scoredb.ranked_uris())
-        self.assertEquals(['http://example.com/', 'http://stanford.edu/'], self.scoredb.ranked_uris(['http://stanford.edu/', 'http://example.com/']))
+    def test_rank(self):
+        self.assertEquals([('http://example.com/', 0.05), ('http://example.com/a.html', 0.04), ('http://stanford.edu/', 0.02)], self.scoredb.rank())
+        self.assertEquals([('http://example.com/', 0.05), ('http://stanford.edu/', 0.02)], self.scoredb.rank(['http://stanford.edu/', 'http://example.com/']))
         

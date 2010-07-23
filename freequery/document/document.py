@@ -9,10 +9,14 @@ class Document(object):
     Represents a document.
     """
 
-    def __init__(self, uri, raw=None, docid=-1):
+    def __init__(self, uri, raw=None, docid=-1, score=None):
         self.uri = uri
         self.raw = raw
         self.docid = docid
+        
+        if score is not None:
+            self.score = score
+        
         self.make_typed('text/html')
 
         self.__cached_link_uris = None
@@ -64,10 +68,21 @@ class Document(object):
     def __eq__(self, other):
         return isinstance(other, Document) and self.uri == other.uri and \
             self.raw == other.raw and self.docid == other.docid
+
+    def __lt__(self, other):
+        """Used when sorting results by score. Break ties with URIs."""
+        if not hasattr(self, 'score') or not hasattr(other, 'score'):
+            raise Exception("can only sort docs with scores")
+        if self.score == other.score:
+            return self.uri > other.uri
+        else:
+            return self.score < other.score
     
     def __str__(self):
         rawstr = "(%d bytes)" % len(self.raw) if self.raw else "None"
-        return "<Document docid=%d uri='%s' raw=%s>" % (self.docid, self.uri, rawstr)
+        scorestr = "score=%d " % self.score if hasattr(self, 'score') else ''
+        return "<Document docid=%d uri='%s' %sraw=%s>" % \
+            (self.docid, self.uri, scorestr, rawstr)
 
     __unicode__ = __str__
     __repr__ = __str__
