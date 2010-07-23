@@ -5,3 +5,13 @@ Freequery is a full MapReduce Web search engine, with:
 * a distributed document server, and
 * a Web interface.
 
+Sample data
+-----------
+
+~1M pages from stanford.edu:
+http://wb11.stanford.edu/~testbed/cgi-bin/crawlStreamingDownload.pl?Links=&LinksAnchor=&userName=Quinn+Slack&userInst=Stanford&andOr=And&ANDORterms=&subPath=&htmlTag=&removeJavaScript=&removeHTML=&numPages=10000000&soloURL=&startURL=&endURL=&doDownload=WB11%2B7688%2Bstanford-10-2009%2Btext
+
+10M pages:
+http://wb21.stanford.edu/~testbed/cgi-bin/crawlStreamingDownload.pl?Links=&LinksAnchor=&userName=Quinn+Slack&userInst=Stanford&andOr=And&ANDORterms=&subPath=&htmlTag=&removeJavaScript=&removeHTML=&numPages=10000000&soloURL=&startURL=&endURL=&doDownload=WB21%2B7756%2B07-2010%2Btext
+
+ClueWeb09 samples included.
