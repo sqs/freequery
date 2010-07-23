@@ -13,7 +13,6 @@ class PagerankJob(object):
         self.niter = niter
         self.nr_partitions = 16
         self.merge_partitions = False
-        self.mem_sort_limit = 1024*1024*1024*1.5 # 1.5 GB
         self.profile = profile
 
     def start(self):
@@ -34,7 +33,6 @@ class PagerankJob(object):
             partitions=self.nr_partitions,
             partition=pagerank_partition,
             merge_partitions=self.merge_partitions,
-            mem_sort_limit=self.mem_sort_limit,
             profile=self.profile,
             params=dict(iter=0, doc_count=self.docset.doc_count))
         results = job.wait()
@@ -56,7 +54,6 @@ class PagerankJob(object):
                 partitions=self.nr_partitions,
                 partition=pagerank_partition,
                 merge_partitions=self.merge_partitions,
-                mem_sort_limit=self.mem_sort_limit,
                 profile=self.profile,
                 params=dict(iter=i, alpha=self.alpha,
                             doc_count=self.docset.doc_count,
@@ -80,7 +77,6 @@ class PagerankJob(object):
                 partitions=self.nr_partitions,
                 partition=pagerank_partition,
                 merge_partitions=self.merge_partitions,
-                mem_sort_limit=self.mem_sort_limit,
                 profile=self.profile,
                 params=dict(iter=i))
             results = job.wait()
