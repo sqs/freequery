@@ -34,13 +34,23 @@ class FreequeryClient(object):
         """Return a ranked list of matching `Document` instances."""
         qq = Query.parse(q)
         uris = self.discodex_client.query(self.spec.invindex_name, qq)
+        if not uris:
+            return []
         if ranked:
             scoredb = ScoreDB(self.spec.scoredb_path)
-            ranking = scoredb.rank(uris)
+            uris = scoredb.rank(uris)
+            if not uris:
+                raise Exception("no ranks available")
         docs = []
-        for uri,score in ranking:
+        for e in uris:
+            if ranked:
+                uri = e[0]
+                score = e[1]
+            else:
+                uri = e
             doc = self.docset.get(uri)
-            doc.score = score
+            if ranked:
+                doc.score = score
             doc.excerpt = doc.excerpt(qq)
             docs.append(doc)
         return docs
