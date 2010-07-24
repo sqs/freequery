@@ -90,9 +90,13 @@ class Document(object):
 
 class HTMLDocument(Document):
 
+    __html_parser_lxml_html = None
+    __html_parse_error = False
+        
     @property
     def html_parser_lxml_html(self):
-        if self.__html_parser_lxml_html is None:
+        if self.__html_parser_lxml_html is None and \
+           not self.__html_parse_error:
             if self.raw is None:
                 raise Exception("can't parse HTML with raw=None")
             rawenc = self.raw
@@ -104,10 +108,12 @@ class HTMLDocument(Document):
                 rawenc = rawenc.decode('utf8', 'ignore')
             rawenc = rawenc.encode('utf8')
             
-            self.__html_parser_lxml_html = lxml.html.fromstring(rawenc,
-                                                                base_url=self.uri)
+            try:
+                self.__html_parser_lxml_html = \
+                    lxml.html.fromstring(rawenc, base_url=self.uri)
+            except lxml.etree.ParserError as p:
+                self.__html_parse_error = p
         return self.__html_parser_lxml_html
-    __html_parser_lxml_html = None
     
     html_parser = html_parser_lxml_html
 
@@ -120,6 +126,8 @@ class HTMLDocument(Document):
                     if w.isalnum()]
 
     def links_lxml_html(self):
+        if self.html_parser is None:
+            return
         self.html_parser.make_links_absolute(self.uri, resolve_base_href=True)
         for e,attr,uri,pos in self.html_parser.iterlinks():
             tag = e.tag

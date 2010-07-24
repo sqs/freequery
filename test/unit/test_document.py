@@ -77,6 +77,9 @@ class TestHTMLDocument(unittest.TestCase):
         qq = Query.parse('welcome')
         self.assertEquals('Welcome to example', fixtures.example.excerpt(qq, radius=20))
 
-
+    def test_empty_doc(self):
+        emptydoc1 = fixtures.dumpdocs('empty-doc')['http://aero-comlab.stanford.edu/sichoi/tet_mesh.html']
+        # should not raise 'ParserError: Document is empty'
+        self.assertEquals([], emptydoc1.link_uris)
         
         
