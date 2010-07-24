@@ -53,7 +53,9 @@ class WARCParser(object):
                 if k == 'WARC-Type':
                     warc_type = v
                 elif k == 'WARC-Target-URI':
-                    warc_target_uri = v.decode('utf8')
+                    # TODO(sqs): handle unicode errors instead of just ignoring
+                    # them.
+                    warc_target_uri = v.decode('utf8', 'ignore')
                 elif k == 'Content-Length':
                     content_length = int(v)
 
