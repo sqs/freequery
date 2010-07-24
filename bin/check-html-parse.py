@@ -1,7 +1,12 @@
 import sys
 from freequery.repository.formats import WARCParser
 
-for doc in WARCParser(open(sys.argv[1], 'rb')):
-    print doc.uri
-    for uri in doc.link_uris():
-        pass#print " - %s" % uri
+inpaths = sys.argv[1:]
+
+for path in inpaths:
+    print "@ %s" % path
+    for doc in WARCParser(open(path, 'rb')):
+        print doc.uri
+        doc.links_lxml_html()
+        for uri in doc.link_uris:
+            pass#print " - %s" % uri
