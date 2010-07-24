@@ -1,7 +1,7 @@
 import unittest
 from freequery.document import Document
 from freequery.query import Query
-from freequery.test import fixtures as docs
+from freequery.test import fixtures
 
 
 class TestDocument(unittest.TestCase):
@@ -26,16 +26,16 @@ class TestDocument(unittest.TestCase):
 class TestHTMLDocument(unittest.TestCase):
        
     def test_tokens(self):
-        assert ['Welcome', 'to', 'example'] == docs.example.tokens()
+        assert ['Welcome', 'to', 'example'] == fixtures.example.tokens()
         
     def test_terms(self):
-        assert ['welcom', 'exampl'] == docs.example.terms()
+        assert ['welcom', 'exampl'] == fixtures.example.terms()
 
     def test_term_frequences(self):
-        self.assertEquals(dict(welcom=1, exampl=1), docs.example.term_frequencies())
+        self.assertEquals(dict(welcom=1, exampl=1), fixtures.example.term_frequencies())
 
     def test_link_uris_simple(self):
-        self.assertEquals(['http://cs.stanford.edu'], list(docs.stanford.link_uris))
+        self.assertEquals(['http://cs.stanford.edu'], list(fixtures.stanford.link_uris))
 
     def test_title(self):
         raw = "<html><head><title>Example</title></head><body></body></html>"
@@ -70,10 +70,13 @@ class TestHTMLDocument(unittest.TestCase):
 
     def test_excerpt(self):
         qq = Query.parse('example')
-        self.assertEquals('Welcome to example', docs.example.excerpt(qq, radius=11))
-        self.assertEquals('... example', docs.example.excerpt(qq, radius=1))
+        self.assertEquals('Welcome to example', fixtures.example.excerpt(qq, radius=11))
+        self.assertEquals('... example', fixtures.example.excerpt(qq, radius=1))
 
     def test_excerpt_lowercases(self):
         qq = Query.parse('welcome')
-        self.assertEquals('Welcome to example', docs.example.excerpt(qq, radius=20))
+        self.assertEquals('Welcome to example', fixtures.example.excerpt(qq, radius=20))
+
+
+        
         
