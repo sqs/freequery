@@ -84,5 +84,9 @@ class TestHTMLDocument(unittest.TestCase):
         # should not raise "AttributeError: 'NoneType' object has no attribute
         # 'text_content'"
         self.assertEquals([], emptydoc1.tokens())
+
+    def test_raw_None(self):
+        rawNone = fixtures.dumpdocs('raw-None')['http://cse.stanford.edu/class/cs201/projects-00-01/napster/index.html']
+        self.assertEquals(None, rawNone.html_parser)
         
         

@@ -111,7 +111,7 @@ class HTMLDocument(Document):
             try:
                 self.__html_parser_lxml_html = \
                     lxml.html.fromstring(rawenc, base_url=self.uri)
-            except lxml.etree.ParserError as p:
+            except (lxml.etree.ParserError, TypeError) as p:
                 self.__html_parse_error = p
         return self.__html_parser_lxml_html
     

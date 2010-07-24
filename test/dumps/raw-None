@@ -1,0 +1,17 @@
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://cse.stanford.edu/class/cs201/projects-00-01/napster/index.html
+Content-Length: 271
+
+
+
+
+<FRAMESET COLS="*, 730,*" NORESIZE BORDER="0" FRAMEBORDER="0">
+         <FRAME NAME ="Left" SRC="gray.html" SCROLLING="No">
+         <FRAME NAME="Default" SCROLLING="No" SRC="Napster/Default.htm">
+	 <FRAME NAME ="Right" SRC="gray.html" SCROLLING="No">
+</FRAMESET>
+
+
+
+
