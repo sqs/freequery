@@ -81,5 +81,8 @@ class TestHTMLDocument(unittest.TestCase):
         emptydoc1 = fixtures.dumpdocs('empty-doc')['http://aero-comlab.stanford.edu/sichoi/tet_mesh.html']
         # should not raise 'ParserError: Document is empty'
         self.assertEquals([], emptydoc1.link_uris)
+        # should not raise "AttributeError: 'NoneType' object has no attribute
+        # 'text_content'"
+        self.assertEquals([], emptydoc1.tokens())
         
         

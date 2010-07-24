@@ -122,6 +122,8 @@ class HTMLDocument(Document):
         return self.html_parser.xpath('.//title')[0].text
 
     def tokens(self):
+        if self.html_parser is None:
+            return []
         return [w for w in self.html_parser.text_content().split() \
                     if w.isalnum()]
 
