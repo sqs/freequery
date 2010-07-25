@@ -17,12 +17,6 @@ def doc_tfidf_map(doc, params):
 
     for t, tf in doc.term_frequencies().items():
         yield t, (doc, tf)
-
-#def doc_term_partition(key, nr_partitions, params):
-#    """
-#    Ensures entries with the same key (term) are partitioned together.
-#    """
-#    return hash(key) % nr_partitions
     
 def doc_tfidf_reduce(in_iter, out, params):
     """
