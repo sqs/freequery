@@ -88,5 +88,12 @@ class TestHTMLDocument(unittest.TestCase):
     def test_raw_None(self):
         rawNone = fixtures.dumpdocs('raw-None')['http://cse.stanford.edu/class/cs201/projects-00-01/napster/index.html']
         self.assertEquals(None, rawNone.html_parser)
+
+    def test_pickleable(self):
+        import pickle
+        d = Document('http://a.com', '<body><b>hello there</b></body>')
+        d.html_parser
+        dp = pickle.loads(pickle.dumps(d))
+        self.assertEquals(d, dp)
         
         

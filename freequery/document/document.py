@@ -167,6 +167,12 @@ class HTMLDocument(Document):
                 
         raise Exception("couldn't make excerpt for doc '%s' txt='%s' with lits=%r" % \
                             (self.uri, txt, qq.non_negated_literals()))
+
+    def __getstate__(self):
+        # Unset HTML parser before pickling, since it can be regenerated.
+        d = self.__dict__.copy()
+        del d['_HTMLDocument__html_parser_lxml_html']
+        return d
         
 class Hit(object):
     """
