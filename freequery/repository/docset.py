@@ -72,8 +72,7 @@ class Docset(object):
     def add_dump(self, dumpname, dump):
         """
         Adds a dump to this docset and indexes its documents by position,
-        appending the doc count to the name of the dump and then uploading the
-        dump to DDFS with the tag for this docset.
+        uploading the dump to DDFS with the tag for this docset.
         """
         # index positions
         startpos = 0
