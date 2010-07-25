@@ -85,12 +85,19 @@ def add(program, spec, *dumps):
     docset.save()
 
 @FreequeryDocset.command
-def info(program, docsetname):
-    """Usage: <docsetname>
+def info(program, spec):
+    """Usage: <spec>
 
     Prints info about the specified docset.
     """
-    pass
+    from freequery.client.client import Spec
+    spec = Spec(spec)
+    docset = program.docset(spec.docset_name)
+    print "Docset '%s'" % spec.docset_name
+    print "Number of documents: %d" % docset.doc_count
+    print "Dumps:"
+    for i,dump_name in enumerate(docset.dump_names()):
+        print "  %d. %s" % (i+1, dump_name)
 
 @FreequeryDocset.command
 def linkparse(program, spec):
