@@ -74,7 +74,7 @@ def show_scores(program, spec):
 
     Shows the scores of documents in the specified `spec` ScoreDB file.
     """
-    from freequery.graph.scoredb import ScoreDB
+    from freequery.index.scoredb import ScoreDB
     from freequery.client.client import Spec
     spec = Spec(spec)
     scoredb = ScoreDB(spec.scoredb_path)

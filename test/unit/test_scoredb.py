@@ -1,5 +1,5 @@
 import unittest
-from freequery.graph.scoredb import ScoreDB, ScoreDBWriter
+from freequery.index.scoredb import ScoreDB, ScoreDBWriter
 
 TEST_SCOREDB_PATH = "/tmp/fq-scoredb"
 
