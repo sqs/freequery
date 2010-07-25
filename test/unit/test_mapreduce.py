@@ -21,14 +21,14 @@ class TestDocdemux(unittest.TestCase):
 
 class TestMapReduce(unittest.TestCase):
 
-    def test_doc_term_map(self):
+    def test_doc_tfidf_map(self):
         d = Document('http://a.com', 'hello there hello')
-        out = list(doc_term_map(d, None))
+        out = list(doc_tfidf_map(d, None))
         expected = [('hello', 1), ('there', 1), ('hello', (d, 2)),
                     ('there', (d, 1))]
         self.assertEqual(sorted(expected), sorted(out))
 
-    def test_doc_term_reduce(self):
+    def test_doc_tfidf_reduce(self):
         d = Document('http://a.com', 'hello there hello')
         out = []
         class mock_reduce_out(object):
@@ -37,8 +37,8 @@ class TestMapReduce(unittest.TestCase):
         reduce_out = mock_reduce_out()        
         map_out = [('hello', 1), ('hello', (d, 2)),
                    ('there', 1), ('there', (d, 1))]
-        # unlike in test_doc_term_map, using doc_count=2
-        doc_term_reduce(map_out, reduce_out, {'doc_count':2})
+        # unlike in test_doc_tfidf_map, using doc_count=2
+        doc_tfidf_reduce(map_out, reduce_out, {'doc_count':2})
         expected = [('hello', (d, 2.0 * 2)), ('there', (d, 1.0 * 2))]
         self.assertEqual(sorted(expected), sorted(out))
         

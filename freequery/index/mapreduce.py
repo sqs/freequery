@@ -7,7 +7,7 @@ def docparse(iterable, size, fname, params):
     from freequery.repository.formats import WARCParser
     return WARCParser(iterable)
 
-def doc_term_map(doc, params):
+def doc_tfidf_map(doc, params):
     """
     For each term `t` in `doc`, emits `(t,1)` to track df (document frequency)
     and `(t, (doc,tf))` to track tf (term frequency).
@@ -24,7 +24,7 @@ def doc_term_map(doc, params):
 #    """
 #    return hash(key) % nr_partitions
     
-def doc_term_reduce(in_iter, out, params):
+def doc_tfidf_reduce(in_iter, out, params):
     """
     Assumes that `(t,1)`'s (to track df) are sorted before `(t,
     (doc,tf))`'s. Emits `(t, (doc,tf-idf))`.
