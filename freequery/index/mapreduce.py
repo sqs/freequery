@@ -10,7 +10,7 @@ def docparse(iterable, size, fname, params):
 def doc_term_map(doc, params):
     """
     For each term `t` in `doc`, emits `(t,1)` to track df (document frequency)
-    and `(t, (d,tf))` to track tf (term frequency).
+    and `(t, (doc,tf))` to track tf (term frequency).
     """
     for t in set(doc.terms()):
         yield t, 1
@@ -27,8 +27,37 @@ def doc_term_map(doc, params):
 def doc_term_reduce(in_iter, out, params):
     """
     Assumes that `(t,1)`'s (to track df) are sorted before `(t,
-    (d,tf))`'s. Emits `(t, (d,tf-idf))`.
+    (doc,tf))`'s. Emits `(t, (doc,tf-idf))`.
     """
+    last_t = None
+    done_counting_df = False
+    df = 0
+
+    for t, v in in_iter:
+        if t != last_t:
+            # Then we're done with this term.
+            done_counting_df = False
+            df = 0
+            assert isinstance(v, int) # (t,1)'s should come first
+            
+        if isinstance(v, int):
+            if done_counting_df:
+                raise Exception("done_counting_df=True but encountered df " \
+                                "value for term '%s'" % t)
+            df += v
+        elif isinstance(v, tuple) or isinstance(v, list):
+            doc, tf = v
+            idf = float(params['doc_count']) / df
+            out.add(t, (doc, tf * idf))
+
+            # We shouldn't see any more (t,1)'s for this document since the
+            # (t,1)'s should be sorted before the (t,(doc,tf))'s. This makes it
+            # so we don't have to hold arbitrarily long lists of (doc,tf)'s in
+            # memory.
+            done_counting_df = True
+            
+        last_t = t
+            
 
 def docdemux(doc, params):
     """Emits (term, docuri) for each term in `doc`."""
