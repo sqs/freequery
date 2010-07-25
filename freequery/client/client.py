@@ -1,11 +1,12 @@
 from disco.util import urlresolve
 from discodex.client import DiscodexClient
-from discodex.objects import DataSet
 from freequery.repository.docset import Docset
 from freequery.document import Document
 from freequery.graph.pagerank_job import PagerankJob
 from freequery.graph.scoredb import ScoreDB
 from freequery.graph.links import LinkParseJob
+from freequery.index.job import IndexJob
+from freequery.index.mapreduce import tfidf_undemux
 from freequery.query import Query
 
 
@@ -33,57 +34,36 @@ class FreequeryClient(object):
     def query(self, q, ranked=True):
         """Return a ranked list of matching `Document` instances."""
         qq = Query.parse(q)
-        uris = self.discodex_client.query(self.spec.invindex_name, qq)
-        if not uris:
+        res = self.discodex_client.query(self.spec.invindex_name, qq)
+        res = map(tfidf_undemux, res)
+        if not res:
             return []
+
+        prs = None
         if ranked:
             scoredb = ScoreDB(self.spec.scoredb_path)
-            uris = scoredb.rank(uris)
-            if not uris:
+            uris = [e[0] for e in res]
+            prs = dict(scoredb.rank(uris))
+            if not prs:
                 raise Exception("no ranks available")
+            
         docs = []
-        for e in uris:
-            if ranked:
-                uri = e[0]
-                score = e[1]
-            else:
-                uri = e
+        for uri,scores in res:
             doc = self.docset.get(uri)
-            if ranked:
-                doc.score = score
+            doc.scores = scores
+            if prs:
+                doc.scores['pr'] = prs[uri]
             doc.excerpt = doc.excerpt(qq)
             docs.append(doc)
         return docs
 
-    def index(self):
-        import sys, time
-        
+    def index(self, **kwargs):
         if not self.docset.exists():
             print "fq: cannot index `%s': no such docset" % self.spec.docset_name
             exit(1)
+        job = IndexJob(self.spec, self.discodex_client, **kwargs)
+        job.start()
 
-        dataset = DataSet(input=map(urlresolve, list(self.docset.dump_uris())),
-                          options=dict(parser='freequery.index.mapreduce.docparse',
-                                       demuxer='freequery.index.mapreduce.docdemux',
-                                       ))
-        orig_invindex_name = self.discodex_client.index(dataset)
-        if orig_invindex_name:
-            print "indexing: %s " % orig_invindex_name,
-        else:
-            print "fq: discodex failed to index `%s'" % self.spec.name
-            exit(2)
-        
-        # wait for indexing to complete
-        while True:
-            try:
-                self.discodex_client.get(orig_invindex_name)
-                break
-            except:
-                # TODO: find a better way of monitoring job status
-                time.sleep(2)
-                sys.stdout.write(".")
-                sys.stdout.flush()
-        self.discodex_client.clone(orig_invindex_name, self.spec.invindex_name)
 
     def linkparse(self, **kwargs):
         job = LinkParseJob(self.spec, **kwargs)

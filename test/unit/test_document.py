@@ -8,8 +8,8 @@ class TestDocument(unittest.TestCase):
 
     def test_score(self):
         self.assertAlmostEqual(1.0,
-                               Document('http://example.com', score=1.0).score)
-        self.assertFalse(hasattr(Document('http://example.com'), 'score'))
+                               Document('http://example.com', scores=dict(pr=1.0)).scores['pr'])
+        self.assertFalse(hasattr(Document('http://example.com'), 'scores'))
 
     def test_eq(self):
         assert Document('http://example.com', '<h1>Welcome to example</h1') == \
@@ -18,9 +18,9 @@ class TestDocument(unittest.TestCase):
                Document('http://apple.com', '<h1>Welcome to Apple</h1>')
 
     def test_lt(self):
-        d1 = Document('http://a.com', score=1.0)
-        d2 = Document('http://b.com', score=1.0)
-        d3 = Document('http://z.com', score=5.0)
+        d1 = Document('http://a.com', scores=dict(pr=1.0))
+        d2 = Document('http://b.com', scores=dict(pr=1.0))
+        d3 = Document('http://z.com', scores=dict(pr=5.0))
         self.assertEquals([d3, d1, d2], sorted([d3,d2,d1], reverse=True))
         
 class TestHTMLDocument(unittest.TestCase):

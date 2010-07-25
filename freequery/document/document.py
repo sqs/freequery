@@ -9,13 +9,13 @@ class Document(object):
     Represents a document.
     """
 
-    def __init__(self, uri, raw=None, docid=-1, score=None):
+    def __init__(self, uri, raw=None, docid=-1, scores=None):
         self.uri = uri
         self.raw = raw
         self.docid = docid
         
-        if score is not None:
-            self.score = score
+        if scores is not None:
+            self.scores = scores
         
         self.make_typed('text/html')
 
@@ -71,12 +71,12 @@ class Document(object):
 
     def __lt__(self, other):
         """Used when sorting results by score. Break ties with URIs."""
-        if not hasattr(self, 'score') or not hasattr(other, 'score'):
+        if not hasattr(self, 'scores') or not hasattr(other, 'scores'):
             raise Exception("can only sort docs with scores")
-        if self.score == other.score:
+        if self.scores['pr'] == other.scores['pr']:
             return self.uri > other.uri
         else:
-            return self.score < other.score
+            return self.scores['pr'] < other.scores['pr']
     
     def __str__(self):
         rawstr = "(%d bytes)" % len(self.raw) if self.raw else "None"

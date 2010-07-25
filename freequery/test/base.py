@@ -65,7 +65,7 @@ class IntegrationTestCase(unittest.TestCase):
                 (msg,
                  "\n".join(expected),
                  "\n".join(actual_uris),
-                 "\n".join("%f\t%s" % (d.score, d.uri) for d in actual),
+                 "\n".join("%r\t%s" % (d.scores, d.uri) for d in actual),
                  self.__diff(expected, actual_uris)))
 
             
@@ -86,7 +86,7 @@ class IntegrationTestCase(unittest.TestCase):
         if self.expected_ranking is None:
             return
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
-        actual = [Document(uri, score=score) for uri,score in scoredb.items()]
+        actual = [Document(uri,scores=dict(pr=pr)) for uri,pr in scoredb.items()]
         self.assertResultsSimilar(self.expected_ranking, actual)
 
     def test_against_local_pagerank(self):
