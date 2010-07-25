@@ -12,7 +12,7 @@ def docparse(iterable, size, fname, params):
 def doc_tfidf_map(doc, params):
     """
     For each term `t` in `doc`, emits `(t,1)` to track df (document frequency)
-    and `(t, (doc,tf))` to track tf (term frequency).
+    and `(t, (uri,tf))` to track tf (term frequency).
     """
     from freequery.index.mapreduce import TERM_SUFFIX_FOR_DOC_KEYS
     
@@ -20,7 +20,7 @@ def doc_tfidf_map(doc, params):
         yield t.encode('utf8'), 1
 
     for t, tf in doc.term_frequencies().items():
-        yield t.encode('utf8')+TERM_SUFFIX_FOR_DOC_KEYS, (doc, tf)
+        yield t.encode('utf8')+TERM_SUFFIX_FOR_DOC_KEYS, (doc.uri, tf)
 
 def doc_tfidf_partition(key, nr_partitions, params):
     """
@@ -35,10 +35,10 @@ def doc_tfidf_partition(key, nr_partitions, params):
 def doc_tfidf_reduce(in_iter, out, params):
     """
     Assumes that `(t,1)`'s (to track df) are sorted before `(t,
-    (doc,tf))`'s. To make this happen, keys for the latter have
+    (uri,tf))`'s. To make this happen, keys for the latter have
     TERM_SUFFIX_FOR_DOC_KEYS appended to them.
 
-    Emits `(t, (doc,tf-idf))`.
+    Emits `(t, (uri,tf-idf))`.
     """
     from freequery.index.mapreduce import TERM_SUFFIX_FOR_DOC_KEYS
     last_t = None
@@ -61,13 +61,13 @@ def doc_tfidf_reduce(in_iter, out, params):
                                 "value for term '%s'" % t)
             df += v
         elif isinstance(v, tuple) or isinstance(v, list):
-            doc, tf = v
+            uri, tf = v
             idf = float(params['doc_count']) / df
-            out.add(t, (doc, tf * idf)) # TODO(sqs): emit only doc URI
+            out.add(t, (uri, tf * idf))
 
             # We shouldn't see any more (t,1)'s for this document since the
-            # (t,1)'s should be sorted before the (t,(doc,tf))'s. This makes it
-            # so we don't have to hold arbitrarily long lists of (doc,tf)'s in
+            # (t,1)'s should be sorted before the (t,(uri,tf))'s. This makes it
+            # so we don't have to hold arbitrarily long lists of (uri,tf)'s in
             # memory.
             done_counting_df = True
         else:
@@ -75,9 +75,9 @@ def doc_tfidf_reduce(in_iter, out, params):
             
         last_t = t
 
-def tfidf_demux((t, (doc, tfidf)), params):
+def tfidf_demux((t, (uri, tfidf)), params):
     import pickle
-    yield t, pickle.dumps((doc.uri.encode('utf8'), tfidf))
+    yield t, pickle.dumps((uri.encode('utf8'), tfidf))
 
 def tfidf_undemux(v):
     import pickle
