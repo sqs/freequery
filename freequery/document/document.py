@@ -70,11 +70,12 @@ class Document(object):
             self.raw == other.raw and self.docid == other.docid
 
     def __lt__(self, other):
-        """Used when sorting results by score. Break ties with URIs."""
+        """Used when sorting results by score. Break ties with URIs
+        (reverse)."""
         if not hasattr(self, 'scores') or not hasattr(other, 'scores'):
             raise Exception("can only sort docs with scores")
         if self.scores['pr'] == other.scores['pr']:
-            return self.uri > other.uri
+            return self.uri < other.uri
         else:
             return self.scores['pr'] < other.scores['pr']
     

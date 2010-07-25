@@ -27,11 +27,11 @@ class ScoreDB(object):
         # default to ranking all URIs in scoredb
         if uris is None:
             uris = self.scoredict.keys()
-        # TODO(sqs): This is very inefficient as it creates a Document class to
-        # wrap each item, just to perform the sort comparison (Document.__lt__).
-        return [(doc.uri, doc.scores['pr']) for doc in
-                 sorted([Document(uri, scores=dict(pr=pr)) for uri,pr in self.items() \
-                           if uri in uris], reverse=True)]
+        # Sort higher scores first, breaking ties with reverse lexigraphic sort
+        # of URIs.
+        return sorted(((uri,score) for uri,score in self.items() if uri in uris),
+                      key=lambda (uri,score): (score,uri),
+                      reverse=True)
 
 class ScoreDBWriter(object):
 

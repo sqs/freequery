@@ -50,8 +50,9 @@ class IntegrationTestCase(unittest.TestCase):
         Tests whether two lists of search results are similar enough. Right
         now, this means that the relative ranking of each result is the
         same. `expected` is a list of URIs in order of decreasing score (ties
-        broken by a lexicographic sort on the URI itself), and `actual` is a
-        list of :class:`freequery.document.Document` instances sorted by score.
+        broken by a reverse lexicographic sort on the URI itself), and `actual`
+        is a list of :class:`freequery.document.Document` instances sorted by
+        score.
         """
         # Sort `actual` by score, breaking ties using the URIs' lexigraphic
         # sort order.
@@ -86,8 +87,10 @@ class IntegrationTestCase(unittest.TestCase):
         if self.expected_ranking is None:
             return
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
-        actual = [Document(uri,scores=dict(pr=pr)) for uri,pr in scoredb.items()]
-        self.assertResultsSimilar(self.expected_ranking, actual)
+        actual = scoredb.rank()
+        self.assertResultsSimilar(self.expected_ranking,
+                                  [Document(uri,scores=dict(pr=pr)) \
+                                   for uri,pr in actual])
 
     def test_against_local_pagerank(self):
         from freequery.graph.local_pagerank import pagerank

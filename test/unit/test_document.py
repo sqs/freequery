@@ -16,12 +16,6 @@ class TestDocument(unittest.TestCase):
                Document('http://example.com', '<h1>Welcome to example</h1')
         assert Document('http://example.com', '<h1>Welcome to example</h1') != \
                Document('http://apple.com', '<h1>Welcome to Apple</h1>')
-
-    def test_lt(self):
-        d1 = Document('http://a.com', scores=dict(pr=1.0))
-        d2 = Document('http://b.com', scores=dict(pr=1.0))
-        d3 = Document('http://z.com', scores=dict(pr=5.0))
-        self.assertEquals([d3, d1, d2], sorted([d3,d2,d1], reverse=True))
         
 class TestHTMLDocument(unittest.TestCase):
        
