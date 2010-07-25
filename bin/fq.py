@@ -67,7 +67,6 @@ def inspect_index(program, soec):
 def rank(program, spec):
     from freequery.client.client import Spec
     program.fqclient(spec).rank(profile=program.option_dict.get('profile', False))
-    show_scores(program, spec)
 
 @Freequery.command
 def show_scores(program, spec):
