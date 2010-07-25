@@ -23,4 +23,7 @@ class TestLocalPagerank(unittest.TestCase):
         edges = [(1,2), (1,3), (2,3), (3,1)]
         self.assertRanking((3,1,2), edges)
         
-        
+    def test_weighted_edges(self):
+        edges = [(1,2), (1,3), (1,3), (1,3), (2,1), (3,1), (3,2)]
+        self.assertRanking((1,3,2), edges)
+            

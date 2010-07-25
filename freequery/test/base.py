@@ -3,18 +3,13 @@ from freequery.test.fixtures import dumppath
 
 
 class IntegrationTestCase(unittest.TestCase):
-    dumps = None
-    expected_results = None
-    index = True
-    rank = True
-    expected_ranking = None
 
     @classmethod
     def setUpClass(klass):
         from freequery.client.client import Spec, FreequeryClient
         from freequery.repository.docset import Docset
 
-        if not klass.dumps:
+        if klass.__name__ == 'IntegrationTestCase':
             return
         
         klass.spec = Spec(klass.__name__)
@@ -34,10 +29,13 @@ class IntegrationTestCase(unittest.TestCase):
         # rank
         if klass.rank:
             klass.fqclient.linkparse()
-            klass.fqclient.rank(niter=2)
+            niter = klass.niter if hasattr(klass, 'niter') else 2
+            klass.fqclient.rank(niter=niter)
 
     @classmethod
     def tearDownClass(klass):
+        if klass.__name__ == 'IntegrationTestCase':
+            return
         klass.clean_up()
 
     @classmethod
@@ -71,7 +69,9 @@ class IntegrationTestCase(unittest.TestCase):
 
             
     def test_expected_results(self):
-        if not self.dumps:
+        if self.__class__.__name__ == 'IntegrationTestCase':
+            return
+        if not hasattr(self, 'expected_results'):
             return
         for q, expected in self.expected_results.items():
             actual = self.fqclient.query(q)
@@ -84,7 +84,9 @@ class IntegrationTestCase(unittest.TestCase):
     def test_expected_ranking(self):
         from freequery.graph.scoredb import ScoreDB
         from freequery.document import Document
-        if self.expected_ranking is None:
+        if self.__class__.__name__ == 'IntegrationTestCase':
+            return
+        if not hasattr(self, 'expected_ranking'):
             return
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
         actual = scoredb.rank()
@@ -96,10 +98,13 @@ class IntegrationTestCase(unittest.TestCase):
         from freequery.graph.local_pagerank import pagerank
         from freequery.graph.scoredb import ScoreDB
         
-        if self.rank:
+        if self.__class__.__name__ == 'IntegrationTestCase':
             return
 
-        docset = self.__class__.docset
+        if not getattr(self, 'check_against_local_pagerank', False):
+            return
+
+        docset = self.docset
         edges = []
         for uri in docset.doc_uris():
             doc = docset.get(uri)
@@ -110,9 +115,10 @@ class IntegrationTestCase(unittest.TestCase):
 
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
         for uri,score in scoredb.items():
-            delta = abs(local_pr[uri] - score)
-            expected_delta = 0.05
+            pr = local_pr.get(uri, 0.0)
+            delta = abs(pr - score)
+            expected_delta = 0.01
             self.assertTrue(delta < expected_delta,
                 "expected MapReduce score for URI '%s' to be almost " \
                 "equal to %f (expected_delta=%.3f, delta=%f), but got %f" % \
-                    (uri, local_pr[uri], expected_delta, delta, score))
+                    (uri, pr, expected_delta, delta, score))

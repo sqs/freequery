@@ -33,6 +33,7 @@ class TestClueWebEnglish(IntegrationTestCase):
     }
     index = True
     rank = True
+    niter = 5
 
     expected_ranking = [
         'http://www.smite.co.id/',
