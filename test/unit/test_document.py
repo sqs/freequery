@@ -90,9 +90,17 @@ class TestHTMLDocument(unittest.TestCase):
         self.assertEquals(None, rawNone.html_parser)
 
     def test_pickleable(self):
+        # The lxml HTML parser isn't pickleable, so remove it first.
         import pickle
         d = Document('http://a.com', '<body><b>hello there</b></body>')
         d.html_parser
+        dp = pickle.loads(pickle.dumps(d))
+        self.assertEquals(d, dp)
+
+    def test_pickleable_without_html_parser(self):
+        # But check that even without the HTML parser, this is pickleable.
+        import pickle
+        d = Document('http://a.com', '<body><b>hello there</b></body>')
         dp = pickle.loads(pickle.dumps(d))
         self.assertEquals(d, dp)
         
