@@ -7,7 +7,7 @@ from freequery.graph.pagerank import pagerank_mass_map, \
     pagerank_partition
 from freequery.repository.docset import Docset
 from freequery.graph.pagerank import DANGLING_MASS_KEY
-from freequery.graph.scoredb import ScoreDBWriter
+from freequery.index.scoredb import ScoreDBWriter
 from freequery.document import Document
 
 

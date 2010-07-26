@@ -23,7 +23,6 @@ class ScoreDB(object):
         return self.scoredict.items()
 
     def rank(self, uris=None):
-        from freequery.document import Document
         # default to ranking all URIs in scoredb
         if uris is None:
             uris = self.scoredict.keys()

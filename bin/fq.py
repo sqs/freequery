@@ -39,7 +39,7 @@ def query(program, spec, q):
     """
     unranked = program.option_dict.get('unranked', False)
     for i,doc in enumerate(program.fqclient(spec).query(q, ranked=not unranked)):
-        print "%d. %s %r" % (i+1, doc.uri, doc.scores)
+        print "%d. %s %r" % (i+1, doc.uri, doc.score)
         print "\t%s\n" % doc.excerpt.replace("\n", " ")
 
 @Freequery.command

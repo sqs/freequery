@@ -1,6 +1,7 @@
 import urlparse
 from cStringIO import StringIO
 import lxml.html
+from freequery.document.score import Score
 from freequery.lang.terms import prep_terms
 
 class Document(object):
@@ -15,7 +16,9 @@ class Document(object):
         self.docid = docid
         
         if scores is not None:
-            self.scores = scores
+            self.score = Score(**scores)
+        else:
+            self.score = None
         
         self.make_typed('text/html')
 
@@ -72,16 +75,18 @@ class Document(object):
     def __lt__(self, other):
         """Used when sorting results by score. Break ties with URIs
         (reverse)."""
-        if not hasattr(self, 'scores') or not hasattr(other, 'scores'):
-            raise Exception("can only sort docs with scores")
-        if self.scores['pr'] == other.scores['pr']:
+        from freequery.document.score import score_pagerank_cmp
+        if not self.score or not other.score:
+            raise Exception("can only sort docs with score")
+        c = score_pagerank_cmp(self.score, other.score)
+        if c == 0:
             return self.uri < other.uri
         else:
-            return self.scores['pr'] < other.scores['pr']
+            return c < 0 # cmp < 0 means self < other
     
     def __str__(self):
         rawstr = "(%d bytes)" % len(self.raw) if self.raw else "None"
-        scorestr = "score=%d " % self.score if hasattr(self, 'score') else ''
+        scorestr = "score=%d " % (self.score or '')
         return "<Document docid=%d uri='%s' %sraw=%s>" % \
             (self.docid, self.uri, scorestr, rawstr)
 

@@ -2,10 +2,11 @@ from disco.util import urlresolve
 from discodex.client import DiscodexClient
 from freequery.repository.docset import Docset
 from freequery.document import Document
+from freequery.document.score import Score
 from freequery.graph.pagerank_job import PagerankJob
-from freequery.graph.scoredb import ScoreDB
 from freequery.graph.links import LinkParseJob
 from freequery.index.job import IndexJob
+from freequery.index.scoredb import ScoreDB
 from freequery.index.mapreduce import tfidf_undemux
 from freequery.query import Query
 
@@ -39,20 +40,20 @@ class FreequeryClient(object):
         if not res:
             return []
 
-        prs = None
+        pageranks = None
         if ranked:
             scoredb = ScoreDB(self.spec.scoredb_path)
             uris = [e[0] for e in res]
-            prs = dict(scoredb.rank(uris))
-            if not prs:
+            pageranks = dict(scoredb.rank(uris))
+            if not pageranks:
                 raise Exception("no ranks available")
             
         docs = []
         for uri,scores in res:
             doc = self.docset.get(uri)
-            doc.scores = scores
-            if prs:
-                doc.scores['pr'] = prs[uri]
+            doc.score = Score(**scores)
+            if pageranks:
+                doc.score['pagerank'] = pageranks[uri]
             doc.excerpt = doc.excerpt(qq)
             docs.append(doc)
         return docs

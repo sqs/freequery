@@ -1,14 +1,15 @@
 import os, unittest
 from freequery.test.fixtures import dumppath
+from freequery.client.client import Spec, FreequeryClient
+from freequery.repository.docset import Docset
+from freequery.index.scoredb import ScoreDB
+from freequery.document import Document
 
 
 class IntegrationTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(klass):
-        from freequery.client.client import Spec, FreequeryClient
-        from freequery.repository.docset import Docset
-
         if klass.__name__ == 'IntegrationTestCase':
             return
         
@@ -64,7 +65,7 @@ class IntegrationTestCase(unittest.TestCase):
                 (msg,
                  "\n".join(expected),
                  "\n".join(actual_uris),
-                 "\n".join("%r\t%s" % (d.scores, d.uri) for d in actual),
+                 "\n".join("%r\t%s" % (d.score, d.uri) for d in actual),
                  self.__diff(expected, actual_uris)))
 
             
@@ -82,8 +83,6 @@ class IntegrationTestCase(unittest.TestCase):
         return "\n".join(difflib.unified_diff(expected, result))
     
     def test_expected_ranking(self):
-        from freequery.graph.scoredb import ScoreDB
-        from freequery.document import Document
         if self.__class__.__name__ == 'IntegrationTestCase':
             return
         if not hasattr(self, 'expected_ranking'):
@@ -91,12 +90,11 @@ class IntegrationTestCase(unittest.TestCase):
         scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
         actual = scoredb.rank()
         self.assertResultsSimilar(self.expected_ranking,
-                                  [Document(uri,scores=dict(pr=pr)) \
+                                  [Document(uri,scores=dict(pagerank=pr)) \
                                    for uri,pr in actual])
 
     def test_against_local_pagerank(self):
         from freequery.graph.local_pagerank import pagerank
-        from freequery.graph.scoredb import ScoreDB
         
         if self.__class__.__name__ == 'IntegrationTestCase':
             return
