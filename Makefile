@@ -9,5 +9,6 @@ install:
 	pip install PyStemmer
 
 test:
+	disco restart > /dev/null && discodex restart > /dev/null && \
 	nosetests test/unit && \
-	nosetests --processes=4 test/integration
+	nosetests -x --processes=4 test/integration
