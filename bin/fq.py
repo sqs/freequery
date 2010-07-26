@@ -51,7 +51,6 @@ def index(program, spec):
     import sys, time
     from freequery.client.client import Spec
     program.fqclient(spec).index()
-    print "\n", Spec(spec).invindex_name
 
 @Freequery.command
 def inspect_index(program, soec):
