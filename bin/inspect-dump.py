@@ -1,5 +1,5 @@
 import sys
-from freequery.repository.formats import WARCParser
+from freequery.formats.warc import WARCParser
 
 if len(sys.argv) != 2:
     print "Usage: %s <dump>" % sys.argv[0]

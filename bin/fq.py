@@ -87,7 +87,7 @@ def dump_lint(program, *dumps):
     Checks the validity of the specified dump file:
       - No two documents have the same URI.
     """
-    from freequery.repository.formats import WARCParser
+    from freequery.formats.warc import WARCParser
     from collections import defaultdict
     uri_dump = defaultdict(list)
     for dump in dumps:

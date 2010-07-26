@@ -1,5 +1,5 @@
 """
-Parsers and writers for Web page dump files.
+Parser and writer for WARC (Web Archive) files.
 """
 from freequery.document import Document
 from cStringIO import StringIO

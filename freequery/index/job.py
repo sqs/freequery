@@ -1,7 +1,7 @@
 from disco.core import Disco, result_iterator
 from disco.func import chain_reader
 from discodex.objects import DataSet
-from freequery.repository.docset import Docset
+from freequery.document.docset import Docset
 from freequery.index.mapreduce import \
     docparse, doc_tfidf_map, doc_tfidf_partition, doc_tfidf_reduce
 

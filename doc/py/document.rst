@@ -7,4 +7,7 @@ Document
 .. autoclass:: Document
    :members:
 
+.. automodule:: freequery.repository.docset
+   :members:
+
 

@@ -6,7 +6,7 @@ TERM_SUFFIX_FOR_DOC_KEYS = ' '
 
 def docparse(iterable, size, fname, params):
     """Iterates through a Web dump and emits each document."""    
-    from freequery.repository.formats import WARCParser
+    from freequery.formats.warc import WARCParser
     return WARCParser(iterable)
 
 def doc_tfidf_map(doc, params):

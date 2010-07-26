@@ -1,6 +1,6 @@
 import sys
 from freequery.document import Document
-from freequery.repository.formats import WARCWriter
+from freequery.formats.warc import WARCWriter
 
 inpath = sys.argv[1]
 outpath = inpath + '.warc'

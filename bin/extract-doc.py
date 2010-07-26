@@ -1,5 +1,5 @@
 import sys
-from freequery.repository.formats import WARCParser, WARCWriter
+from freequery.formats.warc import WARCParser, WARCWriter
 
 infile = open(sys.argv[1], 'rb')
 uri = sys.argv[2]

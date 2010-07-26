@@ -1,5 +1,5 @@
 import os, unittest
-from freequery.repository.docset import Docset
+from freequery.document.docset import Docset
 from freequery.test import fixtures
 
 WROTE_DUMP = False
@@ -104,7 +104,7 @@ class TestDocset(unittest.TestCase):
         self.assertEquals(fixtures.examplez, self.docset.get('http://example.com/z.html'))
 
     def test_get_bad_uri_raises(self):
-        from freequery.repository.docset import DocumentNotFound
+        from freequery.document.docset import DocumentNotFound
         self.docset.add_dump('d1', dump1)
         self.assertRaises(DocumentNotFound,
                           lambda: self.docset.get_pos('http://baduri.example.com'))

@@ -1,4 +1,4 @@
-from freequery.repository.formats import WARCWriter
+from freequery.formats.warc import WARCWriter
 from freequery.document import Document
 
 class QTableFile(object):

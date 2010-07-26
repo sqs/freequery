@@ -57,5 +57,5 @@ def dumppath(dumpname):
                         '../../test/dumps/', dumpname)
 
 def dumpdocs(dumpname):
-    from freequery.repository.formats import WARCParser
+    from freequery.formats.warc import WARCParser
     return dict((doc.uri, doc) for doc in WARCParser(open(dumppath(dumpname), 'rb')))

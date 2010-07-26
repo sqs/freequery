@@ -1,5 +1,5 @@
 from disco.core import Disco, result_iterator
-from freequery.repository.docset import Docset
+from freequery.document.docset import Docset
 from freequery.document import Document
 
 

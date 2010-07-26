@@ -2,7 +2,7 @@ import re, urllib2, os, cPickle as pickle
 from cStringIO import StringIO
 from disco.ddfs import DDFS
 from disco.util import urlresolve
-from freequery.repository.formats import WARCParser
+from freequery.formats.warc import WARCParser
 
 class DocumentNotFound(Exception): pass
 

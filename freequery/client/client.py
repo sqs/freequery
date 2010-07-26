@@ -1,6 +1,6 @@
 from disco.util import urlresolve
 from discodex.client import DiscodexClient
-from freequery.repository.docset import Docset
+from freequery.document.docset import Docset
 from freequery.document import Document
 from freequery.document.score import Score
 from freequery.graph.pagerank_job import PagerankJob

@@ -1,5 +1,5 @@
 import unittest, StringIO
-from freequery.repository.formats import WARCParser, WARCWriter
+from freequery.formats.warc import WARCParser, WARCWriter
 from freequery.test import fixtures
 
 class TestWARCFile(unittest.TestCase):

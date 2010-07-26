@@ -1,6 +1,6 @@
 import os, unittest, StringIO
 from freequery.graph.links import LinkFile, LinkFileOutputStream
-from freequery.repository.formats import WARCParser
+from freequery.formats.warc import WARCParser
 from freequery.test import fixtures
 
 with open(fixtures.dumppath('small1-links'), 'rb') as lf:

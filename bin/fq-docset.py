@@ -27,7 +27,7 @@ class FreequeryDocset(Program):
 
     @property
     def docset(self):
-        from freequery.repository.docset import Docset
+        from freequery.document.docset import Docset
         return Docset
     
     def default(self, program, *args):
@@ -85,6 +85,27 @@ def add(program, spec, *dumps):
     docset.save()
 
 @FreequeryDocset.command
+def make(program, spec, *dumps):
+    def stopwatch(label, fn):
+        import time
+        t0 = time.time()
+        print label
+        fn()
+        t = time.time() - t0
+        print "\t# %f s" % t
+        
+    stopwatch('bin/fq-docset.py add %s %s' % (spec, " ".join(dumps)),
+              lambda: add(program, spec, *dumps))
+    stopwatch('bin/fq-docset.py linkparse %s' % spec,
+              lambda: linkparse(program, spec))
+
+    import subprocess
+    stopwatch('bin/fq.py rank %s' % spec,
+              lambda: subprocess.check_call(['bin/fq.py','rank',spec]))
+    stopwatch('bin/fq.py index %s' % spec,
+              lambda: subprocess.check_call(['bin/fq.py','index',spec]))
+
+@FreequeryDocset.command
 def info(program, spec):
     """Usage: <spec>
 
@@ -115,7 +136,7 @@ def split(program, k, dump):
 
     Splits the dumpfile `dump` into separate files, each with at most `k` documents.
     """
-    from freequery.repository.formats import WARCParser, WARCWriter
+    from freequery.formats.warc import WARCParser, WARCWriter
     if not os.path.isfile(dump):
         print "fq-docset: cannot access '%s': no such dump" % dump
         exit(1)

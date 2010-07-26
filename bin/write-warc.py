@@ -1,6 +1,6 @@
 import sys
 from freequery.document import Document
-from freequery.repository.formats import WARCWriter
+from freequery.formats.warc import WARCWriter
 
 if len(sys.argv) != 2:
     print "usage: %s <uri>" % sys.argv[0]

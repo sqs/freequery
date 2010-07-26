@@ -1,6 +1,6 @@
 import os, sys
 from freequery.document import Document
-from freequery.repository.formats import WARCWriter
+from freequery.formats.warc import WARCWriter
 
 if len(sys.argv) != 2:
     print "Usage: %s <wiki-path>" % sys.argv[0]

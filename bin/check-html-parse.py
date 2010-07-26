@@ -1,5 +1,5 @@
 import sys
-from freequery.repository.formats import WARCParser
+from freequery.formats.warc import WARCParser
 
 inpaths = sys.argv[1:]
 

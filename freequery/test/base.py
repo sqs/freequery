@@ -1,7 +1,7 @@
 import os, unittest
 from freequery.test.fixtures import dumppath
 from freequery.client.client import Spec, FreequeryClient
-from freequery.repository.docset import Docset
+from freequery.document.docset import Docset
 from freequery.index.scoredb import ScoreDB
 from freequery.document import Document
 
