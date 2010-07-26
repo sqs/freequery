@@ -59,8 +59,6 @@ class IndexJob(object):
             except Exception as e:
                 import time
                 # TODO(sqs): find a better way of monitoring job status
-                print "."
-                print e
                 time.sleep(2)
 
 
