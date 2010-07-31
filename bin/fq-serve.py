@@ -34,7 +34,7 @@ class FreequeryServe(Program):
     def ssh(self, url, cmd, **args):
         args["stdout"] = args.get("stdout", subprocess.PIPE)
         args["stderr"] = args.get("stderr", subprocess.STDOUT)
-        p = subprocess.Popen(["ssh", "-Aq",
+        p = subprocess.Popen(["ssh", "-q",
                               "-o", "UserKnownHostsFile=/dev/null",
                               "-o", "StrictHostKeyChecking=no",
                               'root@' + url, cmd], **args)
@@ -92,7 +92,8 @@ def setup(program, *hosts):
            
        p = program.ssh(master,
                "mkdir -p /srv/disco && "\
-               "(useradd -d /srv/disco -s /bin/bash disco || echo) && " \
+               "(useradd -d /srv/disco -s /bin/bash disco > /dev/null " \
+                           "2>&1 || echo -n) && " \
                "chown -R disco:disco /srv/disco && " \
                "rm -Rf /srv/disco/.ssh/; mkdir /srv/disco/.ssh && " \
                "ssh-keygen -N '' -f /srv/disco/.ssh/id_dsa >/dev/null && " \
