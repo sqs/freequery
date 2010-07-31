@@ -12,3 +12,6 @@ test:
 	disco restart > /dev/null && discodex restart > /dev/null && \
 	nosetests test/unit && \
 	nosetests -x --processes=4 test/integration
+
+restart:
+	disco restart && discodex restart
