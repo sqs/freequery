@@ -92,31 +92,3 @@ class IntegrationTestCase(unittest.TestCase):
         self.assertResultsSimilar(self.expected_ranking,
                                   [Document(uri,scores=dict(pagerank=pr)) \
                                    for uri,pr in actual])
-
-    def test_against_local_pagerank(self):
-        from freequery.graph.local_pagerank import pagerank
-        
-        if self.__class__.__name__ == 'IntegrationTestCase':
-            return
-
-        if not getattr(self, 'check_against_local_pagerank', False):
-            return
-
-        docset = self.docset
-        edges = []
-        for uri in docset.doc_uris():
-            doc = docset.get(uri)
-            for dest_uri in doc.link_uris:
-                if dest_uri in docset.doc_uris():
-                    edges.append((uri, dest_uri))
-        local_pr = pagerank(edges)
-
-        scoredb = ScoreDB(self.fqclient.spec.scoredb_path)
-        for uri,score in scoredb.items():
-            pr = local_pr.get(uri, 0.0)
-            delta = abs(pr - score)
-            expected_delta = 0.01
-            self.assertTrue(delta < expected_delta,
-                "expected MapReduce score for URI '%s' to be almost " \
-                "equal to %f (expected_delta=%.3f, delta=%f), but got %f" % \
-                    (uri, pr, expected_delta, delta, score))
