@@ -1,3 +1,5 @@
+# TODO(sqs): add disco user
+
 sudo aptitude -y install git-core build-essential
 
 mkdir -p $HOME/src && cd $HOME/src
@@ -12,7 +14,7 @@ else
 	git clone 'git://github.com/sqs/freequery.git' $HOME/src/freequery && \
 	cd $HOME/src/freequery
 fi
-sudo make install
+make install
 
 #############
 ### DISCO ###
@@ -24,4 +26,12 @@ else
 	git clone 'git://github.com/sqs/disco.git' $HOME/src/disco && \
 	cd $HOME/src/disco
 fi
-make && sudo make install && cd contrib/discodex && sudo python setup.py install
+make && make install && cd contrib/discodex && python setup.py install
+
+#############
+### PATHS ###
+#############
+cp -R $HOME/src/disco/contrib/discodex/ /usr/local/lib/disco/
+chown -R disco:disco /usr/local/lib/
+mkdir -p /srv/disco /srv/disco/log /srv/disco/run /srv/disco/.ssh
+chown -R disco:disco /srv/disco

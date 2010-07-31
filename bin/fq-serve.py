@@ -34,11 +34,10 @@ class FreequeryServe(Program):
     def ssh(self, url, cmd, **args):
         args["stdout"] = args.get("stdout", subprocess.PIPE)
         args["stderr"] = args.get("stderr", subprocess.STDOUT)
-        p = subprocess.Popen(["ssh",
-                              "-i", "/home/sqs/.ssh/id_dsa",
+        p = subprocess.Popen(["ssh", "-Aq",
                               "-o", "UserKnownHostsFile=/dev/null",
                               "-o", "StrictHostKeyChecking=no",
-                              url, cmd], **args)
+                              'root@' + url, cmd], **args)
         return p
 
     def process_instances(self, hosts, op, m):
@@ -66,18 +65,69 @@ class FreequeryServe(Program):
 
 
 @FreequeryServe.command
-def start(program):
-    pass
+def start(program, what, *hosts):
+    def start_daemon(host):
+        if what == 'disco_master':
+            p = program.ssh(host, "cd /srv/disco && sudo -u disco disco start")
+            return p
+    program.process_instances(hosts, start_daemon, "Start %s" % what)
 
 @FreequeryServe.command
+def stop(program, what, *hosts):
+    def stop_daemon(host):
+        if what == 'disco_master':
+            p = program.ssh(host, "cd /srv/disco && sudo -u disco disco stop")
+            return p
+    program.process_instances(hosts, stop_daemon, "Stop %s" % what)
+
+    
+@FreequeryServe.command
 def setup(program, *hosts):
+    def make_sshkey(master):
+       print >> sys.stderr, "Generating an ssh key on the master..",
+       
+       if program.ssh(master, "echo 'StrictHostKeyChecking no' >> "\
+        "/etc/ssh/ssh_config").wait():
+           die("Couldn't modify ssh_config")
+           
+       p = program.ssh(master,
+               "mkdir -p /srv/disco && "\
+               "(useradd -d /srv/disco -s /bin/bash disco || echo) && " \
+               "chown -R disco:disco /srv/disco && " \
+               "rm -Rf /srv/disco/.ssh/; mkdir /srv/disco/.ssh && " \
+               "ssh-keygen -N '' -f /srv/disco/.ssh/id_dsa >/dev/null && " \
+               "chown -R disco:disco /srv/disco/.ssh/ && " \
+               "cat /srv/disco/.ssh/id_dsa.pub", stdout = subprocess.PIPE)
+       key = p.stdout.read()
+       if p.wait():
+           die("Key generation failed.")
+       print >> sys.stderr, "ok."
+       return key
+
+    def get_cookie(master):
+        p = program.ssh(master, "cat /srv/disco/.erlang.cookie",
+                        stdout = subprocess.PIPE)
+        cookie = p.stdout.read()
+        if p.wait():
+            die("Couldn't read ~/.erlang.cookie")
+        return cookie
+
+    sshkey = make_sshkey(hosts[0])
+    cookie = get_cookie(hosts[0])
+    program.distribute_file(hosts, "/srv/disco/.ssh/authorized_keys", sshkey,
+                            change_owner=True)
+    program.distribute_file(hosts, "/srv/disco/.erlang.cookie", cookie,
+                            change_owner=True)
+
     program.distribute_file(hosts, "freequery-remote-install.sh",
                             open('bin/remote-install.sh', 'rb').read())
     def run_install(host):
         p = program.ssh(host, "sh freequery-remote-install.sh")
         return p
     program.process_instances(hosts, run_install, "Run install script")
-                    
+    program.distribute_file(hosts, "/etc/disco/settings.py",
+                            open('conf/disco_settings.py', 'rb').read(),
+                            change_owner=True)                  
 
 @FreequeryServe.command
 def instances(program):
