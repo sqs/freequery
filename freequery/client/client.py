@@ -20,7 +20,7 @@ class Spec(object):
         self.name = name
         self.docset_name = '%s%s' % (self.docset_prefix, name)
         self.invindex_name = 'discodex:fq:%s:invindex' % name
-        self.scoredb_path = '/s/a/scoredb-%s' % name
+        self.scoredb_path = '/tmp/scoredb-%s' % name
 
 class FreequeryClient(object):
 
