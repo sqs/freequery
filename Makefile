@@ -5,7 +5,7 @@ clean:
 	find . -name '*.pyc' -delete
 
 install:
-	aptitude install -y python-pip python-flup python-django erlang python-dev python-nose lighttpd python-networkx
+	aptitude install -y python-pip python-flup python-django erlang python-dev python-nose lighttpd python-networkx python-lxml python-setuptools
 	pip install PyStemmer
 
 test:
