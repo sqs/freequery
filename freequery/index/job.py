@@ -44,7 +44,7 @@ class IndexJob(object):
 
     def __run_discodex_index(self, results):
         dataset = DataSet(input=results,
-                          options=dict(parser='discodex.mapreduce.parsers.netstrparse',
+                          options=dict(parser='netstrparse',
                                        demuxer='freequery.index.mapreduce.tfidf_demux'))
         orig_invindex_name = self.discodex.index(dataset)
         if not orig_invindex_name:
