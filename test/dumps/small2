@@ -1,0 +1,10 @@
+WARC/0.18
+WARC-Type: response
+WARC-Target-URI: http://example.com/news
+Content-Length: 64
+
+
+
+<h1>Example News</h1>
+<p>We just moved to a new office.</p>
+
