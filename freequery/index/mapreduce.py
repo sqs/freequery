@@ -81,5 +81,5 @@ def tfidf_demux((t, (uri, tfidf)), params):
 
 def tfidf_undemux(v):
     import pickle
-    uri, tfidf = pickle.loads(v)
+    uri, tfidf = pickle.loads(str(v))
     return (uri.decode('utf8'), {'tfidf': tfidf})
