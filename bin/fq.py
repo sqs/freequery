@@ -38,7 +38,10 @@ def query(program, spec, q):
     Query the `spec` inverted index for docs matching `query`.
     """
     unranked = program.option_dict.get('unranked', False)
-    for i,doc in enumerate(program.fqclient(spec).query(q, ranked=not unranked)):
+    res = program.fqclient(spec).query(q, ranked=not unranked)
+    if not unranked:
+        res.sort(reverse=True)
+    for i,doc in enumerate(res):
         print "%d. %s %r" % (i+1, doc.uri, doc.score)
         print "\t%s\n" % doc.excerpt.replace("\n", " ")
 
