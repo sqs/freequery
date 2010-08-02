@@ -17,12 +17,18 @@ def doc_tfidf_map(doc, params):
     after the keys tracking df.
     """
     from freequery.index.mapreduce import TERM_SUFFIX_FOR_DOC_KEYS
-    
-    for t in set(doc.terms()):
+
+    doc_terms = doc.terms()
+
+    # df
+    for t in set(doc_terms):
         yield t.encode('utf8'), 1
 
+    # tf
     for t, tf in doc.term_frequencies().items():
-        yield t.encode('utf8')+TERM_SUFFIX_FOR_DOC_KEYS, (doc.uri, tf)
+        yield t.encode('utf8') + TERM_SUFFIX_FOR_DOC_KEYS, \
+              (doc.uri, float(tf)/len(doc_terms))
+
 
 def doc_tfidf_partition(key, nr_partitions, params):
     """
@@ -65,7 +71,6 @@ def doc_tfidf_reduce(in_iter, out, params):
             df += v
         elif isinstance(v, tuple) or isinstance(v, list):
             uri, tf = v
-            tf = 1 + math.log(tf) # TODO(sqs): tf := tf/(num words in doc)
             idf = math.log((float(params['doc_count']) / df))
             out.add(t, (uri, tf * idf))
 
