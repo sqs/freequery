@@ -44,10 +44,13 @@ class IndexJob(object):
             params=dict(doc_count=self.docset.doc_count))
 
     def __run_discodex_index(self, results):
-        dataset = DataSet(input=results,
-                          options=dict(parser='netstrparse',
-                                       demuxer='freequery.index.mapreduce.tfidf_demux'))
-        origname = self.discodex.index(dataset)
+        opts = {
+            'parser': 'disco.func.chain_reader',
+            'demuxer': 'freequery.index.mapreduce.tfidf_demux',
+            'nr_ichunks': 1, # TODO(sqs): after disco#181 fixed, increase this
+        }
+        ds = DataSet(input=results, options=opts)
+        origname = self.discodex.index(ds)
         self.disco.wait(origname) # origname is also the disco job name
         self.discodex.clone(origname, self.spec.invindex_name)
         
