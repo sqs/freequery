@@ -7,7 +7,7 @@ from freequery.graph.pagerank_job import PagerankJob
 from freequery.graph.links import LinkParseJob
 from freequery.index.job import IndexJob
 from freequery.index.scoredb import ScoreDB
-from freequery.index.mapreduce import tfidf_undemux
+from freequery.index.tf_idf import TfIdf
 from freequery.query import Query
 
 
@@ -36,7 +36,7 @@ class FreequeryClient(object):
         """Return a ranked list of matching `Document` instances."""
         qq = Query.parse(q)
         res = self.discodex_client.query(self.spec.invindex_name, qq)
-        res = map(tfidf_undemux, res)
+        res = map(TfIdf.undemux, res)
         if not res:
             return []
 

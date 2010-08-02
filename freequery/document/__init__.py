@@ -1,1 +1,1 @@
-from freequery.document.document import Document, HTMLDocument
+from freequery.document.document import Document, HTMLDocument, docparse

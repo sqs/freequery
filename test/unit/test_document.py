@@ -1,5 +1,5 @@
 import unittest
-from freequery.document import Document
+from freequery.document import Document, docparse
 from freequery.query import Query
 from freequery.test import fixtures
 
@@ -105,4 +105,8 @@ class TestHTMLDocument(unittest.TestCase):
         dp = pickle.loads(pickle.dumps(d))
         self.assertEquals(d, dp)
         
-        
+class TestDocparse(unittest.TestCase):
+    def test_docparse(self):
+        from StringIO import StringIO
+        o = docparse(StringIO(fixtures.warc_file1), None, None, None)
+        self.assertEquals([fixtures.example, fixtures.apple], list(o))

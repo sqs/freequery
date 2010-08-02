@@ -1,7 +1,7 @@
 import os, sys, re
 from disco.core import Disco, result_iterator
 from freequery.graph.links import doclinks
-from freequery.index.mapreduce import docparse
+from freequery.document import docparse
 
 if len(sys.argv) != 2:
     print "Usage: %s <dump>" % sys.argv[0]

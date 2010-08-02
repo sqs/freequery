@@ -209,4 +209,7 @@ MIMETYPE_CLASS = {
     'text/html': HTMLDocument
 }
 
-
+def docparse(iterable, size, fname, params):
+    """Iterates through a Web dump and emits each document."""    
+    from freequery.formats.warc import WARCParser
+    return WARCParser(iterable)

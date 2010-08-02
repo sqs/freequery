@@ -1,6 +1,6 @@
 from disco.core import Disco, result_iterator
 from freequery.document.docset import Docset
-from freequery.document import Document
+from freequery.document import Document, docparse
 
 
 class LinkParseJob(object):
@@ -12,7 +12,6 @@ class LinkParseJob(object):
         self.verbose = verbose
 
     def start(self):
-        from freequery.index.mapreduce import docparse
         from disco import func
         job = self.disco.new_job(
             name="linkparse",

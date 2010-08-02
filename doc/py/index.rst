@@ -1,6 +1,6 @@
 Index
 =====
 
-.. automodule:: freequery.index.mapreduce
+.. automodule:: freequery.index.tf_idf
    :members:
 

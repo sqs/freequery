@@ -2,9 +2,9 @@ from disco.core import Disco, result_iterator
 from disco.settings import DiscoSettings
 from disco.func import chain_reader
 from discodex.objects import DataSet
+from freequery.document import docparse
 from freequery.document.docset import Docset
-from freequery.index.mapreduce import \
-    docparse, doc_tfidf_map, doc_tfidf_partition, doc_tfidf_reduce
+from freequery.index.tf_idf import TfIdf
 
 
 class IndexJob(object):
@@ -34,11 +34,11 @@ class IndexJob(object):
             name="index_tfidf",
             input=['tag://' + self.docset.ddfs_tag],
             map_reader=docparse,
-            map=doc_tfidf_map,
-            reduce=doc_tfidf_reduce,
+            map=TfIdf.map,
+            reduce=TfIdf.reduce,
             sort=True,
             partitions=self.nr_partitions,
-            partition=doc_tfidf_partition,
+            partition=TfIdf.partition,
             merge_partitions=False,
             profile=self.profile,
             params=dict(doc_count=self.docset.doc_count))
@@ -46,7 +46,7 @@ class IndexJob(object):
     def __run_discodex_index(self, results):
         opts = {
             'parser': 'disco.func.chain_reader',
-            'demuxer': 'freequery.index.mapreduce.tfidf_demux',
+            'demuxer': 'freequery.index.tf_idf.TfIdf_demux',
             'nr_ichunks': 1, # TODO(sqs): after disco#181 fixed, increase this
         }
         ds = DataSet(input=results, options=opts)
