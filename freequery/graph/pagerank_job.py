@@ -2,9 +2,7 @@ from disco.core import Disco
 from disco.core import result_iterator
 from disco.func import chain_reader
 from freequery.graph.links import doclinksparse
-from freequery.graph.pagerank import pagerank_mass_map, \
-    pagerank_mass_reduce, pagerank_teleport_distribute_map, \
-    pagerank_partition
+from freequery.graph.pagerank import Pagerank
 from freequery.document.docset import Docset
 from freequery.graph.pagerank import DANGLING_MASS_KEY
 from freequery.index.scoredb import ScoreDBWriter
@@ -52,11 +50,11 @@ class PagerankJob(object):
             name="pagerank_mass0",
             input=['tag://'+self.docset.ddfs_link_file_tag],
             map_reader=doclinksparse,
-            map=pagerank_mass_map,
-            reduce=pagerank_mass_reduce,
+            map=Pagerank.map_mass,
+            reduce=Pagerank.reduce_mass,
             sort=True,
             partitions=self.nr_partitions,
-            partition=pagerank_partition,
+            partition=Pagerank.partition,
             merge_partitions=self.merge_partitions,
             profile=self.profile,
             params=dict(iter=0, doc_count=self.docset.doc_count)))
@@ -66,11 +64,11 @@ class PagerankJob(object):
             name="pagerank_mass%d" % i,
             input=results,
             map_reader=chain_reader,
-            map=pagerank_mass_map,
-            reduce=pagerank_mass_reduce,
+            map=Pagerank.map_mass,
+            reduce=Pagerank.reduce_mass,
             sort=True,
             partitions=self.nr_partitions,
-            partition=pagerank_partition,
+            partition=Pagerank.partition,
             merge_partitions=self.merge_partitions,
             profile=self.profile,
             params=dict(iter=i)))
@@ -84,10 +82,10 @@ class PagerankJob(object):
             name="pagerank_teleport_distribute%d" % (i-1),
             input=results,
             map_reader=chain_reader,
-            map=pagerank_teleport_distribute_map,
+            map=Pagerank.map_teleport_distribute,
             sort=True,
             partitions=self.nr_partitions,
-            partition=pagerank_partition,
+            partition=Pagerank.partition,
             merge_partitions=self.merge_partitions,
             profile=self.profile,
             params=dict(iter=i, alpha=self.alpha,

@@ -4,7 +4,7 @@ Web Graph
 .. automodule:: freequery.graph
    :members:
 
-.. automodule:: freequery.graph.pagerank
+.. autoclass:: freequery.graph.pagerank.Pagerank
    :members:
 
 .. autoclass:: freequery.graph.pagerank_job.PagerankJob
