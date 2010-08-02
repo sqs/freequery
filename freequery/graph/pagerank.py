@@ -40,7 +40,9 @@ def pagerank_mass_map(doc, params):
         
     yield doc.uri.encode('utf8'), doc
 
+    # make sure we aren't re-parsing link URIs each time
     assert doc._Document__cached_link_uris is not None
+    
     outlinks = doc.link_uris
     if len(outlinks) > 0:
         out_pr = doc.pagerank / len(outlinks)
