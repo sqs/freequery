@@ -67,7 +67,9 @@ def doc_tfidf_reduce(in_iter, out, params):
         if isinstance(v, int):
             if done_counting_df:
                 raise Exception("done_counting_df=True but encountered df " \
-                                "value for term '%s'" % t)
+                                "value for term '%s'. This means that a " \
+                                "df value got sorted after a tf value " \
+                                " for some reason." % t)
             df += v
         elif isinstance(v, tuple) or isinstance(v, list):
             uri, tf = v
