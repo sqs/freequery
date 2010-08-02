@@ -12,7 +12,9 @@ def docparse(iterable, size, fname, params):
 def doc_tfidf_map(doc, params):
     """
     For each term `t` in `doc`, emits `(t,1)` to track df (document frequency)
-    and `(t, (uri,tf))` to track tf (term frequency).
+    and `(t, (uri,tf))` to track tf (term frequency). Appends
+    `TERM_SUFFIX_FOR_DOC_KEYS` after keys tracking tf so that they sort just
+    after the keys tracking df.
     """
     from freequery.index.mapreduce import TERM_SUFFIX_FOR_DOC_KEYS
     
