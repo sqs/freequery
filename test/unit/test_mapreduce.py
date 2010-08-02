@@ -27,6 +27,7 @@ class TestMapReduce(unittest.TestCase):
             doc_tfidf_partition('hi ', 1000, None))
 
     def test_doc_tfidf_reduce(self):
+        from math import log
         d = Document('http://a.com', 'hello there hello')
         out = []
         class mock_reduce_out(object):
@@ -37,7 +38,7 @@ class TestMapReduce(unittest.TestCase):
                    ('there', 1), ('there ', ('http://a.com', 1))]
         # unlike in test_doc_tfidf_map, using doc_count=2
         doc_tfidf_reduce(map_out, reduce_out, {'doc_count':2})
-        expected = [('hello', ('http://a.com', 2.0 * 2)),
-                    ('there', ('http://a.com', 1.0 * 2))]
+        expected = [('hello', ('http://a.com', (1+log(2)) * log(2))),
+                    ('there', ('http://a.com', (1+log(1)) * log(2)))]
         self.assertEqual(sorted(expected), sorted(out))
         

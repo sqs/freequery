@@ -42,6 +42,7 @@ def doc_tfidf_reduce(in_iter, out, params):
 
     Emits `(t, (uri,tf-idf))`.
     """
+    import math
     from freequery.index.mapreduce import TERM_SUFFIX_FOR_DOC_KEYS
     last_t = None
     done_counting_df = False
@@ -64,7 +65,8 @@ def doc_tfidf_reduce(in_iter, out, params):
             df += v
         elif isinstance(v, tuple) or isinstance(v, list):
             uri, tf = v
-            idf = float(params['doc_count']) / df
+            tf = 1 + math.log(tf) # TODO(sqs): tf := tf/(num words in doc)
+            idf = math.log((float(params['doc_count']) / df))
             out.add(t, (uri, tf * idf))
 
             # We shouldn't see any more (t,1)'s for this document since the
