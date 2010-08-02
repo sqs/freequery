@@ -1,4 +1,5 @@
 from disco.core import Disco, result_iterator
+from disco.settings import DiscoSettings
 from disco.func import chain_reader
 from discodex.objects import DataSet
 from freequery.document.docset import Docset
@@ -14,7 +15,7 @@ class IndexJob(object):
         self.spec = spec
         self.discodex = discodex
         self.docset = Docset(spec.docset_name)
-        self.disco = Disco("disco://localhost")
+        self.disco = Disco(DiscoSettings()['DISCO_MASTER'])
         self.nr_partitions = 8
         self.profile = profile
 
@@ -46,20 +47,7 @@ class IndexJob(object):
         dataset = DataSet(input=results,
                           options=dict(parser='netstrparse',
                                        demuxer='freequery.index.mapreduce.tfidf_demux'))
-        orig_invindex_name = self.discodex.index(dataset)
-        if not orig_invindex_name:
-            raise Exception("fq: discodex failed to index `%s'" % self.spec.name)
-
-        # wait for indexing to complete
-        while True:
-            try:
-                self.discodex.get(orig_invindex_name)
-                self.discodex.clone(orig_invindex_name, self.spec.invindex_name)
-                break
-            except Exception as e:
-                import time
-                # TODO(sqs): find a better way of monitoring job status
-                time.sleep(2)
-
-
-
+        origname = self.discodex.index(dataset)
+        self.disco.wait(origname) # origname is also the disco job name
+        self.discodex.clone(origname, self.spec.invindex_name)
+        
